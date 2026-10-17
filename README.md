@@ -53,7 +53,7 @@ flowchart LR
     subgraph API["FastAPI service (optional)"]
         M[Python port of theory engine<br/>/v1/generate · /v1/analyze · /v1/presets]
     end
-    K -. parity: fixtures/theory.json .- M
+    K -.-|"parity tests: fixtures/theory.json"| M
     N[GitHub Actions CI<br/>Vitest · tsc · ESLint · build<br/>pytest · ruff] -.-> Browser
     N -.-> API
 ```
