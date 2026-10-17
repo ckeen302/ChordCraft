@@ -10,6 +10,7 @@ import type { InstrumentName } from '@/types'
 import type { Mood } from '@/lib/theory/harmony'
 import { KEY_NAMES } from '@/lib/theory/keys'
 import { parallelKey, transposeKeyName } from '@/lib/theory/transpose'
+import type { ReharmIntent } from '@/lib/ai/generate'
 
 export interface ChatSettings {
   key: string
@@ -22,6 +23,8 @@ export interface ChatSettings {
   excludeDiminished: boolean
   /** Prefer a progression that ends on the tonic. */
   resolve: boolean
+  /** A genre the chord transformer knows (pop, rock, jazz…) — set by the LLM copilot. */
+  genre?: string
 }
 
 export interface ParsedRequest {
@@ -32,9 +35,15 @@ export interface ParsedRequest {
   transpose?: number
   /** Only tempo/instrument changed — keep the chords. */
   keepChords: boolean
+  /** Replace one chord (0-based index), steered by an intent ("make bar 3 more surprising"). */
+  reharmonize?: { index: number; intent: ReharmIntent }
   /** Nothing recognisable: ask the user to rephrase. */
   unknown: boolean
   help: boolean
+  /** The copilot's one-line take on the request (LLM only). */
+  say?: string
+  /** The copilot needs more detail; this is its question (LLM only). */
+  question?: string
 }
 
 export const DEFAULT_SETTINGS: ChatSettings = {
@@ -135,6 +144,25 @@ export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTING
 
   if (/^\s*(help|\?|what can you do|how does this work)/.test(text)) {
     return { settings: s, notes, keepChords: true, unknown: false, help: true }
+  }
+
+  // ── One-chord edits: "make bar 3 more surprising", "darker second chord" ─
+  const ORDINALS: Record<string, number> = { first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6, seventh: 7, eighth: 8, last: -1 }
+  const slot = text.match(/\b(?:bar|chord|measure)\s*(\d{1,2})\b/) ?? text.match(/\b(first|second|third|fourth|fifth|sixth|seventh|eighth|last)\s+(?:bar|chord|measure)\b/)
+  if (slot) {
+    const intent: ReharmIntent | null =
+      /\b(surpris\w*|unexpected|weird\w*|interesting|spic\w*|different|change|swap|replace)\b/.test(text) ? 'surprising'
+        : /\b(darker|sadder|minor)\b/.test(text) ? 'darker'
+          : /\b(brighter|happier|major)\b/.test(text) ? 'brighter'
+            : /\b(tense\w*|tension)\b/.test(text) ? 'tenser'
+              : /\b(jazz\w*|richer|fancier)\b/.test(text) ? 'jazzier'
+                : /\b(simpler|plainer)\b/.test(text) ? 'simpler'
+                  : /\b(resolve\w*|home)\b/.test(text) ? 'resolve'
+                    : null
+    if (intent) {
+      const n = /^\d/.test(slot[1]) ? Number(slot[1]) : ORDINALS[slot[1]]
+      return { settings: s, notes, reharmonize: { index: n > 0 ? n - 1 : -1, intent }, keepChords: true, unknown: false, help: false }
+    }
   }
 
   // ── Follow-up edits relative to the last progression ─────────────────────

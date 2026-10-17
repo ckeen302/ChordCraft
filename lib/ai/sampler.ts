@@ -127,6 +127,17 @@ export function seededRng(seed: number): () => number {
   }
 }
 
+/** Next-token logits with classifier-free guidance against `mood:any` (skipped when anyMood is null). */
+async function guidedLogits(logits: LogitsFn, rows: number[][], anyMood: number | null, guidance: number): Promise<Float32Array[]> {
+  if (anyMood === null) return logits(rows)
+  const uncond = rows.map(r => { const u = [...r]; u[3] = anyMood; return u })
+  const both = await logits([...rows, ...uncond])
+  return rows.map((_, r) => {
+    const c = both[r], u = both[r + rows.length]
+    return Float32Array.from(c, (x, i) => u[i] + guidance * (x - u[i]))
+  })
+}
+
 export async function sampleProgressions(logits: LogitsFn, v: Vocab, opts: SampleOptions): Promise<Candidate[]> {
   const {
     mode, mood = 'any', genre = 'any', candidates = 4, temperature = 0.9, topP = 0.95,
@@ -142,17 +153,7 @@ export async function sampleProgressions(logits: LogitsFn, v: Vocab, opts: Sampl
   const guided = guidance !== 1 && prefix[3] !== anyMood
 
   for (let step = 0; step <= length; step++) {
-    let out: Float32Array[]
-    if (guided) {
-      const uncond = rows.map(r => { const u = [...r]; u[3] = anyMood; return u })
-      const both = await logits([...rows, ...uncond])
-      out = rows.map((_, r) => {
-        const c = both[r], u = both[r + candidates]
-        return Float32Array.from(c, (x, i) => u[i] + guidance * (x - u[i]))
-      })
-    } else {
-      out = await logits(rows)
-    }
+    const out = await guidedLogits(logits, rows, guided ? anyMood : null, guidance)
     for (let r = 0; r < candidates; r++) {
       const chords = rows[r].slice(prefix.length)
       const allowed = step === length ? v.tokens.map((_, i) => i === v.eos) : [...base]
@@ -192,4 +193,71 @@ export async function sampleProgressions(logits: LogitsFn, v: Vocab, opts: Sampl
       logprob: logprob[r] / (length + 1),
     }))
     .sort((a, b) => b.logprob - a.logprob)
+}
+
+/** Token id for a degree, falling back to its plain triad/power chord when the exact quality isn't in the vocabulary. */
+export function degreeId(v: Vocab, [off, q]: Degree): number {
+  const exact = v.tokens.indexOf(`${off}:${q}`)
+  if (exact >= 0) return exact
+  const triad = { maj: 'maj', min: 'm', dim: 'dim', aug: 'aug', sus: 'sus4' }[FAMILY[q] ?? 'maj']
+  const fallback = v.tokens.indexOf(`${off}:${triad}`)
+  return fallback >= 0 ? fallback : v.tokens.indexOf(`${off}:maj`)
+}
+
+/** Chord families, for filters that ask for e.g. "something darker". */
+export function chordFamily(q: ChordQuality): 'maj' | 'min' | 'dim' | 'aug' | 'sus' {
+  return FAMILY[q] ?? 'maj'
+}
+
+/** Whether a degree belongs to the key's diatonic set (sus chords count when their root is diatonic). */
+export function isDiatonic(mode: 'major' | 'minor', [off, q]: Degree): boolean {
+  const want = DIATONIC[mode][off]
+  const fam = chordFamily(q)
+  return want !== undefined && (fam === 'sus' || fam === want)
+}
+
+export interface SlotOptions {
+  mode: 'major' | 'minor'
+  /** The whole progression's length (the model's len: token). */
+  length: number
+  /** Chords before the slot, fixed. */
+  prefix: Degree[]
+  mood?: string
+  genre?: string
+  /** Chords the slot must not become (e.g. the chord being replaced). */
+  exclude?: Degree[]
+  /** Restrict the slot; ignored if it would leave nothing to choose. */
+  filter?: (d: Degree) => boolean
+  temperature?: number
+  guidance?: number
+  rng?: () => number
+}
+
+/**
+ * Resample one chord slot, conditioned on the chords before it — the model
+ * reading the progression so far and offering a different next chord.
+ * Returns the sampled degree.
+ */
+export async function sampleSlot(logits: LogitsFn, v: Vocab, opts: SlotOptions): Promise<Degree> {
+  const { mode, mood = 'any', genre = 'any', exclude = [], filter, temperature = 1, guidance = 2, rng = Math.random } = opts
+  const prefix = controlIds(v, mode, Math.max(opts.length, opts.prefix.length + 1), genre, mood)
+  const row = [...prefix, ...opts.prefix.map(d => degreeId(v, d))]
+  const anyMood = v.id('mood:any')
+  const [out] = await guidedLogits(logits, [row], guidance !== 1 && prefix[3] !== anyMood ? anyMood : null, guidance)
+
+  const banned = new Set(exclude.map(d => degreeId(v, d)))
+  if (opts.prefix.length) banned.add(degreeId(v, opts.prefix[opts.prefix.length - 1]))
+  const base = v.tokens.map((_, i) => i >= v.firstChord && !banned.has(i))
+  const filtered = filter ? base.map((ok, i) => ok && filter(decodeChord(v, i))) : base
+  const allowed = filtered.some(Boolean) ? filtered : base
+
+  const raw = Array.from(out, (x, i) => (allowed[i] ? x / Math.max(temperature, 1e-5) : -Infinity))
+  const max = Math.max(...raw)
+  const weights = raw.map(x => Math.exp(x - max))
+  let u = rng() * weights.reduce((s, x) => s + x, 0)
+  for (let i = 0; i < weights.length; i++) {
+    u -= weights[i]
+    if (u <= 0 && weights[i] > 0) return decodeChord(v, i)
+  }
+  return decodeChord(v, weights.findIndex(w => w > 0))
 }

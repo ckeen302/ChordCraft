@@ -79,6 +79,13 @@ describe('parseRequest', () => {
     expect(parseRequest('40 chords').settings.length).toBe(16)
   })
 
+  it('reads one-chord edits', () => {
+    expect(parseRequest('make bar 3 more surprising').reharmonize).toEqual({ index: 2, intent: 'surprising' })
+    expect(parseRequest('darker second chord').reharmonize).toEqual({ index: 1, intent: 'darker' })
+    expect(parseRequest('make the last chord resolve').reharmonize).toEqual({ index: -1, intent: 'resolve' })
+    expect(parseRequest('8 chords').reharmonize).toBeUndefined()
+  })
+
   it('flags help and gibberish', () => {
     expect(parseRequest('help').help).toBe(true)
     expect(parseRequest('asdfgh qwerty').unknown).toBe(true)

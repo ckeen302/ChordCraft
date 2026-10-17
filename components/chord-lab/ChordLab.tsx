@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Shuffle, ChevronDown, Download, Copy, ArrowRight, Music, Sparkles, Dices,
   Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check, Brain,
 } from 'lucide-react'
 import { ChordStrip } from './ChordStrip'
-import { ChatPanel, type ChatMessage } from './ChatPanel'
+import { ChatPanel, type ChatMessage, type CopilotState } from './ChatPanel'
 import { PianoRoll } from '@/components/piano/PianoRoll'
 import { useStore } from '@/store/useStore'
 import { useProgressionEditor } from '@/hooks/useProgressionEditor'
@@ -21,12 +21,14 @@ import {
 import { KEY_NAMES } from '@/lib/theory/keys'
 import { MOOD_MODE } from '@/lib/theory/harmony'
 import { parallelKey, transposeKeyName } from '@/lib/theory/transpose'
-import { DEFAULT_SETTINGS, parseRequest, type ChatSettings } from '@/lib/chat/parse'
+import { DEFAULT_SETTINGS, type ChatSettings } from '@/lib/chat/parse'
+import { interpret } from '@/lib/chat/copilot'
+import { COPILOT_MODELS, detectBackend, loadCopilot, type LoadedCopilot } from '@/lib/chat/llm/engine'
 import { describeProgression, HELP_TEXT, UNKNOWN_TEXT } from '@/lib/chat/reply'
 import { analyzeProgression } from '@/lib/theory/analysis'
 import { setChordRoll } from '@/lib/audio/engine'
 import { loadChordModel } from '@/lib/ai/model'
-import { generateWithModel } from '@/lib/ai/generate'
+import { generateWithModel, reharmonizeWithModel } from '@/lib/ai/generate'
 import { downloadMidiFromNotes, GM_PROGRAM } from '@/lib/midi/export'
 import { copyToClipboard, progressionToString } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -117,6 +119,40 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatBusy, setChatBusy]         = useState(false)
   const [chatSettings, setChatSettings] = useState<ChatSettings>(DEFAULT_SETTINGS)
+  // The LLM copilot is opt-in: nothing downloads until the user enables it.
+  const [copilot, setCopilot]           = useState<CopilotState>({ status: 'off', modelId: COPILOT_MODELS[0].id })
+  const copilotRef = useRef<LoadedCopilot | null>(null)
+  const copilotLoad = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    detectBackend().then(backend => setCopilot(c => ({ ...c, backend })))
+    return () => { copilotLoad.current?.abort(); copilotRef.current?.dispose() }
+  }, [])
+
+  async function enableCopilot(modelId: string) {
+    const model = COPILOT_MODELS.find(m => m.id === modelId)
+    const backend = copilot.backend ?? await detectBackend()
+    if (!model) return
+    disableCopilot()
+    const abort = new AbortController()
+    copilotLoad.current = abort
+    setCopilot({ status: 'loading', modelId, backend, loaded: 0, total: 0 })
+    try {
+      copilotRef.current = await loadCopilot(model, backend, (loaded, total) =>
+        setCopilot(c => (c.status === 'loading' ? { ...c, loaded, total } : c)), abort.signal)
+      setCopilot(c => ({ ...c, status: 'ready' }))
+    } catch (e) {
+      if (!abort.signal.aborted) setCopilot(c => ({ ...c, status: 'error', error: (e as Error).message }))
+    }
+  }
+
+  function disableCopilot() {
+    copilotLoad.current?.abort()
+    copilotLoad.current = null
+    copilotRef.current?.dispose()
+    copilotRef.current = null
+    setCopilot(c => ({ status: 'off', modelId: c.modelId, backend: c.backend }))
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -238,7 +274,8 @@ export function ChordLab({ active = true }: { active?: boolean }) {
 
   async function handleChat(text: string) {
     setChatMessages(m => [...m, { role: 'user', text }])
-    const reply = (t: string) => setChatMessages(m => [...m, { role: 'assistant', text: t }])
+    let via: Pick<ChatMessage, 'source' | 'fallback'> = {}
+    const reply = (t: string) => setChatMessages(m => [...m, { role: 'assistant', text: t, ...via }])
     setChatBusy(true)
     try {
       const prev: ChatSettings = {
@@ -246,17 +283,43 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         key: chatSettings.keyPinned ? chatSettings.key : selectedKey,
         bpm: chatSettings.bpm ?? bpm,
       }
-      const req = parseRequest(text, prev)
+      const { request: req, source, fallback, raw } = await interpret(text, prev, {
+        chords: localChords.map(c => c.symbol),
+        complete: copilotRef.current?.complete, fewShot: !copilotRef.current?.model.fineTuned,
+      })
+      if (raw) console.debug('[copilot]', raw, fallback ? `→ fallback: ${fallback}` : '')
+      via = { source: copilotRef.current ? source : undefined, fallback }
       const s = req.settings
+      // The copilot's own one-liner leads the reply when it has one.
+      const lead = (t: string) => (req.say ? `${req.say} ${t}` : t)
       if (req.help) return reply(HELP_TEXT)
+      if (req.question) return reply(req.question)
       if (req.unknown) return reply(UNKNOWN_TEXT)
+
+      if (req.reharmonize) {
+        if (!localChords.length) return reply("There's no progression to edit yet — describe one first.")
+        const index = req.reharmonize.index < 0 ? localChords.length - 1 : req.reharmonize.index
+        if (index >= localChords.length) return reply(`There's no bar ${index + 1} — the progression has ${localChords.length} chords.`)
+        setAiStatus(st => (st === 'ready' ? st : 'loading'))
+        const model = await loadChordModel()
+        setAiStatus('ready')
+        const res = await reharmonizeWithModel(model, {
+          key: selectedKey, mood: s.mood, genre: s.genre, chords: localChords, index, intent: req.reharmonize.intent,
+        })
+        loadGenerated({ chords: res.chords, romans: res.romans, patternName, rolledMood: null, key: selectedKey })
+        if (s.bpm && s.bpm !== bpm) setBpm(s.bpm)
+        if (s.instrument && s.instrument !== instrument) useStore.getState().chooseInstrument(s.instrument)
+        setChatSettings(s)
+        return reply(lead(`Bar ${index + 1}: ${res.from} → ${res.to} (${req.reharmonize.intent}). ` +
+          `Now ${res.chords.map(c => c.symbol).join(' – ')}. Undo with ⌘Z if you liked it better before.`))
+      }
 
       if (req.transpose) {
         if (!localChords.length) return reply("There's nothing to transpose yet — describe a progression first.")
         const newKey = transposeKeyName(selectedKey, req.transpose)
         transpose(req.transpose)
         setChatSettings({ ...s, key: newKey, keyPinned: true })
-        return reply(`Done — ${req.notes.join(', ')}. It's now in ${newKey}.`)
+        return reply(lead(`Done — ${req.notes.join(', ')}. It's now in ${newKey}.`))
       }
 
       if (req.keepChords) {
@@ -268,7 +331,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         }
         setChatSettings(s)
         return reply(changes.length
-          ? `Done — ${changes.join(', ')}. Same chords.`
+          ? lead(`Done — ${changes.join(', ')}. Same chords.`)
           : `That's already how it's set. Ask for a different mood, key, or "another one" for new chords.`)
       }
 
@@ -277,7 +340,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       setAiStatus('ready')
       const key = s.keyPinned ? s.key : parallelKey(selectedKey, MOOD_MODE[s.mood])
       const res = await generateWithModel(model, {
-        key, mood: s.mood, length: s.length, excludeDiminished: s.excludeDiminished, resolve: s.resolve,
+        key, mood: s.mood, length: s.length, excludeDiminished: s.excludeDiminished, resolve: s.resolve, genre: s.genre,
       })
       const st = useStore.getState()
       const playBpm = s.bpm ?? res.bpm
@@ -293,11 +356,11 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       setExcludeDim(s.excludeDiminished)
       loadGenerated({ chords: res.chords, romans: res.romans, patternName: res.patternName, rolledMood: null, key })
       setChatSettings({ ...s, key, bpm: playBpm })
-      reply(describeProgression({
+      reply(lead(describeProgression({
         chords: res.chords, romans: res.romans, key, mood: s.mood, bpm: playBpm, instrument: playInstrument,
         summary: analyzeProgression(res.chords, key).summary,
         keyFollowedMood: !s.keyPinned && key !== selectedKey, notes: req.notes,
-      }))
+      })))
     } catch (e) {
       setAiStatus('error')
       reply(`The AI model couldn't run (${(e as Error).message}). Check your connection and try again.`)
@@ -633,7 +696,10 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       {/* ── Right panel: Output ──────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 gap-6">
 
-        <ChatPanel messages={chatMessages} busy={chatBusy} onSend={handleChat} />
+        <ChatPanel
+          messages={chatMessages} busy={chatBusy} onSend={handleChat}
+          copilot={copilot} onEnableCopilot={enableCopilot} onDisableCopilot={disableCopilot}
+        />
 
         {/* Progression strip — or empty hint */}
         {localChords.length > 0 ? (
