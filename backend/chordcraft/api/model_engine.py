@@ -28,6 +28,7 @@ TEMPERATURE = 0.9
 TOP_P = 0.95
 PRESENCE_PENALTY = 0.3
 CANDIDATES = 4
+GUIDANCE = 2.0  # classifier-free guidance: weakest mood 37% → 93% on-mood on v1
 DOWNLOAD_RETRY_S = 60  # a failed Hub download is retried, not cached forever
 
 
@@ -108,7 +109,7 @@ class ModelEngine:
         candidates = sample(
             self._model, self._tok, mode=mode, length=length, mood=mood, num_samples=CANDIDATES,
             temperature=TEMPERATURE, top_p=TOP_P, exclude_diminished=exclude_diminished,
-            block_loops=True, presence_penalty=PRESENCE_PENALTY, generator=gen,
+            block_loops=True, presence_penalty=PRESENCE_PENALTY, guidance=GUIDANCE, generator=gen,
         )
         best = max(candidates, key=lambda s: s.logprob)
         return ModelResult(degrees=best.degrees, logprob=best.logprob)

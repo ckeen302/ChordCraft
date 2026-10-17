@@ -7,6 +7,8 @@
  * - only chord tokens after the control prefix; EOS forced at the exact length
  * - no immediate repeats, and no immediately repeated blocks (ABAB, ABCABC…)
  * - optional no-diminished / diatonic-only masks and a presence penalty
+ * - classifier-free guidance: logits = uncond + w·(cond − uncond), where the
+ *   unconditioned rows swap the mood token for `mood:any` (w > 1 sharpens mood)
  * The best of N candidates (by mean log-probability) is returned first.
  */
 import type { ChordQuality } from '@/types'
@@ -37,6 +39,7 @@ export interface SampleOptions {
   excludeDiminished?: boolean
   diatonicOnly?: boolean
   blockLoops?: boolean
+  guidance?: number
   rng?: () => number
 }
 
@@ -127,16 +130,29 @@ export function seededRng(seed: number): () => number {
 export async function sampleProgressions(logits: LogitsFn, v: Vocab, opts: SampleOptions): Promise<Candidate[]> {
   const {
     mode, mood = 'any', genre = 'any', candidates = 4, temperature = 0.9, topP = 0.95,
-    presencePenalty = 0.3, excludeDiminished = false, diatonicOnly = false, blockLoops = true, rng = Math.random,
+    presencePenalty = 0.3, excludeDiminished = false, diatonicOnly = false, blockLoops = true,
+    guidance = 2, rng = Math.random,
   } = opts
   const prefix = controlIds(v, mode, opts.length, genre, mood)
   const length = Number(v.tokens[prefix[prefix.length - 1]].split(':')[1])
   const base = chordMask(v, mode, excludeDiminished, diatonicOnly)
   const rows = Array.from({ length: candidates }, () => [...prefix])
   const logprob = new Array(candidates).fill(0)
+  const anyMood = v.id('mood:any')
+  const guided = guidance !== 1 && prefix[3] !== anyMood
 
   for (let step = 0; step <= length; step++) {
-    const out = await logits(rows)
+    let out: Float32Array[]
+    if (guided) {
+      const uncond = rows.map(r => { const u = [...r]; u[3] = anyMood; return u })
+      const both = await logits([...rows, ...uncond])
+      out = rows.map((_, r) => {
+        const c = both[r], u = both[r + candidates]
+        return Float32Array.from(c, (x, i) => u[i] + guidance * (x - u[i]))
+      })
+    } else {
+      out = await logits(rows)
+    }
     for (let r = 0; r < candidates; r++) {
       const chords = rows[r].slice(prefix.length)
       const allowed = step === length ? v.tokens.map((_, i) => i === v.eos) : [...base]

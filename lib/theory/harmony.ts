@@ -545,6 +545,51 @@ export function moodVibe(mood: Mood): { bpm: number; instrument: InstrumentName;
   }
 }
 
+/** The mode each mood naturally lives in — used when the key should follow the mood. */
+export const MOOD_MODE: Record<Mood, 'major' | 'minor'> = {
+  uplifting: 'major', dreamy: 'major', romantic: 'major', nostalgic: 'major', jazz: 'major',
+  melancholic: 'minor', tense: 'minor', epic: 'minor', aggressive: 'minor',
+}
+
+/**
+ * Mood colouring for model output: the AI picks the harmony; this layer gives
+ * plain triads the mood's signature extensions with the same style-coherent
+ * rules the rule engine uses (one decision per distinct chord, reused
+ * wherever it recurs). Aggressive turns triads into power chords. Chords the
+ * model already extended are left alone.
+ */
+export function colourDegrees(
+  degrees: [number, ChordQuality][],
+  mood: Mood,
+  isMinorKey: boolean,
+  rng: () => number = Math.random,
+): [number, ChordQuality][] {
+  const profile = PROFILES[mood]
+  const choose = <T,>(arr: T[]) => arr[Math.floor(rng() * arr.length)]
+  const decided = new Map<string, ChordQuality>()
+  return degrees.map(([off, q]) => {
+    if (q !== 'maj' && q !== 'm' && q !== 'dim') return [off, q]
+    if (mood === 'aggressive') return [off, q === 'dim' ? q : '5']
+    const k = `${off}:${q}`
+    if (!decided.has(k)) {
+      let next: ChordQuality = q
+      if (rng() < profile.extendProb) {
+        const ext = profile.extend
+        const isDom = off === 7 && q === 'maj'
+        const borrowedDom = q === 'maj' && ((!isMinorKey && off === 4) || (isMinorKey && off === 5))
+        if (borrowedDom) next = rng() < 0.5 ? '7' : q
+        else if (isDom && ext.dom?.length) next = choose(ext.dom)
+        else if (q === 'maj' && off === 0 && ext.tonic?.length) next = choose(ext.tonic)
+        else if (q === 'maj' && ext.maj?.length) next = choose(ext.maj)
+        else if (q === 'm' && ext.min?.length) next = choose(ext.min)
+        else if (q === 'dim' && (mood === 'jazz' || mood === 'tense')) next = 'dim7'
+      }
+      decided.set(k, next)
+    }
+    return [off, decided.get(k)!]
+  })
+}
+
 // ─── Secondary dominants (chromatic colour) ──────────────────────────────────
 
 /** Pitch class (0–11) of a chord symbol's root. */

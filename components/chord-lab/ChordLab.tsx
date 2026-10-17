@@ -18,6 +18,8 @@ import {
   type Mood,
 } from '@/lib/theory/progressions'
 import { KEY_NAMES } from '@/lib/theory/keys'
+import { MOOD_MODE } from '@/lib/theory/harmony'
+import { parallelKey } from '@/lib/theory/transpose'
 import { analyzeProgression } from '@/lib/theory/analysis'
 import { setChordRoll } from '@/lib/audio/engine'
 import { loadChordModel } from '@/lib/ai/model'
@@ -103,6 +105,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   const [excludeDim, setExcludeDim]   = useState(false)
   const [chromatic, setChromatic]     = useState(false)
   const [autoVibe, setAutoVibe]       = useState(true)
+  const [matchKey, setMatchKey]       = useState(true)
   const [generating, setGenerating]   = useState(false)
   const [copyLabel, setCopyLabel]     = useState('Copy')
   const [error, setError]             = useState<string | null>(null)
@@ -170,6 +173,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       let romans: string[] = []
       let patternName = ''
       let rolledMood: Mood | null = null
+      let genKey = selectedKey
       if (isAI) {
         setAiStatus(s => (s === 'ready' ? s : 'loading'))
         const model = await loadChordModel()
@@ -178,8 +182,11 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           ? MOODS[Math.floor(Math.random() * MOODS.length)][0]
           : mood
         rolledMood = mood === 'random' ? effectiveMood : null
+        // Minor moods in a major key (and vice versa) blur the mood; by default
+        // keep the tonic and switch to the mood's natural mode.
+        if (matchKey) genKey = parallelKey(selectedKey, MOOD_MODE[effectiveMood])
         const res = await generateWithModel(model, {
-          key: selectedKey, mood: effectiveMood, length, excludeDiminished: excludeDim,
+          key: genKey, mood: effectiveMood, length, excludeDiminished: excludeDim,
         })
         romans = res.romans
         patternName = res.patternName
@@ -210,7 +217,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         setError('Generation produced no playable chords — try again.')
         return
       }
-      loadGenerated({ chords, romans, patternName, rolledMood })
+      loadGenerated({ chords, romans, patternName, rolledMood, key: genKey })
     } catch (e) {
       if (isAI) setAiStatus('error')
       setError(isAI
@@ -356,6 +363,22 @@ export function ChordLab({ active = true }: { active?: boolean }) {
             >
               {autoVibe ? '✓ Auto tempo & sound' : 'Auto tempo & sound'}
             </button>
+
+            {/* Key follows mood (AI): melancholic in C → C minor */}
+            {isAI && (
+              <button
+                onClick={() => setMatchKey(v => !v)}
+                title="Keep the tonic but switch to the mood's natural mode — e.g. Melancholic in C Major plays in C Minor. Turn off to force the selected key."
+                className={cn(
+                  'w-full py-1.5 rounded-lg text-[11px] font-semibold border transition-colors cursor-pointer',
+                  matchKey
+                    ? 'bg-accent/15 border-accent/40 text-accent'
+                    : 'bg-bg-raised border-border text-text-muted hover:text-text',
+                )}
+              >
+                {matchKey ? '✓ Match key to mood' : 'Match key to mood'}
+              </button>
+            )}
 
             {/* Chromatic colour (secondary dominants) — rule engine only */}
             {isSmart && (

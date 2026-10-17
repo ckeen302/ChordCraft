@@ -73,3 +73,17 @@ export function transposeProgression(
     }
   })
 }
+
+/** Same tonic, other mode: parallelKey('C Major', 'minor') → 'C Minor'; 'Db Major' → 'C# Minor'. */
+export function parallelKey(keyName: string, mode: 'major' | 'minor'): string {
+  const m = keyName.match(/^([A-G][#b]?) (Major|Minor)$/)
+  if (!m || !Object.hasOwn(NOTE_MAP, m[1])) return keyName
+  const want = mode === 'major' ? 'Major' : 'Minor'
+  if (m[2] === want) return keyName
+  const pc = NOTE_MAP[m[1]] % 12
+  for (const name of Object.keys(KEYS)) {
+    const mm = name.match(/^([A-G][#b]?) (Major|Minor)$/)
+    if (mm && mm[2] === want && NOTE_MAP[mm[1]] % 12 === pc) return name
+  }
+  return keyName
+}
