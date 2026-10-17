@@ -23,6 +23,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("stats")
     p_ingest = sub.add_parser("ingest", help="verify candidates against TheoryTab + songbpm and store them")
     p_ingest.add_argument("candidates", type=Path)
+    p_ingest.add_argument("--workers", type=int, default=1, help="candidates verified in parallel")
     p_export = sub.add_parser("export", help="write the JSON the site bundles")
     p_export.add_argument("out", type=Path)
     args = ap.parse_args(argv)
@@ -34,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
             rejected = conn.execute("SELECT count(*) FROM rejected").fetchone()[0]
             print(f"{songs} songs ({chords} chords), {rejected} candidates rejected")
         elif args.cmd == "ingest":
-            print(ingest(conn, read_candidates(args.candidates)).summary())
+            print(ingest(conn, read_candidates(args.candidates), workers=args.workers).summary())
         elif args.cmd == "export":
             print(f"exported {db.export_json(conn, args.out)} songs to {args.out}")
     return 0

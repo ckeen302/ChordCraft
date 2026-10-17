@@ -15,16 +15,16 @@ DELAY_S = 0.8
 _MISSING = "__404__"
 
 
-def get(url: str) -> str | None:
+def get(url: str, user_agent: str = USER_AGENT, delay: float = DELAY_S) -> str | None:
     """Body of a 200 response, or None for 404. Other HTTP errors raise."""
     cache_dir = os.getenv("SONGS_HTTP_CACHE")
     cached = Path(cache_dir) / hashlib.md5(url.encode()).hexdigest() if cache_dir else None
     if cached and cached.exists():
         body = cached.read_text()
         return None if body == _MISSING else body
-    time.sleep(DELAY_S)
+    time.sleep(delay)
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        req = urllib.request.Request(url, headers={"User-Agent": user_agent})
         with urllib.request.urlopen(req, timeout=30) as r:
             raw = r.read()
             if r.headers.get("Content-Encoding") == "gzip" or raw[:2] == b"\x1f\x8b":  # some CDNs gzip unasked

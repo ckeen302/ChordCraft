@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS songs (
     id              TEXT PRIMARY KEY,
     title           TEXT NOT NULL CHECK (title <> ''),
     artist          TEXT NOT NULL CHECK (artist <> ''),
-    year            INTEGER NOT NULL CHECK (year BETWEEN 1600 AND 2100),
+    year            INTEGER CHECK (year IS NULL OR year BETWEEN 1600 AND 2100),
     key             TEXT NOT NULL CHECK (key LIKE '% Major' OR key LIKE '% Minor'),
     mode            TEXT NOT NULL,          -- TheoryTab scale: major, minor, dorian, mixolydian, ...
     bpm             REAL NOT NULL CHECK (bpm BETWEEN 40 AND 240),
@@ -93,7 +93,7 @@ class Song:
     id: str
     title: str
     artist: str
-    year: int
+    year: int | None
     key: str
     mode: str
     bpm: float
@@ -106,6 +106,9 @@ class Song:
     keyCheck: str  # noqa: N815
     tempoSourceUrl: str | None = None  # noqa: N815  -- tempo override's confirming tab, if any
     tempoSourceBpm: float | None = None  # noqa: N815
+    chordCheckUrl: str | None = None  # noqa: N815  -- Songsterr tab whose notes confirm the chords
+    chordCheckKey: str | None = None  # noqa: N815  -- 'same': confirmed in the tab's key; 'transposed': shape only
+    yearSourceUrl: str | None = None  # noqa: N815  -- MusicBrainz recording or Wikidata item the year comes from
     chords: list[SongChord] = field(default_factory=list)
 
     def to_json(self) -> dict:
@@ -117,6 +120,9 @@ class Song:
             del d["tempoSourceUrl"], d["tempoSourceBpm"]
         else:
             d["tempoSourceBpm"] = _num(self.tempoSourceBpm or 0)
+        for optional in ("chordCheckUrl", "chordCheckKey", "yearSourceUrl"):
+            if d[optional] is None:
+                del d[optional]
         d["chords"] = [{"symbol": c.symbol, "beats": _num(c.beats)} for c in self.chords]
         return d
 
@@ -164,6 +170,10 @@ def open_db(path: str | Path | None = None) -> Iterator[sqlite3.Connection]:
 _ADDED_COLUMNS = {
     "tempo_source_url": "TEXT CHECK (tempo_source_url IS NULL OR tempo_source_url LIKE 'https://www.songsterr.com/%')",
     "tempo_source_bpm": "REAL",
+    "chord_check_url": "TEXT CHECK (chord_check_url IS NULL OR chord_check_url LIKE 'https://www.songsterr.com/%')",
+    "chord_check_key": "TEXT CHECK (chord_check_key IS NULL OR chord_check_key IN ('same', 'transposed'))",
+    "year_source_url": "TEXT CHECK (year_source_url IS NULL OR year_source_url LIKE 'https://musicbrainz.org/%'"
+                       " OR year_source_url LIKE 'https://www.wikidata.org/%')",
 }
 
 
@@ -190,11 +200,12 @@ def _upsert(conn: sqlite3.Connection, s: Song) -> None:
     conn.execute("DELETE FROM songs WHERE id = ? OR song_key = ?", (s.id, song_key(s.artist, s.title)))
     conn.execute(
         "INSERT INTO songs (id, title, artist, year, key, mode, bpm, time_signature, section, source_url,"
-        " youtube_id, tempo_check_url, tempo_check_bpm, key_check, tempo_source_url, tempo_source_bpm, song_key)"
-        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        " youtube_id, tempo_check_url, tempo_check_bpm, key_check, tempo_source_url, tempo_source_bpm,"
+        " chord_check_url, chord_check_key, year_source_url, song_key)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (s.id, s.title, s.artist, s.year, s.key, s.mode, s.bpm, s.timeSignature, s.section, s.sourceUrl,
          s.youtubeId, s.tempoCheckUrl, s.tempoCheckBpm, s.keyCheck, s.tempoSourceUrl, s.tempoSourceBpm,
-         song_key(s.artist, s.title)),
+         s.chordCheckUrl, s.chordCheckKey, s.yearSourceUrl, song_key(s.artist, s.title)),
     )
     conn.executemany(
         "INSERT INTO song_chords (song_id, position, symbol, beats) VALUES (?, ?, ?, ?)",
@@ -228,7 +239,9 @@ def _load(conn: sqlite3.Connection, rows: list[sqlite3.Row]) -> list[Song]:
                         mode=r["mode"], bpm=r["bpm"], timeSignature=r["time_signature"], section=r["section"],
                         sourceUrl=r["source_url"], youtubeId=r["youtube_id"], tempoCheckUrl=r["tempo_check_url"],
                         tempoCheckBpm=r["tempo_check_bpm"], keyCheck=r["key_check"],
-                        tempoSourceUrl=r["tempo_source_url"], tempoSourceBpm=r["tempo_source_bpm"], chords=chords))
+                        tempoSourceUrl=r["tempo_source_url"], tempoSourceBpm=r["tempo_source_bpm"],
+                        chordCheckUrl=r["chord_check_url"], chordCheckKey=r["chord_check_key"],
+                        yearSourceUrl=r["year_source_url"], chords=chords))
     return out
 
 
@@ -238,13 +251,13 @@ def query(conn: sqlite3.Connection, q: str = "", limit: int = 50, offset: int = 
     clause = "WHERE rowid IN (SELECT rowid FROM songs_fts WHERE songs_fts MATCH ?)" if match else ""
     args = [match] if match else []
     total = conn.execute(f"SELECT count(*) FROM songs {clause}", args).fetchone()[0]
-    rows = conn.execute(f"SELECT * FROM songs {clause} ORDER BY year, title COLLATE NOCASE LIMIT ? OFFSET ?",
-                        [*args, limit, offset]).fetchall()
+    order = "ORDER BY year IS NULL, year, title COLLATE NOCASE"
+    rows = conn.execute(f"SELECT * FROM songs {clause} {order} LIMIT ? OFFSET ?", [*args, limit, offset]).fetchall()
     return total, _load(conn, rows)
 
 
 def all_songs(conn: sqlite3.Connection) -> list[Song]:
-    return _load(conn, conn.execute("SELECT * FROM songs ORDER BY year, title COLLATE NOCASE").fetchall())
+    return _load(conn, conn.execute("SELECT * FROM songs ORDER BY year IS NULL, year, title COLLATE NOCASE").fetchall())
 
 
 def get(conn: sqlite3.Connection, song_id: str) -> Song | None:

@@ -61,6 +61,15 @@ def test_flat_keys_spell_with_flats_and_modes_map_to_app_keys():
     assert app_key("C#", "major") == "Db Major"
 
 
+def test_chords_last_until_the_next_one_starts():
+    stabs = section([chord(1, 1, 0.5), chord(5, 2, 0.5), chord(6, 3, 1), chord(4, 5, 4)])
+    s = convert({"name": "Verse", "rel": "I V vi IV"}, stabs)
+    assert s.chords == [("C", 1), ("G", 1), ("Am", 2), ("F", 4)]
+    silence = section([chord(1, 1, 1), chord(5, 5, 4)])
+    with pytest.raises(Unusable, match="silence"):
+        convert({"name": "Verse", "rel": "I V"}, silence)
+
+
 def test_compound_meter_counts_dotted_quarter_pulses():
     data = section([chord(1, 1, 6), chord(3, 7, 6), chord(4, 13, 12)], tonic="A", scale="minor", bpm=82,
                    meters=[{"beat": 1, "numBeats": 6, "beatUnit": 3}])
@@ -249,3 +258,82 @@ def test_tempo_source_is_stored_exported_and_migrated(tmp_path):
     by_id = {s["id"]: s for s in json.loads(out.read_text())}
     assert "tempoSourceUrl" not in by_id["let-it-be"]
     assert by_id["stairway-to-heaven"]["tempoSourceUrl"] == TAB and by_id["stairway-to-heaven"]["tempoSourceBpm"] == 77
+
+
+# ── Songsterr chord cross-check ─────────────────────────────────────────────
+
+from chordcraft.songs import chordcheck  # noqa: E402
+
+GUITAR = [64, 59, 55, 50, 45, 40]
+SHAPES = {  # string → fret, open-position shapes (string 0 = high E)
+    "C": {1: 1, 2: 0, 3: 2, 4: 3}, "G": {0: 3, 1: 0, 2: 0, 3: 0, 4: 2, 5: 3}, "Am": {0: 0, 1: 1, 2: 2, 3: 2, 4: 0},
+    "F": {0: 1, 1: 1, 2: 2, 3: 3, 4: 3, 5: 1}, "Em": {0: 0, 1: 0, 2: 0, 3: 2, 4: 2, 5: 0},
+    "D": {0: 2, 1: 3, 2: 2, 3: 0}, "Dm": {0: 1, 1: 3, 2: 2, 3: 0},
+}
+
+
+def guitar_part(bars, capo=0, beats_per_chord=4):
+    """A rhythm-guitar track strumming quarter notes: ``bars`` is a list of chord names, one per bar."""
+    def beat(shape):
+        return {"duration": [1, 4], "notes": [{"string": s, "fret": f} for s, f in SHAPES[shape].items()]}
+    measures = [{"signature": [4, 4], "voices": [{"beats": [beat(ch)] * beats_per_chord}]} for ch in bars]
+    return {"tuning": GUITAR, "capo": capo, "measures": measures}
+
+
+def tl_of(*parts):
+    return chordcheck.timeline([(p, False) for p in parts])
+
+
+def test_chordcheck_confirms_the_real_progression_and_refuses_wrong_ones():
+    tab = tl_of(guitar_part(["G", "C", "G", "D", "Em", "C", "G", "D"] * 2))
+    right = chordcheck.targets([("Em", 4), ("C", 4), ("G", 4), ("D", 4)], "4/4")
+    assert chordcheck.locate(right, tab, False, [0])
+    wrong_quality = chordcheck.targets([("E", 4), ("C", 4), ("G", 4), ("D", 4)], "4/4")
+    assert not chordcheck.locate(wrong_quality, tab, False, list(range(12)))
+    wrong_rhythm = chordcheck.targets([("Em", 2), ("C", 6), ("G", 4), ("D", 4)], "4/4")
+    assert not chordcheck.locate(wrong_rhythm, tab, False, [0])
+    wrong_song = chordcheck.targets([("Am", 4), ("E", 4), ("Am", 4), ("E", 4)], "4/4")
+    assert not chordcheck.locate(wrong_song, tab, False, list(range(12)))
+    same_shape_other_key = chordcheck.targets([("Am", 4), ("F", 4), ("C", 4), ("G", 4)], "4/4")
+    assert chordcheck.locate(same_shape_other_key, tab, False, list(range(12)))[0] == 7  # = Em C G D
+
+
+def test_chordcheck_reads_capo_shapes_as_sounding_pitch():
+    tab = tl_of(guitar_part(["Am", "F", "C", "G"] * 2, capo=2))   # sounds Bm G D A
+    assert chordcheck.locate(chordcheck.targets([("Bm", 4), ("G", 4), ("D", 4), ("A", 4)], "4/4"), tab, False, [0])
+    assert not chordcheck.locate(chordcheck.targets([("Am", 4), ("F", 4), ("C", 4), ("G", 4)], "4/4"), tab, False, [0])
+
+
+def test_chordcheck_allows_half_time_readings():
+    tab = tl_of(guitar_part(["C", "G", "Am", "F"] * 2))
+    assert chordcheck.locate(chordcheck.targets([("C", 2), ("G", 2), ("Am", 2), ("F", 2)], "4/4"), tab, False, [0])
+
+
+def test_chordcheck_window_keeps_only_the_confirmed_stretch():
+    tab = tl_of(guitar_part(["C", "G", "Am", "F", "C", "G", "F", "F"]))
+    prog = chordcheck.targets([("C", 4), ("G", 4), ("Am", 4), ("F", 4), ("C", 4), ("G", 4), ("Dm", 4), ("F", 4)], "4/4")
+    assert not chordcheck.locate(prog, tab, False, [0])
+    assert chordcheck.best_window(prog, tab, False, 0, bar=4, min_beats=16) == (0, 5)
+
+
+def test_chordcheck_needs_the_third_to_be_heard():
+    power = {"duration": [1, 4], "notes": [{"string": 4, "fret": 3}, {"string": 3, "fret": 5}]}  # C5
+    part = {"tuning": GUITAR, "capo": 0,
+            "measures": [{"signature": [4, 4], "voices": [{"beats": [power] * 4}]}] * 4}
+    tl = tl_of(part)
+    for quality in ("C", "Cm"):
+        assert not chordcheck.locate(chordcheck.targets([(quality, 4), (quality, 4)], "4/4"), tl, False, [0])
+
+
+def test_check_reports_confirmed_contradicted_and_unchecked(monkeypatch):
+    tab = tl_of(guitar_part(["C", "G", "Am", "F"] * 2))
+    url = "https://www.songsterr.com/a/wsa/x-y-tab-s1"
+    monkeypatch.setattr(chordcheck, "load", lambda u: tab)
+    ok = chordcheck.check("Y", "X", [("C", 4), ("G", 4), ("Am", 4), ("F", 4)], "4/4", url=url)
+    assert ok.status == "confirmed" and ok.key_agrees and ok.window is None
+    moved = chordcheck.check("Y", "X", [("D", 4), ("A", 4), ("Bm", 4), ("G", 4)], "4/4", url=url)
+    assert moved.status == "confirmed" and moved.key_agrees is False
+    bad = chordcheck.check("Y", "X", [("C", 4), ("Em", 4), ("Am", 4), ("F", 4)], "4/4", url=url)
+    assert bad.status == "contradicted"
+    monkeypatch.setattr(chordcheck.songsterr, "search", lambda t, a: None)
+    assert chordcheck.check("Y", "X", [("C", 4), ("G", 4)], "4/4").status == "unchecked"

@@ -65,6 +65,28 @@ within 4% (allowing half/double time). songbpm's key is Spotify's automatic
 estimate, often a fifth off, so it is recorded (`key_check`) but never
 grounds for rejection.
 
+**Chords are confirmed by a second source** (`chordcraft/songs/chordcheck.py`).
+[Songsterr](https://www.songsterr.com) tabs are multitrack transcriptions synced
+to the record, with every note as string + fret on a track with known tuning
+and capo. The checker turns the rhythm guitar, bass and keys tracks into the
+pitches sounding at every half beat, then slides the TheoryTab progression along
+them (allowing half/double time). Every chord of a beat or longer must fit the
+notes under it:
+
+- mostly chord tones, with the root sounding;
+- the right third heard, and not outweighed by the opposite one;
+- the right seventh where the tab voices one (otherwise it confirms the triad);
+- a bass note in the chord;
+- the chord changing where TheoryTab says: each half of it, and its first and
+  last beat, fit it at least as well as its neighbours.
+
+If only part of a section is confirmed (at least half of it and 2 bars, from a
+bar line), only that part is published. If the tab is in another key,
+songbpm has to confirm the key. On hand-planted errors (a wrong third, wrong
+seventh, swapped relative chord, shifted chord change, another song's tab) the
+check refuses or trims out the wrong chord. Release years come from
+[MusicBrainz](https://musicbrainz.org) (the earliest single/album/EP).
+
 ```bash
 SONGS_HTTP_CACHE=/tmp/songs-cache uv run python -m chordcraft.songs ingest db/songs-candidates.txt
 uv run python -m chordcraft.songs stats
