@@ -1,13 +1,14 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Shuffle, ChevronDown, Download, Copy, ArrowRight, Music, Sparkles, Dices,
-  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, Brain, X, Check,
+  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check, Brain,
 } from 'lucide-react'
 import { ChordStrip } from './ChordStrip'
 import { PianoRoll } from '@/components/piano/PianoRoll'
 import { useStore } from '@/store/useStore'
+import { useProgressionEditor } from '@/hooks/useProgressionEditor'
 import {
   generateSmartRich,
   generateRandom,
@@ -17,20 +18,14 @@ import {
   type Mood,
 } from '@/lib/theory/progressions'
 import { KEY_NAMES } from '@/lib/theory/keys'
-import { parseChords, detectChord } from '@/lib/theory/chords'
-import { voiceLeadProgression } from '@/lib/theory/voicing'
-import { transposeProgression, transposeKeyName, keyPrefersFlats } from '@/lib/theory/transpose'
 import { analyzeProgression } from '@/lib/theory/analysis'
-import { ollamaGenerate } from '@/lib/ai/ollama'
 import { setChordRoll } from '@/lib/audio/engine'
-import {
-  chordsToNotes, chordWindows, detectWindowChords, deleteWindowNotes,
-  newNoteId, totalBeatsOf, type ChordWindow,
-} from '@/lib/roll/notes'
+import { loadChordModel } from '@/lib/ai/model'
+import { generateWithModel } from '@/lib/ai/generate'
 import { downloadMidiFromNotes, GM_PROGRAM } from '@/lib/midi/export'
 import { copyToClipboard, progressionToString } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import type { InstrumentName, NoteEvent, ParsedChord } from '@/types'
+import type { InstrumentName, ParsedChord } from '@/types'
 
 const INSTRUMENTS: InstrumentName[] = [
   'Piano', 'Electric Piano', 'Pad', 'Synth Lead', 'Organ',
@@ -50,79 +45,6 @@ const MOOD_DESCRIPTIONS: Record<Mood, string> = {
   epic:        'The minor axis ("Numb"), the Mario cadence bVI–bVII–I, battle loops — trailer-sized, ending unresolved on VII.',
   aggressive:  'Phrygian i–bII slams, metal i–VI–VII loops, punk I–IV–V at 140+ BPM. Raw triads, no ornaments.',
 }
-
-// ─── Progression history (persisted, last 10 generations) ───────────────────
-
-interface HistoryEntry {
-  symbols: string[]
-  key: string
-  ts: number
-  /** Per-chord durations (harmonic rhythm), when the entry carried one. */
-  beats?: (number | undefined)[]
-}
-
-const HISTORY_KEY = 'chordcraft-history'
-const HISTORY_MAX = 10
-
-function readHistory(): HistoryEntry[] {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY)
-    const list = raw ? JSON.parse(raw) : []
-    return Array.isArray(list) ? list : []
-  } catch {
-    return []
-  }
-}
-
-// ─── Saved progressions (persisted, user-named favourites) ───────────────────
-
-interface SavedProg {
-  id: string
-  name: string
-  key: string
-  ts: number
-  /** Full chords — exact voicings, symbols, and beats round-trip losslessly. */
-  chords: ParsedChord[]
-  /** Exact note timeline (piano-roll edits). Older saves may lack it. */
-  notes?: NoteEvent[]
-}
-
-const SAVED_KEY = 'chordcraft-saved'
-const SAVED_MAX = 30
-
-function readSaved(): SavedProg[] {
-  try {
-    const raw = localStorage.getItem(SAVED_KEY)
-    const list = raw ? JSON.parse(raw) : []
-    if (!Array.isArray(list)) return []
-    return list.filter((s: SavedProg) =>
-      s && typeof s.id === 'string' && typeof s.name === 'string' &&
-      Array.isArray(s.chords) &&
-      s.chords.every(c => c && typeof c.symbol === 'string' &&
-        Array.isArray(c.notes) && c.notes.every(n => typeof n === 'number')),
-    )
-  } catch {
-    return []
-  }
-}
-
-function persistSaved(list: SavedProg[]) {
-  try { localStorage.setItem(SAVED_KEY, JSON.stringify(list)) } catch { /* storage full */ }
-}
-
-// ─── Undo/redo snapshots ─────────────────────────────────────────────────────
-
-interface Snapshot {
-  chords: ParsedChord[]
-  notes: NoteEvent[]
-  romans: string[]
-  patternName: string
-  key: string
-  /** Which mood actually generated this snapshot, when mood was 'random'. */
-  rolledMood: Mood | null
-}
-
-const UNDO_MAX = 50
 
 function SelectField({
   label, value, onChange, children, icon,
@@ -159,273 +81,49 @@ function SelectField({
 }
 
 export function ChordLab({ active = true }: { active?: boolean }) {
+  const { progression: storeProgression, source, bpm, setBpm, instrument, setInstrument } = useStore()
+
   const {
-    loadProgression, progression: storeProgression,
-    source, bpm, setBpm,
-    instrument, setInstrument,
-  } = useStore()
+    selectedKey, setSelectedKey,
+    localChords, localNotes, romans, patternName, rolledMood,
+    history, saved, canUndo, canRedo, undo, redo,
+    loadGenerated, recallHistory, clearHistory,
+    saveCurrent, deleteSaved, loadSaved,
+    handleRollChange, deleteChord, appendChordSlot, transpose,
+  } = useProgressionEditor({ active })
 
-  // The lab stays mounted while the Songs tab is shown — its shortcuts must
-  // not fire from the other tab.
-  const activeRef = useRef(active)
-  activeRef.current = active
-
-  const [selectedKey, setSelectedKey] = useState('C Major')
-  const [mode, setMode]               = useState<'smart' | 'random' | string>('smart')
+  const [mode, setMode]               = useState<'ai' | 'smart' | 'random' | string>('ai')
+  // The AI model runs in the browser; it starts downloading (15 MB) shortly
+  // after the page loads so the first Generate doesn't wait on it.
+  const [aiStatus, setAiStatus]       = useState<'loading' | 'ready' | 'error'>('loading')
   // Default is 'random' — a fresh mood is rolled on every generate; picking
   // a specific mood pins it (like the old behaviour) until Random is chosen again.
   const [mood, setMood]               = useState<Mood | 'random'>('random')
-  const [rolledMood, setRolledMood]   = useState<Mood | null>(null)
   const [length, setLength]           = useState(4)
   const [excludeDim, setExcludeDim]   = useState(false)
   const [chromatic, setChromatic]     = useState(false)
   const [autoVibe, setAutoVibe]       = useState(true)
-  const [romans, setRomans]           = useState<string[]>([])
-  const [patternName, setPatternName] = useState('')
-  const [localChords, setLocalChords] = useState<ParsedChord[]>([])
-  const [localNotes, setLocalNotes]   = useState<NoteEvent[]>([])
   const [generating, setGenerating]   = useState(false)
   const [copyLabel, setCopyLabel]     = useState('Copy')
   const [error, setError]             = useState<string | null>(null)
-  const [history, setHistory]         = useState<HistoryEntry[]>([])
+  const [saveOpen, setSaveOpen]       = useState(false)
+  const [saveName, setSaveName]       = useState('')
 
-  // Undo/redo stacks
-  const [past, setPast]     = useState<Snapshot[]>([])
-  const [future, setFuture] = useState<Snapshot[]>([])
-
-  // Saved progressions
-  const [saved, setSaved]       = useState<SavedProg[]>([])
-  const [saveOpen, setSaveOpen] = useState(false)
-  const [saveName, setSaveName] = useState('')
-
-  // Local-AI analysis (Ollama)
-  const [aiText, setAiText]   = useState<string | null>(null)
-  const [aiModel, setAiModel] = useState('')
-  const [aiBusy, setAiBusy]   = useState(false)
-  const [aiHint, setAiHint]   = useState<string | null>(null)
-  const aiReqRef = useRef(0)
-
-  // localStorage is browser-only — hydrate after mount.
   useEffect(() => {
-    setHistory(readHistory())
-    setSaved(readSaved())
+    let cancelled = false
+    const timer = setTimeout(() => {
+      loadChordModel().then(
+        () => { if (!cancelled) setAiStatus('ready') },
+        () => { if (!cancelled) setAiStatus('error') },
+      )
+    }, 1500)
+    return () => { cancelled = true; clearTimeout(timer) }
   }, [])
-
-  // ── Transport sync ─────────────────────────────────────────────────────────
-  // Live-update the transport only when it's playing this lab's progression;
-  // otherwise (re)load, which also stops playback of e.g. a Popular Song.
-  function syncTransport(chords: ParsedChord[], key: string, notes: NoteEvent[]) {
-    const st = useStore.getState()
-    if (st.progression.length && st.source.startsWith('Chord Lab')) {
-      st.updateProgressionAndNotes(chords, notes)
-    } else {
-      st.loadProgressionWithNotes(chords, notes, `Chord Lab · ${key}`)
-    }
-  }
-
-  // ── Undo / redo ────────────────────────────────────────────────────────────
-
-  function snapshot(): Snapshot {
-    return { chords: localChords, notes: localNotes, romans, patternName, key: selectedKey, rolledMood }
-  }
-
-  /** Push the current state onto the undo stack; every new edit clears redo. */
-  function pushUndo() {
-    const snap = snapshot()
-    setPast(p => [...p.slice(-(UNDO_MAX - 1)), snap])
-    setFuture([])
-  }
-
-  function applySnapshot(s: Snapshot) {
-    setLocalChords(s.chords)
-    setLocalNotes(s.notes)
-    setRomans(s.romans)
-    setPatternName(s.patternName)
-    setSelectedKey(s.key)
-    setRolledMood(s.rolledMood)
-    syncTransport(s.chords, s.key, s.notes)
-  }
-
-  function undo() {
-    if (!past.length) return
-    setFuture(f => [...f, snapshot()])
-    applySnapshot(past[past.length - 1])
-    setPast(past.slice(0, -1))
-  }
-
-  function redo() {
-    if (!future.length) return
-    setPast(p => [...p, snapshot()])
-    applySnapshot(future[future.length - 1])
-    setFuture(future.slice(0, -1))
-  }
-
-  // ⌘Z / Ctrl+Z and ⇧⌘Z / Ctrl+Y — refs keep the handler closure fresh.
-  const undoRef = useRef(undo)
-  const redoRef = useRef(redo)
-  undoRef.current = undo
-  redoRef.current = redo
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => {
-      if (!activeRef.current) return
-      const tag = (e.target as HTMLElement).tagName
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
-      if (!(e.metaKey || e.ctrlKey)) return
-      if (e.code === 'KeyZ' && !e.shiftKey) { e.preventDefault(); undoRef.current() }
-      else if ((e.code === 'KeyZ' && e.shiftKey) || e.code === 'KeyY') { e.preventDefault(); redoRef.current() }
-    }
-    window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [])
-
-  // ── History ────────────────────────────────────────────────────────────────
-
-  function pushHistory(chords: ParsedChord[], key: string) {
-    const symbols = chords.map(c => c.symbol)
-    const beats = chords.map(c => c.beats)
-    setHistory(prev => {
-      const next = [
-        { symbols, key, ts: Date.now(), beats },
-        ...prev.filter(h => h.symbols.join('|') !== symbols.join('|')),
-      ].slice(0, HISTORY_MAX)
-      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)) } catch { /* storage full */ }
-      return next
-    })
-  }
-
-  function recallHistory(entry: HistoryEntry) {
-    const chords = voiceLeadProgression(parseChords(entry.symbols))
-      .map((c, i) => ({ ...c, beats: entry.beats?.[i] }))
-    if (!chords.length) return
-    pushUndo()
-    const notes = chordsToNotes(chords, useStore.getState().beatsPerChord)
-    setSelectedKey(entry.key)
-    setLocalChords(chords)
-    setLocalNotes(notes)
-    setRomans([])
-    setPatternName('')
-    setRolledMood(null)
-    loadProgression(chords, `Chord Lab · ${entry.key}`)
-  }
-
-  function clearHistory() {
-    setHistory([])
-    try { localStorage.removeItem(HISTORY_KEY) } catch { /* ignore */ }
-  }
-
-  // ── Saved progressions ─────────────────────────────────────────────────────
 
   function handleSaveConfirm() {
-    if (!localChords.length) return
-    const fallback = `${selectedKey} · ${localChords.map(c => c.symbol).slice(0, 4).join('–')}`
-    const entry: SavedProg = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      name: saveName.trim() || fallback,
-      key: selectedKey,
-      ts: Date.now(),
-      chords: localChords,
-      notes: localNotes,
-    }
-    setSaved(prev => {
-      const next = [entry, ...prev].slice(0, SAVED_MAX)
-      persistSaved(next)
-      return next
-    })
+    saveCurrent(saveName)
     setSaveOpen(false)
     setSaveName('')
-  }
-
-  function deleteSaved(id: string) {
-    setSaved(prev => {
-      const next = prev.filter(s => s.id !== id)
-      persistSaved(next)
-      return next
-    })
-  }
-
-  function loadSaved(s: SavedProg) {
-    if (!s.chords.length) return
-    pushUndo()
-    const notes = Array.isArray(s.notes) && s.notes.length
-      ? s.notes
-      : chordsToNotes(s.chords, useStore.getState().beatsPerChord)
-    if (KEY_NAMES.includes(s.key)) setSelectedKey(s.key)
-    setLocalChords(s.chords)
-    setLocalNotes(notes)
-    setRomans([])
-    setPatternName('')
-    setRolledMood(null)
-    useStore.getState().loadProgressionWithNotes(s.chords, notes, `Chord Lab · ${s.key}`)
-  }
-
-  // ── Editing ────────────────────────────────────────────────────────────────
-
-  /**
-   * Piano-roll edits: notes are the truth; chord columns are relabelled by
-   * detection, and the live transport follows without stopping.
-   */
-  function handleRollChange(notes: NoteEvent[], windows: ChordWindow[]) {
-    pushUndo()
-    const detected = detectWindowChords(notes, windows)
-    setLocalNotes(notes)
-    setLocalChords(detected)
-    setRomans([])          // hand-edited — analysis labels no longer apply
-    setPatternName('')
-    setRolledMood(null)
-    syncTransport(detected, selectedKey, notes)
-  }
-
-  /** Remove one chord column (× on a card or roll header); notes shift left. */
-  function deleteChord(i: number) {
-    pushUndo()
-    const windows = chordWindows(localChords, useStore.getState().beatsPerChord)
-    const nextNotes  = deleteWindowNotes(localNotes, windows, i)
-    const nextChords = localChords.filter((_, j) => j !== i)
-    const nextRomans = romans.length === localChords.length
-      ? romans.filter((_, j) => j !== i)
-      : []
-    setLocalChords(nextChords)
-    setLocalNotes(nextNotes)
-    setRomans(nextRomans)
-    if (!nextChords.length) setPatternName('')
-    syncTransport(nextChords, selectedKey, nextNotes)
-  }
-
-  /** The roll's + strip: append a slot repeating the last chord (or C major). */
-  function appendChordSlot() {
-    pushUndo()
-    const bpc = useStore.getState().beatsPerChord
-    const windows = chordWindows(localChords, bpc)
-    const total = totalBeatsOf(windows)
-    const beats = windows.length ? windows[windows.length - 1].beats : bpc
-    const last = localChords[localChords.length - 1]
-    const template = last?.notes.length ? last.notes : [60, 64, 67]
-    const fresh: NoteEvent[] = template.map(midi => ({
-      id: newNoteId(), midi, start: total, duration: beats, velocity: 0.78,
-    }))
-    const nextNotes = [...localNotes, ...fresh]
-    const nextChords = [...localChords, { ...detectChord(template), beats }]
-    setLocalChords(nextChords)
-    setLocalNotes(nextNotes)
-    setRomans([])
-    setPatternName('')
-    syncTransport(nextChords, selectedKey, nextNotes)
-  }
-
-  /** Shift everything by ±1 semitone; voicings, beats, and romans survive. */
-  function transpose(semitones: number) {
-    if (!localChords.length) return
-    const newKey = transposeKeyName(selectedKey, semitones)
-    const next = transposeProgression(localChords, semitones, keyPrefersFlats(newKey))
-    // Keep the whole progression inside a sane playable register.
-    const all = next.flatMap(c => c.notes)
-    if (all.length && (Math.min(...all) < 24 || Math.max(...all) > 108)) return
-    pushUndo()
-    const nextNotes = localNotes.map(n => ({ ...n, midi: n.midi + semitones }))
-    setLocalChords(next)
-    setLocalNotes(nextNotes)
-    setSelectedKey(newKey)
-    syncTransport(next, newKey, nextNotes)
   }
 
   // ── Analysis ───────────────────────────────────────────────────────────────
@@ -437,39 +135,12 @@ export function ChordLab({ active = true }: { active?: boolean }) {
     [localChords, selectedKey, patternName],
   )
 
-  // New progression → stale AI text (and any in-flight request) is dropped.
-  useEffect(() => {
-    aiReqRef.current++
-    setAiText(null)
-    setAiHint(null)
-    setAiBusy(false)
-  }, [localChords, selectedKey])
-
-  async function handleAiAnalyze() {
-    if (!analysis || aiBusy) return
-    const id = ++aiReqRef.current
-    setAiBusy(true)
-    setAiHint(null)
-    const prompt = [
-      'You are a concise, expert music-theory mentor. In 2-3 short sentences, give a songwriter one practical, non-obvious insight about this chord progression: what it evokes, a genre or artist it fits, and one concrete thing to try next (a substitution, extension, or arrangement idea).',
-      `Key: ${selectedKey}. Chords: ${localChords.map(c => c.symbol).join(' - ')}. Roman numerals: ${analysis.romans.filter(r => r !== '—').join(' - ')}.`,
-      'Plain prose only - no lists, no markdown, do not restate the chords.',
-    ].join('\n')
-    const res = await ollamaGenerate(prompt)
-    if (aiReqRef.current !== id) return // progression changed while waiting
-    setAiBusy(false)
-    if (res.ok) {
-      setAiText(res.text)
-      setAiModel(res.model)
-    } else {
-      setAiHint(res.hint)
-    }
-  }
-
   // ── Generate / export ──────────────────────────────────────────────────────
 
+  const isAI     = mode === 'ai'
   const isSmart  = mode === 'smart'
   const isRandom = mode === 'random'
+  const usesMood = isAI || isSmart
 
   const isLoaded =
     localChords.length > 0 &&
@@ -477,42 +148,58 @@ export function ChordLab({ active = true }: { active?: boolean }) {
     storeProgression.length === localChords.length &&
     storeProgression[0]?.symbol === localChords[0]?.symbol
 
-  function handleGenerate() {
+  /** Mood tempo/timbre/articulation, or strip the harmonic rhythm when auto-vibe is off. */
+  function applyVibe(chords: ParsedChord[], vibe: { bpm: number; rollMs: number; instrument: InstrumentName | null }) {
+    if (!autoVibe) {
+      setChordRoll(12)
+      return chords.map(c => ({ ...c, beats: undefined }))
+    }
+    setBpm(vibe.bpm)
+    setChordRoll(vibe.rollMs)
+    // The mood's timbre applies only until the user picks an instrument
+    // themselves — an explicit choice always wins.
+    if (vibe.instrument && !useStore.getState().instrumentTouched) setInstrument(vibe.instrument)
+    return chords
+  }
+
+  async function handleGenerate() {
     setError(null)
     setGenerating(true)
     try {
       let chords: ParsedChord[]
-      let nextRomans: string[] = []
-      let nextPattern = ''
-      let nextRolledMood: Mood | null = null
-      if (isSmart) {
+      let romans: string[] = []
+      let patternName = ''
+      let rolledMood: Mood | null = null
+      if (isAI) {
+        setAiStatus(s => (s === 'ready' ? s : 'loading'))
+        const model = await loadChordModel()
+        setAiStatus('ready')
+        const effectiveMood: Mood = mood === 'random'
+          ? MOODS[Math.floor(Math.random() * MOODS.length)][0]
+          : mood
+        rolledMood = mood === 'random' ? effectiveMood : null
+        const res = await generateWithModel(model, {
+          key: selectedKey, mood: effectiveMood, length, excludeDiminished: excludeDim,
+        })
+        romans = res.romans
+        patternName = res.patternName
+        chords = applyVibe(res.chords, { bpm: res.bpm, rollMs: res.rollMs, instrument: res.instrument })
+      } else if (isSmart) {
         // 'random' rolls a fresh mood every generate; a pinned mood repeats it.
         const effectiveMood: Mood = mood === 'random'
           ? MOODS[Math.floor(Math.random() * MOODS.length)][0]
           : mood
-        nextRolledMood = mood === 'random' ? effectiveMood : null
+        rolledMood = mood === 'random' ? effectiveMood : null
 
         const result = generateSmartRich(selectedKey, {
           mood: effectiveMood, length,
           excludeDiminished: excludeDim,
           chromaticColor: chromatic,
         })
-        chords = result.chords
-        nextRomans = result.romans
-        nextPattern = result.patternName
-        // Mood = harmony + rhythm + tempo + timbre + articulation. With
-        // auto-vibe off, strip the harmonic rhythm so the transport's global
-        // beats-per-chord stays in control.
-        if (autoVibe) {
-          setBpm(result.bpm)
-          setChordRoll(result.rollMs)
-          // The mood's timbre applies only until the user picks an instrument
-          // themselves — an explicit choice always wins.
-          if (!useStore.getState().instrumentTouched) setInstrument(result.instrument)
-        } else {
-          chords = chords.map(c => ({ ...c, beats: undefined }))
-          setChordRoll(12)
-        }
+        romans = result.romans
+        patternName = result.patternName
+        // Mood = harmony + rhythm + tempo + timbre + articulation.
+        chords = applyVibe(result.chords, { bpm: result.bpm, rollMs: result.rollMs, instrument: result.instrument })
       } else {
         chords = isRandom
           ? generateRandom(selectedKey, length, excludeDim)
@@ -523,16 +210,12 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         setError('Generation produced no playable chords — try again.')
         return
       }
-      pushUndo()
-      setRomans(nextRomans)
-      setPatternName(nextPattern)
-      setRolledMood(nextRolledMood)
-      setLocalChords(chords)
-      setLocalNotes(chordsToNotes(chords, useStore.getState().beatsPerChord))
-      loadProgression(chords, `Chord Lab · ${selectedKey}`)
-      pushHistory(chords, selectedKey)
+      loadGenerated({ chords, romans, patternName, rolledMood })
     } catch (e) {
-      setError((e as Error).message)
+      if (isAI) setAiStatus('error')
+      setError(isAI
+        ? `The AI model couldn't run (${(e as Error).message}). Try again, or use Smart Generate.`
+        : (e as Error).message)
     } finally {
       setGenerating(false)
     }
@@ -579,7 +262,10 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         </SelectField>
 
         <SelectField label="Mode" value={mode} onChange={setMode}>
-          <option value="smart">✦ Smart Generate</option>
+          <option value="ai">
+            {'✦ AI · Chord Transformer' + ({ loading: ' (loading model…)', ready: '', error: ' (unavailable)' } as const)[aiStatus]}
+          </option>
+          <option value="smart">◆ Smart Generate (rules)</option>
           <option value="random">🎲 Fully Random</option>
           <optgroup label="Classic Templates">
             {TEMPLATE_NAMES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -595,15 +281,21 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           {INSTRUMENTS.map(i => <option key={i} value={i}>{i}</option>)}
         </SelectField>
 
-        {/* Smart-mode panel */}
-        {isSmart && (
+        {/* Mood panel — shared by the AI model and the rule-based harmony engine */}
+        {usesMood && (
           <div className="flex flex-col gap-4 p-3.5 rounded-xl border border-accent/20 bg-accent/5">
             <div className="flex items-center gap-2">
-              <Sparkles size={12} className="text-accent" />
+              {isAI ? <Brain size={12} className="text-accent" /> : <Sparkles size={12} className="text-accent" />}
               <span className="text-[10px] font-bold text-accent uppercase tracking-[2px]">
-                Harmony Engine
+                {isAI ? 'Chord Transformer' : 'Harmony Engine'}
               </span>
             </div>
+            {isAI && (
+              <p className="text-[11px] text-text-dim leading-relaxed -mt-2">
+                A 14M-parameter transformer trained on 1.4M progressions from real songs, running right in
+                your browser. Mood steers it; every chord is spelled and checked by the theory engine.
+              </p>
+            )}
 
             {/* Mood — Random by default; pin a specific mood if you want it. */}
             <div className="flex flex-col gap-2">
@@ -665,7 +357,8 @@ export function ChordLab({ active = true }: { active?: boolean }) {
               {autoVibe ? '✓ Auto tempo & sound' : 'Auto tempo & sound'}
             </button>
 
-            {/* Chromatic colour (secondary dominants) */}
+            {/* Chromatic colour (secondary dominants) — rule engine only */}
+            {isSmart && (
             <button
               onClick={() => setChromatic(v => !v)}
               title="Swap one chord for the secondary dominant (V7) of the chord after it — adds a colour chord from outside the key."
@@ -678,6 +371,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
             >
               {chromatic ? '✓ Chromatic colour (V7/x)' : 'Chromatic colour (V7/x)'}
             </button>
+            )}
           </div>
         )}
 
@@ -698,8 +392,8 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {/* Length + Avoid dim (Smart and Random only) */}
-        {(isSmart || isRandom) && (
+        {/* Length + Avoid dim (AI, Smart, and Random) */}
+        {(usesMood || isRandom) && (
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
               <span className="text-[10px] text-text-muted font-semibold uppercase tracking-[2px]">Length</span>
@@ -823,7 +517,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           >
             {generating
               ? <Loader2 size={14} className="animate-spin" />
-              : isSmart
+              : isAI
+                ? <Brain size={14} />
+                : isSmart
                 ? <Sparkles size={14} />
                 : isRandom
                   ? <Dices size={14} />
@@ -905,7 +601,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
             <div className="ml-auto flex items-center gap-1">
               <button
                 onClick={undo}
-                disabled={!past.length}
+                disabled={!canUndo}
                 title="Undo (⌘Z)"
                 className="w-7 h-7 flex items-center justify-center rounded-lg bg-bg-raised border border-border text-text-muted hover:text-text hover:border-accent/40 cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:text-text-muted disabled:hover:border-border"
               >
@@ -913,7 +609,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
               </button>
               <button
                 onClick={redo}
-                disabled={!future.length}
+                disabled={!canRedo}
                 title="Redo (⇧⌘Z)"
                 className="w-7 h-7 flex items-center justify-center rounded-lg bg-bg-raised border border-border text-text-muted hover:text-text hover:border-accent/40 cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:text-text-muted disabled:hover:border-border"
               >
@@ -951,41 +647,14 @@ export function ChordLab({ active = true }: { active?: boolean }) {
               </div>
             </div>
 
-            {/* Harmonic analysis — instant rules + optional free local AI */}
+            {/* Harmonic analysis — instant, rule-based */}
             {analysis && (
               <div>
                 <p className="text-[10px] uppercase tracking-[2px] text-text-muted font-semibold mb-3">
                   Analysis
                 </p>
-                <div className="flex flex-col gap-3 p-4 rounded-xl bg-bg-raised border border-border">
+                <div className="p-4 rounded-xl bg-bg-raised border border-border">
                   <p className="text-sm text-text-muted leading-relaxed">{analysis.summary}</p>
-
-                  {aiText && (
-                    <div className="pt-3 border-t border-border">
-                      <p className="text-sm text-text leading-relaxed">{aiText}</p>
-                      <p className="text-[10px] text-text-dim font-mono mt-1.5">
-                        via Ollama · {aiModel} · runs locally, free
-                      </p>
-                    </div>
-                  )}
-
-                  {aiHint && <p className="text-xs text-amber-400/90">{aiHint}</p>}
-
-                  {!aiText && (
-                    <button
-                      onClick={handleAiAnalyze}
-                      disabled={aiBusy}
-                      title="Uses Ollama — a free AI that runs entirely on your computer. Nothing is sent to the cloud."
-                      className={cn(
-                        'flex items-center gap-2 self-start px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-colors',
-                        'border-accent/30 text-accent hover:bg-accent/10',
-                        'disabled:opacity-60 disabled:cursor-wait',
-                      )}
-                    >
-                      {aiBusy ? <Loader2 size={13} className="animate-spin" /> : <Brain size={13} />}
-                      {aiBusy ? 'Asking local AI…' : 'Deeper take — local AI (free, via Ollama)'}
-                    </button>
-                  )}
                 </div>
               </div>
             )}

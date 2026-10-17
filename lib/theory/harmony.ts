@@ -20,7 +20,7 @@
  */
 import type { ChordQuality, InstrumentName } from '@/types'
 import { KEYS } from './keys'
-import { NOTE_MAP } from './chords'
+import { NOTE_MAP, QUALITY_SUFFIX } from './chords'
 
 // ─── Moods ────────────────────────────────────────────────────────────────────
 
@@ -364,13 +364,6 @@ function makeSpeller(key: string): (pc: number, off: number) => string {
   }
 }
 
-const QUALITY_SUFFIX: Record<ChordQuality, string> = {
-  maj: '', m: 'm', dim: 'dim', aug: 'aug',
-  '7': '7', maj7: 'maj7', m7: 'm7', dim7: 'dim7',
-  sus2: 'sus2', sus4: 'sus4', '6': '6', m6: 'm6',
-  '7sus4': '7sus4', add9: 'add9', '9': '9', m9: 'm9', mmaj7: 'mmaj7',
-}
-
 // Roman numerals by semitone offset (degree names; accidental from offset).
 const ROMAN_MAJOR: Record<number, string> = {
   0: 'I', 1: 'bII', 2: 'II', 3: 'bIII', 4: 'III', 5: 'IV',
@@ -526,6 +519,28 @@ export function generateMoodProgression(
     bpm,
     instrument: pick(profile.instruments),
     beats,
+    rollMs: profile.rollMs,
+  }
+}
+
+// ─── Helpers for model output ────────────────────────────────────────────────
+
+/** Spell key-relative (semitone offset, quality) pairs as chord symbols in `key`. */
+export function spellDegrees(key: string, degrees: [number, ChordQuality][]): string[] {
+  const tonicPc = NOTE_MAP[key.split(' ')[0]]
+  if (tonicPc === undefined) throw new Error(`Unknown key: "${key}"`)
+  const spell = makeSpeller(key)
+  return degrees.map(([off, q]) => spell(tonicPc + off, off) + QUALITY_SUFFIX[q])
+}
+
+/** A mood's tempo (sampled from its range), timbre, harmonic rhythm, and articulation. */
+export function moodVibe(mood: Mood): { bpm: number; instrument: InstrumentName; rhythm: number[]; rollMs: number } {
+  const profile = PROFILES[mood]
+  const [lo, hi] = profile.bpm
+  return {
+    bpm: Math.round(lo + Math.random() * (hi - lo)),
+    instrument: pick(profile.instruments),
+    rhythm: profile.rhythm,
     rollMs: profile.rollMs,
   }
 }

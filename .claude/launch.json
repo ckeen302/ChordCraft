@@ -4,9 +4,28 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "api",
+      "runtimeExecutable": "/Users/ckeen302/.local/bin/uv",
+      "runtimeArgs": [
+        "run",
+        "--directory",
+        "backend",
+        "--extra",
+        "ml",
+        "uvicorn",
+        "chordcraft.api.main:app",
+        "--port",
+        "8000"
+      ],
+      "port": 8000
     }
   ]
 }

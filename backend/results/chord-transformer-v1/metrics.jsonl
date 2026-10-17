@@ -1,0 +1,17 @@
+{"step": 500, "train_loss": 1.7225, "val_loss": 1.5617, "val_ppl": 4.767, "lr": 0.001, "elapsed_s": 255.6}
+{"step": 1000, "train_loss": 1.6576, "val_loss": 1.5123, "val_ppl": 4.537, "lr": 0.0009909234651561715, "elapsed_s": 513.7}
+{"step": 1500, "train_loss": 1.6797, "val_loss": 1.4898, "val_ppl": 4.436, "lr": 0.0009639889261573478, "elapsed_s": 772.0}
+{"step": 2000, "train_loss": 1.599, "val_loss": 1.4766, "val_ppl": 4.378, "lr": 0.0009202872343773321, "elapsed_s": 1030.2}
+{"step": 2500, "train_loss": 1.5712, "val_loss": 1.471, "val_ppl": 4.353, "lr": 0.0008615883718049509, "elapsed_s": 1288.3}
+{"step": 3000, "train_loss": 1.5723, "val_loss": 1.462, "val_ppl": 4.315, "lr": 0.0007902697276278057, "elapsed_s": 1546.3}
+{"step": 3500, "train_loss": 1.5908, "val_loss": 1.4587, "val_ppl": 4.3, "lr": 0.0007092198105172882, "elapsed_s": 1804.3}
+{"step": 4000, "train_loss": 1.5127, "val_loss": 1.4525, "val_ppl": 4.274, "lr": 0.000621721259832159, "elapsed_s": 2062.3}
+{"step": 4500, "train_loss": 1.5961, "val_loss": 1.4471, "val_ppl": 4.251, "lr": 0.0005313178939568564, "elapsed_s": 2320.2}
+{"step": 5000, "train_loss": 1.5172, "val_loss": 1.4436, "val_ppl": 4.236, "lr": 0.00044167118050993494, "elapsed_s": 2578.2}
+{"step": 5500, "train_loss": 1.4989, "val_loss": 1.4416, "val_ppl": 4.227, "lr": 0.0003564119415876477, "elapsed_s": 2836.1}
+{"step": 6000, "train_loss": 1.5134, "val_loss": 1.4381, "val_ppl": 4.213, "lr": 0.00027899330019569296, "elapsed_s": 3093.7}
+{"step": 6500, "train_loss": 1.4954, "val_loss": 1.4363, "val_ppl": 4.205, "lr": 0.00021255082375221386, "elapsed_s": 3351.5}
+{"step": 7000, "train_loss": 1.5614, "val_loss": 1.4348, "val_ppl": 4.199, "lr": 0.00015977552905331022, "elapsed_s": 3609.3}
+{"step": 7500, "train_loss": 1.4718, "val_loss": 1.4337, "val_ppl": 4.194, "lr": 0.00012280489218439913, "elapsed_s": 3867.2}
+{"step": 8000, "train_loss": 1.4929, "val_loss": 1.4339, "val_ppl": 4.195, "lr": 0.0001031362776343158, "elapsed_s": 4125.1}
+{"step": 8292, "train_loss": 1.539, "val_loss": 1.4334, "val_ppl": 4.193, "lr": 0.00010000003657500297, "elapsed_s": 4279.1}

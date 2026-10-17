@@ -37,6 +37,14 @@ export const QUALITY_INTERVALS: Record<ChordQuality, number[]> = {
   '9':     [0, 4, 7, 10, 14],
   m9:      [0, 3, 7, 10, 14],
   mmaj7:   [0, 3, 7, 11],
+  maj9:    [0, 4, 7, 11, 14],
+  m7b5:    [0, 3, 6, 10],
+  '11':    [0, 4, 7, 10, 14, 17],
+  m11:     [0, 3, 7, 10, 14, 17],
+  '13':    [0, 4, 7, 10, 14, 21],   // 11th omitted — it clashes with the 3rd
+  '7b9':   [0, 4, 7, 10, 13],
+  '7#9':   [0, 4, 7, 10, 15],
+  '5':     [0, 7],                  // power chord (no third)
 }
 
 // ─── Display labels rendered on chord cards ──────────────────────────────────
@@ -59,47 +67,95 @@ export const QUALITY_DISPLAY: Record<ChordQuality, string> = {
   '9':     '9',
   m9:      'm9',
   mmaj7:   'mΔ7',
+  maj9:    'Δ9',
+  m7b5:    'ø7',
+  '11':    '11',
+  m11:     'm11',
+  '13':    '13',
+  '7b9':   '7♭9',
+  '7#9':   '7♯9',
+  '5':     '5',
+}
+
+/** Canonical suffix appended to a root when spelling a symbol from a quality. */
+export const QUALITY_SUFFIX: Record<ChordQuality, string> = {
+  maj: '', m: 'm', dim: 'dim', aug: 'aug',
+  '7': '7', maj7: 'maj7', m7: 'm7', dim7: 'dim7',
+  sus2: 'sus2', sus4: 'sus4', '6': '6', m6: 'm6',
+  '7sus4': '7sus4', add9: 'add9', '9': '9', m9: 'm9', mmaj7: 'mmaj7',
+  maj9: 'maj9', m7b5: 'm7b5', '11': '11', m11: 'm11', '13': '13',
+  '7b9': '7b9', '7#9': '7#9', '5': '5',
 }
 
 // ─── Quality normalisation ───────────────────────────────────────────────────
 
+/** Exact alternative spellings — accepted by strict parsing. */
 const ALIASES: Record<string, ChordQuality> = {
-  '':       'maj',
-  'M':      'maj',
-  'major':  'maj',
-  '-':      'm',
-  'minor':  'm',
-  '+':      'aug',
-  'M7':     'maj7',
-  'Maj7':   'maj7',
-  'ma7':    'maj7',
-  'min7':   'm7',
-  '-7':     'm7',
-  'dom7':   '7',
-  'sus':    'sus4',
+  '':        'maj',
+  'M':       'maj',
+  'major':   'maj',
+  '-':       'm',
+  'min':     'm',
+  'minor':   'm',
+  '+':       'aug',
+  'M7':      'maj7',
+  'Maj7':    'maj7',
+  'ma7':     'maj7',
+  'Δ':       'maj7',
+  'Δ7':      'maj7',
+  'min7':    'm7',
+  '-7':      'm7',
+  'dom7':    '7',
+  'sus':     'sus4',
+  '7sus':    '7sus4',
+  '°':       'dim',
+  'o':       'dim',
+  '°7':      'dim7',
+  'o7':      'dim7',
+  'mM7':     'mmaj7',
+  'minmaj7': 'mmaj7',
+  'm(maj7)': 'mmaj7',
+  'M9':      'maj9',
+  'Maj9':    'maj9',
+  'Δ9':      'maj9',
+  'ø':       'm7b5',
+  'ø7':      'm7b5',
+  'min7b5':  'm7b5',
+  'm7-5':    'm7b5',
+  'min11':   'm11',
+  'min9':    'm9',
+  'add2':    'add9',
 }
 
-function normalizeQuality(suffix: string): ChordQuality {
-  if (suffix in ALIASES) return ALIASES[suffix]
-  if (suffix in QUALITY_INTERVALS) return suffix as ChordQuality
-  // Best-effort prefix detection — longer/more-specific suffixes first.
-  if (suffix.startsWith('maj7') || suffix.startsWith('M7'))  return 'maj7'
-  if (suffix.startsWith('mmaj7') || suffix.startsWith('mM7') || suffix.startsWith('minmaj7')) return 'mmaj7'
-  if (suffix.startsWith('m9')   || suffix.startsWith('min9'))return 'm9'
-  if (suffix.startsWith('m7')   || suffix.startsWith('min7'))return 'm7'
-  if (suffix.startsWith('dim7'))                              return 'dim7'
-  if (suffix.startsWith('dim'))                               return 'dim'
-  if (suffix.startsWith('aug'))                               return 'aug'
-  if (suffix.startsWith('add9'))                              return 'add9'
-  if (suffix.startsWith('7sus4') || suffix.startsWith('7sus'))return '7sus4'
-  if (suffix.startsWith('sus2'))                              return 'sus2'
-  if (suffix.startsWith('sus4') || suffix.startsWith('sus')) return 'sus4'
-  if (suffix.startsWith('m6'))                                return 'm6'
-  if (suffix.startsWith('6'))                                 return '6'
-  if (suffix.startsWith('9'))                                 return '9'
-  if (suffix.startsWith('7'))                                 return '7'
-  if (suffix.startsWith('m') || suffix.startsWith('min'))     return 'm'
-  return 'maj'
+/**
+ * Lenient fallbacks for suffixes outside the catalogue (Cmaj7#11, Dm13…),
+ * mapped to the nearest catalogued quality. Order matters: longer and more
+ * specific prefixes first, and every maj-prefixed rule before the bare 'm'
+ * rule — otherwise "maj9" would read as a minor chord.
+ */
+const PREFIX_FALLBACKS: [string, ChordQuality][] = [
+  ['mmaj', 'mmaj7'], ['mM', 'mmaj7'], ['minmaj', 'mmaj7'], ['m(maj', 'mmaj7'],
+  ['maj13', 'maj9'], ['maj11', 'maj9'], ['maj9', 'maj9'], ['M9', 'maj9'],
+  ['maj7', 'maj7'], ['M7', 'maj7'], ['Δ', 'maj7'], ['maj', 'maj'],
+  ['m7b5', 'm7b5'], ['ø', 'm7b5'],
+  ['m13', 'm11'], ['m11', 'm11'], ['min11', 'm11'],
+  ['m9', 'm9'], ['min9', 'm9'], ['m7', 'm7'], ['min7', 'm7'],
+  ['m6', 'm6'], ['min6', 'm6'],
+  ['dim7', 'dim7'], ['°7', 'dim7'], ['dim', 'dim'], ['°', 'dim'],
+  ['aug', 'aug'], ['+', 'aug'],
+  ['add9', 'add9'], ['add2', 'add9'],
+  ['7sus', '7sus4'], ['sus2', 'sus2'], ['sus', 'sus4'],
+  ['13', '13'], ['11', '11'], ['9', '9'],
+  ['7b9', '7b9'], ['7#9', '7#9'], ['7', '7'], ['6', '6'],
+  ['min', 'm'], ['m', 'm'],
+]
+
+/** Resolve a suffix; `exact` is false when the quality was only approximated. */
+function normalizeQuality(suffix: string): { quality: ChordQuality; exact: boolean } {
+  if (Object.hasOwn(ALIASES, suffix)) return { quality: ALIASES[suffix], exact: true }
+  if (Object.hasOwn(QUALITY_INTERVALS, suffix)) return { quality: suffix as ChordQuality, exact: true }
+  const hit = PREFIX_FALLBACKS.find(([prefix]) => suffix.startsWith(prefix))
+  return { quality: hit ? hit[1] : 'maj', exact: false }
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────
@@ -110,8 +166,12 @@ function normalizeQuality(suffix: string): ChordQuality {
  * @example
  * parseChord('F#m7')  // { root: 'F#', quality: 'm7', notes: [66,69,73,76], … }
  * parseChord('Bdim')  // { root: 'B',  quality: 'dim', … }
+ *
+ * By default unknown suffixes are approximated (Cmaj7#11 → maj7) so hand-typed
+ * charts still play. With `strict`, anything not exactly catalogued throws —
+ * use it to validate machine-generated chords.
  */
-export function parseChord(symbol: string): ParsedChord {
+export function parseChord(symbol: string, { strict = false }: { strict?: boolean } = {}): ParsedChord {
   let s = symbol.trim()
   if (!s) throw new Error('Empty chord symbol')
 
@@ -122,8 +182,10 @@ export function parseChord(symbol: string): ParsedChord {
   if (slash > 0) {
     const bassName = s.slice(slash + 1).trim()
     const normalized = bassName[0]?.toUpperCase() + bassName.slice(1)
-    if (normalized in NOTE_MAP) {
+    if (Object.hasOwn(NOTE_MAP, normalized)) {
       bassMidi = NOTE_MAP[normalized] - 12   // one octave below the chord body
+    } else if (strict) {
+      throw new Error(`Unknown bass note in chord: "${symbol}"`)
     }
     s = s.slice(0, slash)
   }
@@ -137,12 +199,15 @@ export function parseChord(symbol: string): ParsedChord {
     idx++
   }
 
-  if (!(root in NOTE_MAP)) {
+  if (!Object.hasOwn(NOTE_MAP, root)) {
     throw new Error(`Unknown root note in chord: "${symbol}"`)
   }
 
   const qualitySuffix = s.slice(idx)
-  const quality = normalizeQuality(qualitySuffix)
+  const { quality, exact } = normalizeQuality(qualitySuffix)
+  if (strict && !exact) {
+    throw new Error(`Unrecognised chord quality "${qualitySuffix}" in chord: "${symbol}"`)
+  }
   const base = NOTE_MAP[root]
   const intervals = QUALITY_INTERVALS[quality]
   const notes = intervals.map(i => base + i)
@@ -155,6 +220,11 @@ export function parseChord(symbol: string): ParsedChord {
     notes,
     displayQuality: QUALITY_DISPLAY[quality] + (bassMidi !== null ? symbol.slice(symbol.indexOf('/')) : ''),
   }
+}
+
+/** {@link parseChord} in strict mode: throws on any symbol it would have to guess at. */
+export function parseChordStrict(symbol: string): ParsedChord {
+  return parseChord(symbol, { strict: true })
 }
 
 /** Parse multiple chord symbols, skipping any that fail. */
@@ -171,14 +241,6 @@ export function parseChords(symbols: string[]): ParsedChord[] {
 // ─── Reverse lookup: MIDI notes → chord symbol ───────────────────────────────
 
 const PC_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-
-/** Suffix appended to the root when rebuilding a symbol from a quality. */
-const QUALITY_SUFFIX: Record<ChordQuality, string> = {
-  maj: '', m: 'm', dim: 'dim', aug: 'aug',
-  '7': '7', maj7: 'maj7', m7: 'm7', dim7: 'dim7',
-  sus2: 'sus2', sus4: 'sus4', '6': '6', m6: 'm6',
-  '7sus4': '7sus4', add9: 'add9', '9': '9', m9: 'm9', mmaj7: 'mmaj7',
-}
 
 /**
  * Name an arbitrary set of MIDI notes — the inverse of parseChord(), used by

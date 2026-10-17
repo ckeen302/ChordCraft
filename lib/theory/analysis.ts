@@ -5,8 +5,7 @@
  * numerals, the closing cadence, borrowed/chromatic chords, and named devices
  * (Phrygian bII, the IV→iv "saddest move", secondary dominants, the
  * Andalusian descent). Pure and instant, so the Analysis panel always has
- * something musical to say; the optional Ollama integration layers a local
- * LLM's take on top of this.
+ * something musical to say.
  */
 import type { ParsedChord } from '@/types'
 import { KEYS } from './keys'
@@ -28,11 +27,15 @@ type Family = 'maj' | 'min' | 'dim' | 'aug' | 'sus'
 /** Triad family of each quality — what decides numeral case + diatonic match. */
 const FAMILY: Record<string, Family> = {
   maj: 'maj', maj7: 'maj', '6': 'maj', add9: 'maj', '7': 'maj', '9': 'maj',
-  m: 'min', m7: 'min', m6: 'min', m9: 'min', mmaj7: 'min',
-  dim: 'dim', dim7: 'dim',
+  maj9: 'maj', '11': 'maj', '13': 'maj', '7b9': 'maj', '7#9': 'maj',
+  m: 'min', m7: 'min', m6: 'min', m9: 'min', mmaj7: 'min', m11: 'min',
+  dim: 'dim', dim7: 'dim', m7b5: 'dim',
   aug: 'aug',
-  sus2: 'sus', sus4: 'sus', '7sus4': 'sus',
+  sus2: 'sus', sus4: 'sus', '7sus4': 'sus', '5': 'sus',
 }
+
+/** Qualities with a dominant (major 3rd + flat 7th) sound — secondary-dominant candidates. */
+const DOMINANT_QUALITIES = new Set<string>(['7', '9', '11', '13', '7b9', '7#9'])
 
 const famOf = (c: ParsedChord): Family => FAMILY[c.quality] ?? 'maj'
 const pcOf  = (c: ParsedChord): number => NOTE_MAP[c.root] % 12
@@ -53,7 +56,7 @@ export function analyzeProgression(
   patternName?: string,
 ): ProgressionAnalysis {
   const keyMatch = keyName.match(/^([A-G][#b]?) (Major|Minor)$/)
-  const playable = chords.filter(c => c.notes.length > 0 && c.root in NOTE_MAP)
+  const playable = chords.filter(c => c.notes.length > 0 && Object.hasOwn(NOTE_MAP, c.root))
   if (!keyMatch || playable.length < 2) {
     return { romans: [], summary: 'Add at least two chords to see an analysis.' }
   }
@@ -63,7 +66,7 @@ export function analyzeProgression(
   const off = (c: ParsedChord) => ((pcOf(c) - tonicPc) % 12 + 12) % 12
 
   const romans = chords.map(c =>
-    c.notes.length > 0 && c.root in NOTE_MAP ? romanFor(c, tonicPc, isMinor) : '—',
+    c.notes.length > 0 && Object.hasOwn(NOTE_MAP, c.root) ? romanFor(c, tonicPc, isMinor) : '—',
   )
 
   // Diatonic pool: pitch class + triad family for each chord of the key.
@@ -148,7 +151,7 @@ export function analyzeProgression(
     const next = playable[(i + 1) % playable.length]
 
     // Secondary dominant: a dom-7-flavoured chord a fifth above its target.
-    const isDom = c.quality === '7' || c.quality === '9'
+    const isDom = DOMINANT_QUALITIES.has(c.quality)
     if (isDom && o !== 7 && next && ((pcOf(c) - pcOf(next)) % 12 + 12) % 12 === 7) {
       colour.push(`${c.symbol} is a secondary dominant (V7 of ${next.symbol}) — a borrowed pull toward ${next.symbol}.`)
     } else if (o === 1) {

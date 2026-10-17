@@ -36,3 +36,15 @@ yarn-error.log*
 .claude/settings.local.json
 .cursor/
 sample audio.mp3
+
+# Python backend
+backend/.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Datasets (downloaded / generated, not committed)
+backend/data/
+backend/runs/
+backend/models/*.pt
+backend/dist/

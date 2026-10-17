@@ -1,0 +1,9 @@
+{
+ "best_val_loss": 1.4334,
+ "best_val_ppl": 4.193,
+ "final_full_val_loss": 1.4087,
+ "steps": 8292,
+ "params": 14294400,
+ "minutes": 71.74,
+ "device": "cuda"
+}
