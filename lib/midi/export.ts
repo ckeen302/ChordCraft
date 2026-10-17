@@ -29,20 +29,28 @@ export const GM_PROGRAM: Record<InstrumentName, number> = {
  * @param bpm          Tempo in beats per minute.
  * @param beatsPerChord How many beats each chord is held (default: 2).
  * @param program      General MIDI instrument program number (0 = Grand Piano).
+ * @param timeSignature Meter written to the file ("4/4", "6/8" …). In x/8 the
+ *                     app counts dotted-quarter pulses, so `bpm` and `beats`
+ *                     are in dotted quarters; the file stores the equivalent
+ *                     quarter-note tempo so DAWs draw the bars correctly.
  */
 export async function buildMidiBytes(
   chords: ParsedChord[],
   bpm: number,
   beatsPerChord = 2,
   program = 0,
+  timeSignature = '4/4',
 ): Promise<Uint8Array> {
   const { Midi } = await import('@tonejs/midi')
 
+  const [num, den] = timeSignature.split('/').map(Number)
+  const compound = den === 8 && num % 3 === 0
   const midi = new Midi()
   // Set tempo header. update() recomputes each tempo entry's `time` field;
   // without it, @tonejs/midi's seconds→ticks binary search spins forever on
   // the first addNote (undefined `time` never narrows the search bounds).
-  midi.header.tempos.push({ bpm, ticks: 0 })
+  midi.header.tempos.push({ bpm: compound ? bpm * 1.5 : bpm, ticks: 0 })
+  midi.header.timeSignatures.push({ ticks: 0, timeSignature: [num, den] })
   midi.header.update()
 
   const track = midi.addTrack()
@@ -85,8 +93,9 @@ export async function downloadMidi(
   filename = 'chordcraft-progression',
   beatsPerChord = 2,
   program = 0,
+  timeSignature = '4/4',
 ): Promise<void> {
-  const bytes = await buildMidiBytes(chords, bpm, beatsPerChord, program)
+  const bytes = await buildMidiBytes(chords, bpm, beatsPerChord, program, timeSignature)
   // Copy into a guaranteed plain ArrayBuffer to satisfy the BlobPart constraint
   // (bytes.buffer may be typed as ArrayBufferLike which includes SharedArrayBuffer).
   const plain = new Uint8Array(bytes)

@@ -39,6 +39,39 @@ roman numerals), sampled best-of-4 with loop blocking.
 | GET    | `/v1/presets`  | Preset Finder search: `q` (full-text, prefix match), `vst`, `source` (`Reddit`/`YouTube`/`Web`), `limit` ≤ 200, `offset` |
 | GET    | `/v1/presets/facets` | Every VST with its count, plus counts per source |
 | GET    | `/v1/presets/{id}` | One preset |
+| GET    | `/v1/songs`    | Popular Songs search: `q` (title/artist, prefix match), `limit` ≤ 500, `offset` |
+| GET    | `/v1/songs/{id}` | One song with its chords and sources |
+
+## Popular Songs database
+
+The Popular Songs tab is built from a SQLite database at `db/songs.sqlite`:
+
+- `songs`: one progression per song with key, mode, tempo, meter, section, the
+  Hooktheory TheoryTab URL it came from, and the songbpm.com tempo check
+- `song_chords`: the chords in order, each with its duration in beats
+- `songs_fts`: an FTS5 index over title and artist
+- `rejected`: every candidate that didn't make it, with the reason
+
+`chordcraft.songs.ingest` reads `db/songs-candidates.txt`, finds each song on
+[TheoryTab](https://www.hooktheory.com/theorytab), and converts one section
+(chorus first, then verse ...) from the analysis data its player loads
+(`/v1/songs/public/<section>`) into absolute chord symbols with real
+durations. Borrowed and secondary chords, inversions, suspensions and
+compound meters are all handled. A section is refused when any chord has no
+exact symbol the app's strict parser accepts, when it has a key/tempo change or
+a rest mid-progression, or when the converter's roman numerals disagree with
+TheoryTab's own. The song is then published only if songbpm.com's tempo agrees
+within 4% (allowing half/double time). songbpm's key is Spotify's automatic
+estimate, often a fifth off, so it is recorded (`key_check`) but never
+grounds for rejection.
+
+```bash
+SONGS_HTTP_CACHE=/tmp/songs-cache uv run python -m chordcraft.songs ingest db/songs-candidates.txt
+uv run python -m chordcraft.songs stats
+uv run python -m chordcraft.songs export ../lib/data/popular-songs.json
+```
+
+The site bundles the exported `lib/data/popular-songs.json`.
 
 ## Preset Finder database
 

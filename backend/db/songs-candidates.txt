@@ -1,0 +1,577 @@
+# Popular Songs candidates: title|artist|year|theorytab-artist/song slug (optional)|id (optional)
+# Ingest: uv run python -m chordcraft.songs ingest db/songs-candidates.txt
+Stand By Me|Ben E. King|1961||stand-by-me
+Let It Be|The Beatles|1970||let-it-be
+Hey Jude|The Beatles|1968||hey-jude
+House of the Rising Sun|The Animals|1964||house-of-the-rising-sun
+Can't Help Falling in Love|Elvis Presley|1961||cant-help-falling-in-love
+Knockin' on Heaven's Door|Bob Dylan|1973||knockin-on-heavens-door
+No Woman, No Cry|Bob Marley|1974||no-woman-no-cry
+Don't Stop Believin'|Journey|1981||dont-stop-believin
+With or Without You|U2|1987||with-or-without-you
+Every Breath You Take|The Police|1983||every-breath-you-take
+Zombie|The Cranberries|1994||zombie
+Creep|Radiohead|1992||creep
+Wonderwall|Oasis|1995||wonderwall
+Losing My Religion|R.E.M.|1991||losing-my-religion
+Clocks|Coldplay|2002||clocks
+Viva la Vida|Coldplay|2008||viva-la-vida
+Chasing Cars|Snow Patrol|2006||chasing-cars
+Boulevard of Broken Dreams|Green Day|2004||boulevard-of-broken-dreams
+Apologize|OneRepublic|2007||apologize
+Numb|Linkin Park|2003||numb
+Hallelujah|Jeff Buckley|1994||hallelujah
+Someone Like You|Adele|2011||someone-like-you
+All of Me|John Legend|2013||all-of-me
+Stay With Me|Sam Smith|2014||stay-with-me
+Riptide|Vance Joy|2013||riptide
+Ho Hey|The Lumineers|2012||ho-hey
+Perfect|Ed Sheeran|2017||perfect
+Someone You Loved|Lewis Capaldi|2018||someone-you-loved
+My Girl|The Temptations|1964||my-girl
+La Bamba|Ritchie Valens|1958|ritchie-valen/la-bamba|la-bamba
+Twist and Shout|The Beatles|1963||twist-and-shout
+Runaway|Del Shannon|1961||runaway
+Louie Louie|The Kingsmen|1963||louie-louie
+Unchained Melody|The Righteous Brothers|1965||unchained-melody
+Hit the Road Jack|Ray Charles|1961||hit-the-road-jack
+Brown Eyed Girl|Van Morrison|1967||brown-eyed-girl
+All Along the Watchtower|Jimi Hendrix|1968||all-along-the-watchtower
+Take Me Home, Country Roads|John Denver|1971||take-me-home-country-roads
+Imagine|John Lennon|1971||imagine
+Hotel California|Eagles|1977||hotel-california
+Wish You Were Here|Pink Floyd|1975||wish-you-were-here
+Sweet Home Alabama|Lynyrd Skynyrd|1974||sweet-home-alabama
+Piano Man|Billy Joel|1973||piano-man
+Ain't No Sunshine|Bill Withers|1971||aint-no-sunshine
+I Will Survive|Gloria Gaynor|1978||i-will-survive
+Isn't She Lovely|Stevie Wonder|1976||isnt-she-lovely
+Sultans of Swing|Dire Straits|1978||sultans-of-swing
+Billie Jean|Michael Jackson|1983||billie-jean
+Take On Me|a-ha|1985||take-on-me
+Livin' on a Prayer|Bon Jovi|1986|bon-jovi/living-on-a-prayer|livin-on-a-prayer
+Free Fallin'|Tom Petty|1989||free-fallin
+Should I Stay or Should I Go|The Clash|1982||should-i-stay-or-should-i-go
+Smells Like Teen Spirit|Nirvana|1991||smells-like-teen-spirit
+Basket Case|Green Day|1994||basket-case
+Save Tonight|Eagle-Eye Cherry|1997||save-tonight
+The Scientist|Coldplay|2002||the-scientist
+Hey There Delilah|Plain White T's|2006||hey-there-delilah
+I'm Yours|Jason Mraz|2008||im-yours
+Halo|Beyoncé|2008||halo
+Rolling in the Deep|Adele|2010||rolling-in-the-deep
+Just the Way You Are|Bruno Mars|2010||just-the-way-you-are
+Somebody That I Used to Know|Gotye|2011||somebody-that-i-used-to-know
+Counting Stars|OneRepublic|2013||counting-stars
+Radioactive|Imagine Dragons|2012||radioactive
+Pumped Up Kicks|Foster the People|2010||pumped-up-kicks
+Shape of You|Ed Sheeran|2017||shape-of-you
+Let Her Go|Passenger|2012||let-her-go
+Memories|Maroon 5|2019||memories
+Despacito|Luis Fonsi|2017|luis-fonsi/despacito-ft-daddy-yankee|despacito
+Havana|Camila Cabello|2017||havana
+Uptown Funk|Bruno Mars|2014|bruno-mars/uptown-funk|uptown-funk
+Get Lucky|Daft Punk|2013|daft-punk/get-lucky|get-lucky
+Demons|Imagine Dragons|2012||demons
+Let It Go|Idina Menzel|2013|idina-menzel/let-it-go|let-it-go
+Heat Waves|Glass Animals|2020||heat-waves
+Thinking Out Loud|Ed Sheeran|2014||thinking-out-loud
+Wagon Wheel|Old Crow Medicine Show|2004|old-crow-medicine-show/wagon-wheel|wagon-wheel
+Africa|Toto|1982||africa
+Dreams|Fleetwood Mac|1977||dreams-fleetwood-mac
+Mad World|Gary Jules|2001||mad-world
+Torn|Natalie Imbruglia|1997||torn
+Californication|Red Hot Chili Peppers|1999||californication
+What's Up?|4 Non Blondes|1992||whats-up
+Royals|Lorde|2013||royals
+Blinding Lights|The Weeknd|2019||blinding-lights
+Iris|Goo Goo Dolls|1998||iris
+Believer|Imagine Dragons|2017||believer
+Yesterday|The Beatles|1965
+Here Comes the Sun|The Beatles|1969
+Come Together|The Beatles|1969
+Something|The Beatles|1969
+Blackbird|The Beatles|1968
+In My Life|The Beatles|1965
+Eleanor Rigby|The Beatles|1966
+Penny Lane|The Beatles|1967
+Strawberry Fields Forever|The Beatles|1967
+All You Need Is Love|The Beatles|1967
+Help!|The Beatles|1965
+A Hard Day's Night|The Beatles|1964
+I Want to Hold Your Hand|The Beatles|1963
+While My Guitar Gently Weeps|The Beatles|1968
+Ob-La-Di, Ob-La-Da|The Beatles|1968
+Yellow Submarine|The Beatles|1966
+Johnny B. Goode|Chuck Berry|1958
+Jailhouse Rock|Elvis Presley|1957|elvis/jailhouse-rock
+Hound Dog|Elvis Presley|1956
+# Excluded after review: TheoryTab's analysis has Dmaj7 where this 12-bar blues plays D7.
+# Blue Suede Shoes|Elvis Presley|1956|elvis-presley/blue-suede-shoes
+Sweet Caroline|Neil Diamond|1969
+Respect|Aretha Franklin|1967
+(Sittin' On) The Dock of the Bay|Otis Redding|1968
+What a Wonderful World|Louis Armstrong|1967
+Fly Me to the Moon|Frank Sinatra|1964
+My Way|Frank Sinatra|1969
+I Got You (I Feel Good)|James Brown|1965
+Ain't No Mountain High Enough|Marvin Gaye|1967|marvin-gaye-and-tammi-terrell/aint-no-mountain-high-enough
+I Heard It Through the Grapevine|Marvin Gaye|1968
+Superstition|Stevie Wonder|1972
+Signed, Sealed, Delivered I'm Yours|Stevie Wonder|1970
+Good Vibrations|The Beach Boys|1966
+God Only Knows|The Beach Boys|1966
+California Dreamin'|The Mamas & the Papas|1965
+The Sound of Silence|Simon & Garfunkel|1964|simon-and-garfunkel/sound-of-silence
+Mrs. Robinson|Simon & Garfunkel|1968
+Bridge over Troubled Water|Simon & Garfunkel|1970
+Like a Rolling Stone|Bob Dylan|1965
+Blowin' in the Wind|Bob Dylan|1963
+(I Can't Get No) Satisfaction|The Rolling Stones|1965|the-rolling-stones/(i-cant-get-no)-satisfaction
+Paint It Black|The Rolling Stones|1966
+Wild Horses|The Rolling Stones|1971
+Gimme Shelter|The Rolling Stones|1969
+Purple Haze|Jimi Hendrix|1967
+Light My Fire|The Doors|1967
+Riders on the Storm|The Doors|1971
+Born to Be Wild|Steppenwolf|1968
+Proud Mary|Creedence Clearwater Revival|1969
+Bad Moon Rising|Creedence Clearwater Revival|1969
+Have You Ever Seen the Rain|Creedence Clearwater Revival|1970
+Fortunate Son|Creedence Clearwater Revival|1969
+Stairway to Heaven|Led Zeppelin|1971
+Bohemian Rhapsody|Queen|1975
+Don't Stop Me Now|Queen|1978
+We Are the Champions|Queen|1977
+Somebody to Love|Queen|1976
+Under Pressure|Queen|1981|queen-and-david-bowie/under-pressure
+Another One Bites the Dust|Queen|1980
+Killer Queen|Queen|1974
+Your Song|Elton John|1970
+Rocket Man|Elton John|1972
+Tiny Dancer|Elton John|1971
+Bennie and the Jets|Elton John|1973
+Space Oddity|David Bowie|1969
+Heroes|David Bowie|1977
+Starman|David Bowie|1972
+Life on Mars?|David Bowie|1971
+Go Your Own Way|Fleetwood Mac|1977
+Landslide|Fleetwood Mac|1975
+Everywhere|Fleetwood Mac|1987
+Dancing Queen|ABBA|1976
+Mamma Mia|ABBA|1975
+The Winner Takes It All|ABBA|1980
+Stayin' Alive|Bee Gees|1977
+How Deep Is Your Love|Bee Gees|1977
+September|Earth, Wind & Fire|1978
+Le Freak|Chic|1978
+Lean on Me|Bill Withers|1972
+Lovely Day|Bill Withers|1977
+Three Little Birds|Bob Marley|1977
+Redemption Song|Bob Marley|1980
+Is This Love|Bob Marley|1978
+Rocket 88|Jackie Brenston|1951
+Margaritaville|Jimmy Buffett|1977
+Born to Run|Bruce Springsteen|1975
+Dancing in the Dark|Bruce Springsteen|1984
+Born in the U.S.A.|Bruce Springsteen|1984
+Jolene|Dolly Parton|1973
+9 to 5|Dolly Parton|1980
+Ring of Fire|Johnny Cash|1963
+Hurt|Johnny Cash|2002
+Vincent|Don McLean|1971
+American Pie|Don McLean|1971
+Fire and Rain|James Taylor|1970
+Behind Blue Eyes|The Who|1971
+Baba O'Riley|The Who|1971
+More Than a Feeling|Boston|1976
+Dream On|Aerosmith|1973
+Carry On Wayward Son|Kansas|1976
+Dust in the Wind|Kansas|1977
+Rosanna|Toto|1982
+Thriller|Michael Jackson|1982
+Beat It|Michael Jackson|1982
+Man in the Mirror|Michael Jackson|1987
+Smooth Criminal|Michael Jackson|1987
+Human Nature|Michael Jackson|1982
+Purple Rain|Prince|1984
+When Doves Cry|Prince|1984
+Like a Prayer|Madonna|1989
+Like a Virgin|Madonna|1984
+Girls Just Want to Have Fun|Cyndi Lauper|1983
+Time After Time|Cyndi Lauper|1984
+Sweet Dreams (Are Made of This)|Eurythmics|1983
+Don't You (Forget About Me)|Simple Minds|1985
+Everybody Wants to Rule the World|Tears for Fears|1985
+Careless Whisper|George Michael|1984
+Wake Me Up Before You Go-Go|Wham!|1984
+Last Christmas|Wham!|1984
+Never Gonna Give You Up|Rick Astley|1987
+Total Eclipse of the Heart|Bonnie Tyler|1983
+Eye of the Tiger|Survivor|1982
+Jump|Van Halen|1984
+Sweet Child O' Mine|Guns N' Roses|1987
+November Rain|Guns N' Roses|1991
+Paradise City|Guns N' Roses|1987
+Back in Black|AC/DC|1980
+Highway to Hell|AC/DC|1979
+Pour Some Sugar on Me|Def Leppard|1987
+Here I Go Again|Whitesnake|1987
+The Final Countdown|Europe|1986
+Faithfully|Journey|1983
+Open Arms|Journey|1982
+Separate Ways (Worlds Apart)|Journey|1983
+Hungry Like the Wolf|Duran Duran|1982
+Tainted Love|Soft Cell|1981
+Take My Breath Away|Berlin|1986
+Don't Dream It's Over|Crowded House|1986
+I Still Haven't Found What I'm Looking For|U2|1987
+One|U2|1991
+Under the Bridge|Red Hot Chili Peppers|1991
+Scar Tissue|Red Hot Chili Peppers|1999
+Otherside|Red Hot Chili Peppers|1999
+Come As You Are|Nirvana|1991
+Heart-Shaped Box|Nirvana|1993
+Lithium|Nirvana|1991
+Black Hole Sun|Soundgarden|1994
+Plush|Stone Temple Pilots|1992
+Interstate Love Song|Stone Temple Pilots|1994
+Man in the Box|Alice in Chains|1990
+Jeremy|Pearl Jam|1991
+Black|Pearl Jam|1991
+Everlong|Foo Fighters|1997
+Learn to Fly|Foo Fighters|1999
+Best of You|Foo Fighters|2005
+Good Riddance (Time of Your Life)|Green Day|1997
+American Idiot|Green Day|2004
+Wake Me Up When September Ends|Green Day|2004
+All the Small Things|Blink-182|1999
+What's My Age Again?|Blink-182|1999
+Buddy Holly|Weezer|1994
+Say It Ain't So|Weezer|1994
+1979|The Smashing Pumpkins|1996
+Today|The Smashing Pumpkins|1993
+Karma Police|Radiohead|1997
+No Surprises|Radiohead|1997
+High and Dry|Radiohead|1995
+Fake Plastic Trees|Radiohead|1995
+Champagne Supernova|Oasis|1995
+Don't Look Back in Anger|Oasis|1996
+Live Forever|Oasis|1994
+Bitter Sweet Symphony|The Verve|1997
+Song 2|Blur|1997
+Yellow|Coldplay|2000
+Fix You|Coldplay|2005
+Paradise|Coldplay|2011
+A Sky Full of Stars|Coldplay|2014
+Adventure of a Lifetime|Coldplay|2015
+Mr. Brightside|The Killers|2004
+Somebody Told Me|The Killers|2004
+Seven Nation Army|The White Stripes|2003
+Take Me Out|Franz Ferdinand|2004
+Use Somebody|Kings of Leon|2008
+Sex on Fire|Kings of Leon|2008
+Bring Me to Life|Evanescence|2003
+In the End|Linkin Park|2000
+Crawling|Linkin Park|2000
+What I've Done|Linkin Park|2007
+Chop Suey!|System of a Down|2001
+Last Resort|Papa Roach|2000
+It's My Life|Bon Jovi|2000
+Bed of Roses|Bon Jovi|1993
+Wanted Dead or Alive|Bon Jovi|1986
+Everybody Hurts|R.E.M.|1992
+Man on the Moon|R.E.M.|1992
+Semi-Charmed Life|Third Eye Blind|1997
+Closing Time|Semisonic|1998
+Bitch|Meredith Brooks|1997
+You Oughta Know|Alanis Morissette|1995
+Ironic|Alanis Morissette|1995
+Hand in My Pocket|Alanis Morissette|1995
+Kiss Me|Sixpence None the Richer|1997
+Linger|The Cranberries|1993
+Dreams|The Cranberries|1992
+Truly Madly Deeply|Savage Garden|1997
+I Want It That Way|Backstreet Boys|1999
+Everybody (Backstreet's Back)|Backstreet Boys|1997
+Bye Bye Bye|NSYNC|2000
+...Baby One More Time|Britney Spears|1998
+Toxic|Britney Spears|2003
+Genie in a Bottle|Christina Aguilera|1999
+My Heart Will Go On|Celine Dion|1997
+I Will Always Love You|Whitney Houston|1992
+I Wanna Dance with Somebody (Who Loves Me)|Whitney Houston|1987
+Vision of Love|Mariah Carey|1990
+All I Want for Christmas Is You|Mariah Carey|1994
+No Scrubs|TLC|1999
+Waterfalls|TLC|1995
+Wannabe|Spice Girls|1996
+Crazy in Love|Beyoncé|2003
+Single Ladies (Put a Ring on It)|Beyoncé|2008
+Umbrella|Rihanna|2007
+We Found Love|Rihanna|2011
+Diamonds|Rihanna|2012
+Stay|Rihanna|2012
+Poker Face|Lady Gaga|2008
+Bad Romance|Lady Gaga|2009
+Just Dance|Lady Gaga|2008
+Shallow|Lady Gaga|2018
+Hey Ya!|OutKast|2003
+Crazy|Gnarls Barkley|2006
+Hips Don't Lie|Shakira|2006
+Since U Been Gone|Kelly Clarkson|2004
+Complicated|Avril Lavigne|2002
+Sk8er Boi|Avril Lavigne|2002
+Hey, Soul Sister|Train|2009
+Drops of Jupiter (Tell Me)|Train|2001
+Bubbly|Colbie Caillat|2007
+Love Story|Taylor Swift|2008
+You Belong with Me|Taylor Swift|2008
+Shake It Off|Taylor Swift|2014
+Blank Space|Taylor Swift|2014
+Style|Taylor Swift|2014
+Anti-Hero|Taylor Swift|2022
+Cruel Summer|Taylor Swift|2019
+All Too Well|Taylor Swift|2012
+Set Fire to the Rain|Adele|2011
+Skyfall|Adele|2012
+Hello|Adele|2015
+Easy on Me|Adele|2021
+Grenade|Bruno Mars|2010
+Locked Out of Heaven|Bruno Mars|2012
+When I Was Your Man|Bruno Mars|2012
+24K Magic|Bruno Mars|2016
+Talking to the Moon|Bruno Mars|2010
+Payphone|Maroon 5|2012
+Sugar|Maroon 5|2014
+Moves like Jagger|Maroon 5|2011
+She Will Be Loved|Maroon 5|2002
+This Love|Maroon 5|2002
+Call Me Maybe|Carly Rae Jepsen|2011
+Firework|Katy Perry|2010
+Roar|Katy Perry|2013
+Teenage Dream|Katy Perry|2010
+Dark Horse|Katy Perry|2013
+Party in the U.S.A.|Miley Cyrus|2009
+Wrecking Ball|Miley Cyrus|2013
+Flowers|Miley Cyrus|2023
+Price Tag|Jessie J|2011
+Titanium|David Guetta|2011
+Wake Me Up|Avicii|2013
+Levels|Avicii|2011
+The Nights|Avicii|2014
+Lean On|Major Lazer|2015
+Closer|The Chainsmokers|2016
+Something Just Like This|The Chainsmokers|2017
+Don't Let Me Down|The Chainsmokers|2016
+Faded|Alan Walker|2015
+Animals|Martin Garrix|2013
+One More Time|Daft Punk|2000
+Happy|Pharrell Williams|2013
+Stressed Out|Twenty One Pilots|2015
+Ride|Twenty One Pilots|2015
+Heathens|Twenty One Pilots|2016
+Thunder|Imagine Dragons|2017
+Natural|Imagine Dragons|2018
+Bad Liar|Imagine Dragons|2018
+It's Time|Imagine Dragons|2012
+Pompeii|Bastille|2013
+Take Me to Church|Hozier|2013
+Little Talks|Of Monsters and Men|2011
+Home|Edward Sharpe and the Magnetic Zeros|2009
+Ophelia|The Lumineers|2016
+I Will Wait|Mumford & Sons|2012
+Little Lion Man|Mumford & Sons|2009
+The Cave|Mumford & Sons|2009
+Budapest|George Ezra|2014
+Shotgun|George Ezra|2018
+Photograph|Ed Sheeran|2014
+The A Team|Ed Sheeran|2011
+Castle on the Hill|Ed Sheeran|2017
+Bad Habits|Ed Sheeran|2021
+Shivers|Ed Sheeran|2021
+Lego House|Ed Sheeran|2011
+Dancing On My Own|Calum Scott|2016
+Too Good at Goodbyes|Sam Smith|2017
+Say You Won't Let Go|James Arthur|2016
+Before You Go|Lewis Capaldi|2019
+Love Yourself|Justin Bieber|2015
+Sorry|Justin Bieber|2015
+Peaches|Justin Bieber|2021
+Stay|The Kid LAROI|2021
+Starboy|The Weeknd|2016
+Save Your Tears|The Weeknd|2020
+Can't Feel My Face|The Weeknd|2015
+The Hills|The Weeknd|2015
+Die for You|The Weeknd|2016
+Location|Khalid|2016
+Young Dumb & Broke|Khalid|2017
+Sunflower|Post Malone|2018
+Circles|Post Malone|2019
+Rockstar|Post Malone|2017
+Congratulations|Post Malone|2016
+Better Now|Post Malone|2018
+Lucid Dreams|Juice WRLD|2018
+Old Town Road|Lil Nas X|2019
+Montero (Call Me by Your Name)|Lil Nas X|2021
+Bad Guy|Billie Eilish|2019
+When the Party's Over|Billie Eilish|2018
+Ocean Eyes|Billie Eilish|2016
+Lovely|Billie Eilish|2018
+Happier Than Ever|Billie Eilish|2021
+What Was I Made For?|Billie Eilish|2023
+Birds of a Feather|Billie Eilish|2024
+Drivers License|Olivia Rodrigo|2021
+Good 4 U|Olivia Rodrigo|2021
+Traitor|Olivia Rodrigo|2021
+Vampire|Olivia Rodrigo|2023
+Watermelon Sugar|Harry Styles|2019
+As It Was|Harry Styles|2022
+Adore You|Harry Styles|2019
+Sign of the Times|Harry Styles|2017
+Levitating|Dua Lipa|2020
+New Rules|Dua Lipa|2017
+Don't Start Now|Dua Lipa|2019
+Dance the Night|Dua Lipa|2023
+Espresso|Sabrina Carpenter|2024
+Please Please Please|Sabrina Carpenter|2024
+Good Luck, Babe!|Chappell Roan|2024
+Pink Pony Club|Chappell Roan|2020
+Die with a Smile|Lady Gaga|2024
+APT.|Rosé|2024
+Golden Hour|JVKE|2022
+Kill Bill|SZA|2022
+Snooze|SZA|2022
+Greedy|Tate McRae|2023
+Cupid|FIFTY FIFTY|2023
+Seven|Jungkook|2023
+Dynamite|BTS|2020
+Butter|BTS|2021
+Unholy|Sam Smith|2022
+Glimpse of Us|Joji|2022
+Sweater Weather|The Neighbourhood|2012
+Do I Wanna Know?|Arctic Monkeys|2013
+505|Arctic Monkeys|2007
+R U Mine?|Arctic Monkeys|2012
+Mardy Bum|Arctic Monkeys|2006
+Electric Feel|MGMT|2007
+Kids|MGMT|2007
+Feel Good Inc.|Gorillaz|2005
+Clint Eastwood|Gorillaz|2001
+Mr. Blue Sky|Electric Light Orchestra|1977
+Don't Worry Be Happy|Bobby McFerrin|1988
+Everybody Talks|Neon Trees|2011
+Somewhere Over the Rainbow|Israel Kamakawiwo'ole|1993
+Fallin'|Alicia Keys|2001
+If I Ain't Got You|Alicia Keys|2003
+No One|Alicia Keys|2007
+Ordinary People|John Legend|2004
+Use Me|Bill Withers|1972
+Gravity|John Mayer|2006
+Slow Dancing in a Burning Room|John Mayer|2006
+Your Body Is a Wonderland|John Mayer|2001
+I Won't Back Down|Tom Petty|1989
+Learning to Fly|Tom Petty and the Heartbreakers|1991
+Here Comes Your Man|Pixies|1989
+Where Is My Mind?|Pixies|1988
+Just Like Heaven|The Cure|1987
+Friday I'm in Love|The Cure|1992
+Boys Don't Cry|The Cure|1979
+There Is a Light That Never Goes Out|The Smiths|1986
+This Charming Man|The Smiths|1983
+Love Will Tear Us Apart|Joy Division|1980
+Blue Monday|New Order|1983
+Enjoy the Silence|Depeche Mode|1990
+Personal Jesus|Depeche Mode|1989
+Running Up That Hill (A Deal with God)|Kate Bush|1985
+Wuthering Heights|Kate Bush|1978
+Video Killed the Radio Star|The Buggles|1979
+Heart of Glass|Blondie|1978
+Call Me|Blondie|1980
+Gangsta's Paradise|Coolio|1995
+In Da Club|50 Cent|2003
+Lose Yourself|Eminem|2002
+Stan|Eminem|2000
+Love the Way You Lie|Eminem|2010
+The Real Slim Shady|Eminem|2000
+HUMBLE.|Kendrick Lamar|2017
+Gold Digger|Kanye West|2005
+Stronger|Kanye West|2007
+Hotline Bling|Drake|2015
+God's Plan|Drake|2018
+One Dance|Drake|2016
+See You Again|Wiz Khalifa|2015
+The Lazy Song|Bruno Mars|2011
+Secrets|OneRepublic|2009
+Love Me Like You Do|Ellie Goulding|2015
+Chandelier|Sia|2014
+Cheap Thrills|Sia|2016
+Elastic Heart|Sia|2014
+Somewhere Only We Know|Keane|2004
+Run|Snow Patrol|2003
+How to Save a Life|The Fray|2005
+You Found Me|The Fray|2008
+Breakeven|The Script|2008
+Hall of Fame|The Script|2012
+I'm Gonna Be (500 Miles)|The Proclaimers|1988
+Mr. Jones|Counting Crows|1993
+Hey Jealousy|Gin Blossoms|1992
+Only Wanna Be with You|Hootie & the Blowfish|1994
+Slide|Goo Goo Dolls|1998
+Bad Day|Daniel Powter|2005
+The Middle|Jimmy Eat World|2001
+Fireflies|Owl City|2009
+Young Folks|Peter Bjorn and John|2006
+1985|Bowling for Soup|2004
+Skinny Love|Bon Iver|2007
+Holocene|Bon Iver|2011
+Rivers and Roads|The Head and the Heart|2011
+Banana Pancakes|Jack Johnson|2005
+Better Together|Jack Johnson|2005
+Upside Down|Jack Johnson|2006
+Santeria|Sublime|1996
+What I Got|Sublime|1996
+Cherry Wine|Hozier|2016
+Lover|Taylor Swift|2019
+Cardigan|Taylor Swift|2020
+Exile|Taylor Swift|2020
+Make You Feel My Love|Adele|2008
+Jealous|Labrinth|2014
+The Girl from Ipanema|Stan Getz & João Gilberto|1964
+Autumn Leaves|Joseph Kosma|1945
+Take Five|The Dave Brubeck Quartet|1959
+So What|Miles Davis|1959
+Blue Bossa|Kenny Dorham|1963
+Georgia on My Mind|Ray Charles|1960
+At Last|Etta James|1960
+Earth Angel|The Penguins|1954
+Heart and Soul|Hoagy Carmichael|1938
+Pachelbel's Canon|Johann Pachelbel|1680
+Für Elise|Ludwig van Beethoven|1810
+River Flows in You|Yiruma|2001
+Comptine d'un autre été|Yann Tiersen|2001
+Married Life|Michael Giacchino|2009
+He's a Pirate|Klaus Badelt|2003
+Time|Hans Zimmer|2010
+Cornfield Chase|Hans Zimmer|2014
+Hedwig's Theme|John Williams|2001
+Megalovania|Toby Fox|2015
+Sweden|C418|2011
+Song of Storms|Koji Kondo|1998
+Zelda's Lullaby|Koji Kondo|1998
+City of Stars|Ryan Gosling & Emma Stone|2016
+Mia & Sebastian's Theme|Justin Hurwitz|2016
+Remember Me|Kristen Anderson-Lopez|2017
+How Far I'll Go|Auli'i Cravalho|2016
+We Don't Talk About Bruno|Encanto Cast|2021
+A Whole New World|Aladdin|1992
+Can You Feel the Love Tonight|Elton John|1994
+Circle of Life|Elton John|1994
+Part of Your World|Jodi Benson|1989
+Under the Sea|Samuel E. Wright|1989
+Gurenge|LiSA|2019
+Unravel|TK from Ling tosite sigure|2014
+Sparkle|RADWIMPS|2016
+Lemon|Kenshi Yonezu|2018
+Idol|YOASOBI|2023
+Yoru ni Kakeru|YOASOBI|2019

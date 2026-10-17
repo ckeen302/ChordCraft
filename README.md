@@ -11,7 +11,7 @@ A chord-progression generator with pro-quality sampled playback, a real-time MID
 - **Fully Random & Classic Templates** — pure-chance diatonic progressions, or fixed patterns like I–V–vi–IV and ii–V–I.
 - **Real sampled instruments** — 11 voices played from recorded multisamples via Tone.js (grand piano, acoustic guitar, organ, layered string/brass ensembles, harp, bass, bells) with an FM electric piano, pad, and lead. Root-octave doubling and humanized note onsets.
 - **FL Studio–style piano roll** — a real note editor, not just a chord grid: every note has its own start, length, and velocity. Pencil-draw on empty cells, drag to move (whole selection follows), drag a note's right edge to resize, right-click to erase, ⌘drag for box selection, ⌘A/⌘C/⌘X/⌘V and ⌘B (duplicate right), Delete key, snap grid (1/4 · 1/2 · 1 · off), horizontal zoom, a velocity lane with draggable bars, full C1–B7 pitch range with scroll, and a beat-accurate playhead. Chord columns relabel themselves via chord detection as you edit, and playback follows edits live.
-- **Popular Songs library** — 87 research-verified progressions with the record's real key, tempo, and per-chord harmonic rhythm.
+- **Popular Songs library** — 388 progressions converted chord-for-chord from [Hooktheory TheoryTab](https://www.hooktheory.com/theorytab) analyses, with the record's real key, tempo, meter and per-chord rhythm. Each tempo is cross-checked against songbpm.com, and every song links to both sources. Stored in SQLite (`backend/db/songs.sqlite`) and exported for the site.
 - **Transport** — play/pause/stop (Space), loop, transport-tied metronome (M), live BPM 40–240, beats-per-chord, volume.
 - **Export** — standards-compliant `.mid` files (correct tempo, beats-per-chord, and General MIDI program for the selected instrument), or copy the progression as text.
 - **Undo / Redo** — every edit (generate, note edits, deletions, transpose) is undoable via buttons or ⌘Z / ⇧⌘Z.
@@ -71,7 +71,7 @@ lib/
   midi/              MIDI export (chord blocks or exact note events)
   ai/                In-browser chord transformer: ONNX Runtime Web loader, constrained
                      sampler (TS port of the Python decoder), theory post-processing
-  data/              Popular-song progressions (87 songs), VST preset library
+  data/              Popular-song progressions (388 songs, exported from the songs DB), VST preset library
 backend/             FastAPI service + Python port of the theory engine (see backend/README.md)
 fixtures/theory.json Golden outputs pinning the TypeScript and Python engines together
 ```

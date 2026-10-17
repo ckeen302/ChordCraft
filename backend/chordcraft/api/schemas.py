@@ -129,3 +129,33 @@ class PresetFacets(BaseModel):
     total: int
     vsts: list[VstCount]
     sources: dict[str, int]
+
+
+class SongChordOut(BaseModel):
+    symbol: str
+    beats: float
+
+
+class SongOut(BaseModel):
+    id: str
+    title: str
+    artist: str
+    year: int
+    key: str
+    mode: str
+    bpm: float
+    timeSignature: str  # noqa: N815
+    section: str
+    sourceUrl: str  # noqa: N815
+    youtubeId: str | None  # noqa: N815
+    tempoCheckUrl: str | None  # noqa: N815
+    tempoCheckBpm: float | None  # noqa: N815
+    keyCheck: Literal["exact", "relative", "differs", "unavailable"]  # noqa: N815
+    chords: list[SongChordOut]
+
+
+class SongPage(BaseModel):
+    total: int
+    offset: int
+    limit: int
+    items: list[SongOut]
