@@ -124,15 +124,15 @@ def test_tokenizer_round_trip_and_layout():
     phrase = [(0, "m"), (8, "maj"), (3, "maj"), (10, "maj")]
     ids = tok.encode(phrase, "minor", "rock", "epic")
     assert [tok.itos[i] for i in ids] == [
-        "<bos>", "mode:minor", "genre:rock", "mood:epic", "0:m", "8:maj", "3:maj", "10:maj", "<eos>"]
+        "<bos>", "mode:minor", "genre:rock", "mood:epic", "len:4", "0:m", "8:maj", "3:maj", "10:maj", "<eos>"]
     assert tok.decode_chords(ids) == phrase
-    assert len(tok) == 4 + 2 + 13 + 10 + 12 * len(QUALITY_INTERVALS)
+    assert len(tok) == 4 + 2 + 13 + 10 + 15 + 12 * len(QUALITY_INTERVALS)
 
 
 def test_unknown_conditioning_falls_back_to_any():
     tok = ChordTokenizer()
-    ids = tok.control_ids("major", genre="polka", mood="sleepy")
-    assert [tok.itos[i] for i in ids[2:]] == ["genre:any", "mood:any"]
+    ids = tok.control_ids("major", 40, genre="polka", mood="sleepy")
+    assert [tok.itos[i] for i in ids[2:]] == ["genre:any", "mood:any", "len:16"]
 
 
 def test_vocab_file_compatibility(tmp_path):

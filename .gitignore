@@ -45,3 +45,4 @@ __pycache__/
 
 # Datasets (downloaded / generated, not committed)
 backend/data/
+backend/runs/

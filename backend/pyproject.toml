@@ -9,6 +9,11 @@ dependencies = [
     "pydantic>=2.9",
 ]
 
+[project.optional-dependencies]
+# Model training + inference. Linux installs pull CPU wheels (see [tool.uv.sources]);
+# GPU training happens on Modal, which builds its own CUDA image.
+ml = ["torch>=2.5", "numpy>=2.0"]
+
 [dependency-groups]
 dev = [
     "pytest>=8.3",
@@ -32,3 +37,11 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

@@ -33,6 +33,6 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: '3.12'
-      - run: uv sync --frozen
+      - run: uv sync --frozen --extra ml
       - run: uv run ruff check .
       - run: uv run pytest -q
