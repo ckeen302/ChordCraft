@@ -33,7 +33,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local-only
-.claude/settings.local.json
 .cursor/
 sample audio.mp3
 
