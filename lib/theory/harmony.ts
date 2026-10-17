@@ -20,7 +20,7 @@
  */
 import type { ChordQuality, InstrumentName } from '@/types'
 import { KEYS } from './keys'
-import { NOTE_MAP } from './chords'
+import { NOTE_MAP, QUALITY_SUFFIX } from './chords'
 
 // ─── Moods ────────────────────────────────────────────────────────────────────
 
@@ -362,13 +362,6 @@ function makeSpeller(key: string): (pc: number, off: number) => string {
     if (FLAT_DEGREE_OFFSETS.has(((off % 12) + 12) % 12)) return FLAT_NAMES[pc % 12]
     return flatKey ? FLAT_NAMES[pc % 12] : SHARP_NAMES[pc % 12]
   }
-}
-
-const QUALITY_SUFFIX: Record<ChordQuality, string> = {
-  maj: '', m: 'm', dim: 'dim', aug: 'aug',
-  '7': '7', maj7: 'maj7', m7: 'm7', dim7: 'dim7',
-  sus2: 'sus2', sus4: 'sus4', '6': '6', m6: 'm6',
-  '7sus4': '7sus4', add9: 'add9', '9': '9', m9: 'm9', mmaj7: 'mmaj7',
 }
 
 // Roman numerals by semitone offset (degree names; accidental from offset).

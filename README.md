@@ -13,7 +13,8 @@ A chord-progression generator with pro-quality sampled playback, a real-time MID
 - **Export** — standards-compliant `.mid` files (correct tempo, beats-per-chord, and General MIDI program for the selected instrument), or copy the progression as text.
 - **Undo / Redo** — every edit (generate, note edits, deletions, transpose) is undoable via buttons or ⌘Z / ⇧⌘Z.
 - **Transpose** — shift the whole progression ±1 semitone; voicings, rhythm, and roman numerals survive, and the key select follows (all 24 keys covered).
-- **Harmonic analysis** — an instant rule-based breakdown of every progression (cadence type, borrowed chords, named devices like the Phrygian bII or the IV→iv "saddest move"), plus an optional deeper take from a **free local AI** via [Ollama](https://ollama.com) — no API key, no cloud, no cost. If Ollama isn't installed the button simply explains how to get it.
+- **Harmonic analysis** — an instant rule-based breakdown of every progression (cadence type, borrowed chords, named devices like the Phrygian bII or the IV→iv "saddest move").
+- **Robust chord parsing** — 24 chord qualities including extended and altered chords (maj9, m11, 13, m7b5, 7♭9, 7♯9), common notations (Δ, ø, °, mM7), and a strict mode that rejects anything it would have to guess at.
 - **Saved progressions** — name and keep favourites (exact voicings round-trip), separate from the auto-history of recent generations.
 - **Settings** — persisted defaults for BPM, instrument, beats-per-chord, and volume, applied every launch.
 - **Preset Finder** — a browsable library of famous VST preset identifications ("what preset is that sound?"), in the spirit of [r/findthepreset](https://www.reddit.com/r/findthepreset/): search, filter by VST, grouped by artist, every entry labelled **Confirmed** (official documentation) or **Community ID** (accepted lore) with a source link. Grow it by appending to `lib/data/presets.ts`.
@@ -38,6 +39,7 @@ No configuration or API keys required. Samples stream from a CDN on first play.
 | `npm start`          | Serve the production build    |
 | `npm run type-check` | TypeScript check              |
 | `npm run lint`       | ESLint                        |
+| `npm test`           | Vitest unit tests             |
 
 > Note: don't run `npm run build` while a dev server is running — both write to `.next/` and the dev server's chunk manifest gets corrupted (ChunkLoadError). Stop the dev server first, or just rely on `type-check`.
 
@@ -58,8 +60,18 @@ lib/
                      transpose, rule-based analysis
   roll/notes.ts      NoteEvent model — chords ⇄ notes conversion, chord windows,
                      per-window chord detection
-  ai/ollama.ts       Optional local-AI analysis via Ollama (graceful when absent)
   audio/             Tone.js sample engine + metronome
   midi/              MIDI export (chord blocks or exact note events)
-  data/              Popular-song progressions (77 songs)
+  data/              Popular-song progressions (87 songs), VST preset library
 ```
+
+## Roadmap — AI rebuild
+
+ChordCraft is being rebuilt into an AI chord-progression generator:
+
+- **Chord model** — a custom decoder-only transformer written in PyTorch, trained on open chord datasets with mood/key/tempo control tokens and constrained decoding (only valid, in-key chords can be sampled).
+- **LLM copilot** — a fine-tuned open model (Llama / Qwen, LoRA via Hugging Face PEFT + TRL) that turns natural-language requests into tool calls: generate, edit, analyze, search.
+- **RAG** — sentence-transformer embeddings + FAISS over the song library for "sounds like…" requests.
+- **Backend** — FastAPI with streaming responses; the theory engine validates and repairs every model output.
+- **Evals** — rule engine vs. chord model vs. LLM-only, scored on validity, key adherence, and cadence quality.
+- **Infra** — training on Modal and Kaggle GPUs, experiment tracking with W&B, models on the Hugging Face Hub, CI on GitHub Actions.

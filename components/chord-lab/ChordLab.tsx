@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Shuffle, ChevronDown, Download, Copy, ArrowRight, Music, Sparkles, Dices,
-  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, Brain, X, Check,
+  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check,
 } from 'lucide-react'
 import { ChordStrip } from './ChordStrip'
 import { PianoRoll } from '@/components/piano/PianoRoll'
@@ -21,7 +21,6 @@ import { parseChords, detectChord } from '@/lib/theory/chords'
 import { voiceLeadProgression } from '@/lib/theory/voicing'
 import { transposeProgression, transposeKeyName, keyPrefersFlats } from '@/lib/theory/transpose'
 import { analyzeProgression } from '@/lib/theory/analysis'
-import { ollamaGenerate } from '@/lib/ai/ollama'
 import { setChordRoll } from '@/lib/audio/engine'
 import {
   chordsToNotes, chordWindows, detectWindowChords, deleteWindowNotes,
@@ -197,13 +196,6 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   const [saved, setSaved]       = useState<SavedProg[]>([])
   const [saveOpen, setSaveOpen] = useState(false)
   const [saveName, setSaveName] = useState('')
-
-  // Local-AI analysis (Ollama)
-  const [aiText, setAiText]   = useState<string | null>(null)
-  const [aiModel, setAiModel] = useState('')
-  const [aiBusy, setAiBusy]   = useState(false)
-  const [aiHint, setAiHint]   = useState<string | null>(null)
-  const aiReqRef = useRef(0)
 
   // localStorage is browser-only — hydrate after mount.
   useEffect(() => {
@@ -436,35 +428,6 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       : null),
     [localChords, selectedKey, patternName],
   )
-
-  // New progression → stale AI text (and any in-flight request) is dropped.
-  useEffect(() => {
-    aiReqRef.current++
-    setAiText(null)
-    setAiHint(null)
-    setAiBusy(false)
-  }, [localChords, selectedKey])
-
-  async function handleAiAnalyze() {
-    if (!analysis || aiBusy) return
-    const id = ++aiReqRef.current
-    setAiBusy(true)
-    setAiHint(null)
-    const prompt = [
-      'You are a concise, expert music-theory mentor. In 2-3 short sentences, give a songwriter one practical, non-obvious insight about this chord progression: what it evokes, a genre or artist it fits, and one concrete thing to try next (a substitution, extension, or arrangement idea).',
-      `Key: ${selectedKey}. Chords: ${localChords.map(c => c.symbol).join(' - ')}. Roman numerals: ${analysis.romans.filter(r => r !== '—').join(' - ')}.`,
-      'Plain prose only - no lists, no markdown, do not restate the chords.',
-    ].join('\n')
-    const res = await ollamaGenerate(prompt)
-    if (aiReqRef.current !== id) return // progression changed while waiting
-    setAiBusy(false)
-    if (res.ok) {
-      setAiText(res.text)
-      setAiModel(res.model)
-    } else {
-      setAiHint(res.hint)
-    }
-  }
 
   // ── Generate / export ──────────────────────────────────────────────────────
 
@@ -951,41 +914,14 @@ export function ChordLab({ active = true }: { active?: boolean }) {
               </div>
             </div>
 
-            {/* Harmonic analysis — instant rules + optional free local AI */}
+            {/* Harmonic analysis — instant, rule-based */}
             {analysis && (
               <div>
                 <p className="text-[10px] uppercase tracking-[2px] text-text-muted font-semibold mb-3">
                   Analysis
                 </p>
-                <div className="flex flex-col gap-3 p-4 rounded-xl bg-bg-raised border border-border">
+                <div className="p-4 rounded-xl bg-bg-raised border border-border">
                   <p className="text-sm text-text-muted leading-relaxed">{analysis.summary}</p>
-
-                  {aiText && (
-                    <div className="pt-3 border-t border-border">
-                      <p className="text-sm text-text leading-relaxed">{aiText}</p>
-                      <p className="text-[10px] text-text-dim font-mono mt-1.5">
-                        via Ollama · {aiModel} · runs locally, free
-                      </p>
-                    </div>
-                  )}
-
-                  {aiHint && <p className="text-xs text-amber-400/90">{aiHint}</p>}
-
-                  {!aiText && (
-                    <button
-                      onClick={handleAiAnalyze}
-                      disabled={aiBusy}
-                      title="Uses Ollama — a free AI that runs entirely on your computer. Nothing is sent to the cloud."
-                      className={cn(
-                        'flex items-center gap-2 self-start px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-colors',
-                        'border-accent/30 text-accent hover:bg-accent/10',
-                        'disabled:opacity-60 disabled:cursor-wait',
-                      )}
-                    >
-                      {aiBusy ? <Loader2 size={13} className="animate-spin" /> : <Brain size={13} />}
-                      {aiBusy ? 'Asking local AI…' : 'Deeper take — local AI (free, via Ollama)'}
-                    </button>
-                  )}
                 </div>
               </div>
             )}
