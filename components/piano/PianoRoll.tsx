@@ -31,7 +31,7 @@ import { useStore } from '@/store/useStore'
 import { getPlayheadBeats } from '@/hooks/useTransport'
 import { playChord } from '@/lib/audio/engine'
 import {
-  chordWindows, chordsToNotes, extendWindows, newNoteId, totalBeatsOf,
+  chordWindows, chordsToNotes, extendWindows, newNoteId, totalBeatsOf, ROLL_HI_MIDI, ROLL_LO_MIDI,
   type ChordWindow,
 } from '@/lib/roll/notes'
 import { cn } from '@/lib/utils'
@@ -45,8 +45,8 @@ const GUTTER_W = 48    // px key gutter
 const HEADER_H = 22    // px chord-symbol header
 const VEL_H    = 56    // px velocity lane
 const GRID_H   = 336   // px visible grid height (scrolls vertically)
-const HI_MIDI  = 107   // B7
-const LO_MIDI  = 24    // C1
+const HI_MIDI  = ROLL_HI_MIDI   // B7
+const LO_MIDI  = ROLL_LO_MIDI   // C1
 const EDGE_PX  = 7     // resize handle width on a note's right edge
 const EPS = 1e-6
 

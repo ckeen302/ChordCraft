@@ -198,7 +198,7 @@ def list_presets(
     vst: str | None = Query(None, max_length=100),
     source: Literal["Reddit", "YouTube", "Web"] | None = None,
     limit: int = Query(50, ge=1, le=200),
-    offset: int = Query(0, ge=0),
+    offset: int = Query(0, ge=0, le=1_000_000),
 ) -> PresetPage:
     conn = _presets_conn()
     try:

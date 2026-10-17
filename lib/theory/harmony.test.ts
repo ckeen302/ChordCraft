@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { applySecondaryDominants, generateMoodProgression, MOOD_LABELS, type Mood } from './harmony'
-import { generateFromTemplate, generateRandom, generateSmartRich, TEMPLATE_NAMES } from './progressions'
+import { generateFromTemplate, generateRandom, generateSmartRich, TEMPLATE_NAMES, templateMode } from './progressions'
 import { parseChordStrict } from './chords'
 import { KEY_NAMES } from './keys'
+import { analyzeProgression } from './analysis'
 
 const MOODS = Object.keys(MOOD_LABELS) as Mood[]
 
@@ -57,6 +58,13 @@ describe('applySecondaryDominants', () => {
 })
 
 describe('progressions', () => {
+  it('romans describe the final chords when a secondary dominant is inserted', () => {
+    for (let i = 0; i < 100; i++) {
+      const r = generateSmartRich('C Major', { mood: 'uplifting', length: 6, excludeDiminished: false, chromaticColor: true })
+      expect(r.romans).toEqual(analyzeProgression(r.chords, 'C Major').romans)
+    }
+  })
+
   it('generateSmartRich voice-leads and carries beats', () => {
     const r = generateSmartRich('D Minor', { mood: 'epic', length: 6, excludeDiminished: false })
     expect(r.chords).toHaveLength(6)
@@ -67,6 +75,12 @@ describe('progressions', () => {
     expect(generateFromTemplate('C Major', 'I – V – vi – IV').map(c => c.symbol)).toEqual(['C', 'G', 'Am', 'F'])
     expect(generateFromTemplate('A Minor', 'i – VII – VI – VII').map(c => c.symbol)).toEqual(['Am', 'G', 'F', 'G'])
     for (const t of TEMPLATE_NAMES) expect(generateFromTemplate('E Major', t).length).toBeGreaterThan(0)
+  })
+
+  it('knows which templates are minor', () => {
+    expect(templateMode('i – VII – VI – VII')).toBe('minor')
+    expect(templateMode('ii – V – I')).toBe('major')
+    expect(templateMode('I – V – vi – IV')).toBe('major')
   })
 
   it('random generation stays diatonic', () => {
