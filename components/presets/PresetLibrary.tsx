@@ -37,6 +37,8 @@ function StatusChip({ status }: { status: PresetEntry['status'] }) {
 
 /** VST chips shown before "Show all" — the list is long once every synth gets one. */
 const VST_CHIPS_COLLAPSED = 14
+/** Artist groups rendered per "Show more" step — the full library is 1,000+ cards. */
+const ARTISTS_PER_PAGE = 40
 
 function FilterChip({ active, onClick, children }: {
   active: boolean
@@ -63,6 +65,8 @@ export function PresetLibrary() {
   const [vstFilter, setVstFilter] = useState<string | null>(null)
   const [sourceFilter, setSourceFilter] = useState<PresetSource | null>(null)
   const [showAllVsts, setShowAllVsts] = useState(false)
+  // Paging resets whenever the filters change: a stored limit only applies to its own filter key.
+  const [page, setPage] = useState({ key: '', limit: ARTISTS_PER_PAGE })
 
   const q = query.trim().toLowerCase()
   const filtered = useMemo(
@@ -90,6 +94,9 @@ export function PresetLibrary() {
     }
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]))
   }, [filtered])
+
+  const filterKey = `${q}|${vstFilter}|${sourceFilter}`
+  const artistLimit = page.key === filterKey ? page.limit : ARTISTS_PER_PAGE
 
   return (
     <div className="flex h-full min-h-0">
@@ -201,7 +208,7 @@ export function PresetLibrary() {
           </div>
         ) : (
           <div className="flex flex-col gap-6 max-w-3xl">
-            {grouped.map(([artist, entries]) => (
+            {grouped.slice(0, artistLimit).map(([artist, entries]) => (
               <div key={artist}>
                 <h3 className="text-sm font-extrabold text-text uppercase tracking-widest mb-2.5">
                   {artist}
@@ -237,6 +244,14 @@ export function PresetLibrary() {
                 </div>
               </div>
             ))}
+            {grouped.length > artistLimit && (
+              <button
+                onClick={() => setPage({ key: filterKey, limit: artistLimit + ARTISTS_PER_PAGE })}
+                className="self-center px-4 py-2 rounded-xl border border-border bg-bg-raised text-xs font-semibold text-text-muted hover:text-text hover:border-border-bright transition-colors cursor-pointer"
+              >
+                Show more artists ({grouped.length - artistLimit} left)
+              </button>
+            )}
           </div>
         )}
       </div>
