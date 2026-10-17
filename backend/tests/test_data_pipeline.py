@@ -182,3 +182,8 @@ def test_split_is_stable_per_artist():
     for i in range(5000):
         counts[split_for(f"artist_{i}")] += 1
     assert 0.85 < counts["train"] / 5000 < 0.95
+
+
+def test_shared_vocab_fixture_is_current():
+    """fixtures/chord-vocab.json feeds the TypeScript sampler tests; it must match the tokenizer."""
+    ChordTokenizer.check_compatible(ROOT / "fixtures" / "chord-vocab.json")

@@ -4,7 +4,7 @@ A chord-progression generator with pro-quality sampled playback, a real-time MID
 
 ## Features
 
-- **AI · Chord Transformer** — progressions written by a 14M-parameter transformer trained from scratch in PyTorch on 1.4M real-song progressions, steered by mood and length, served by the FastAPI backend. Every chord is spelled, voice-led, and analysed by the theory engine; when the backend is offline the generator falls back to the rule-based engine below. Model, data, and evaluation: [backend/README.md](backend/README.md).
+- **AI · Chord Transformer** — progressions written by a 14M-parameter transformer trained from scratch in PyTorch on 1.4M real-song progressions, steered by mood and length. It runs **in the browser**: the int8 ONNX export (15 MB, [on the Hugging Face Hub](https://huggingface.co/ckeen302/chordcraft-chord-transformer)) executes in ONNX Runtime Web with constrained decoding ported to TypeScript (~0.4 s per progression, no server). Every chord is spelled, voice-led, and analysed by the theory engine. Model, data, and evaluation: [backend/README.md](backend/README.md).
 - **Smart Generate** — a mood-driven harmony engine. Defaults to **Random**, rolling a fresh mood on every generate (shown as a badge, e.g. "🎲 Nostalgic"); pin one of the 9 moods (Uplifting, Melancholic, Dreamy, Romantic, Nostalgic, Tense, Jazz, Epic, Aggressive) to repeat it instead. Each blends signature progressions from real repertoire (doo-wop changes, ii–V–I turnarounds, the minor axis, sad-pop loops) with a weighted Markov chain over functional harmony, plus mood-specific cadences and chord extensions.
 - **Fully Random & Classic Templates** — pure-chance diatonic progressions, or fixed patterns like I–V–vi–IV and ii–V–I.
 - **Real sampled instruments** — 11 voices played from recorded multisamples via Tone.js (grand piano, acoustic guitar, organ, layered string/brass ensembles, harp, bass, bells) with an FM electric piano, pad, and lead. Root-octave doubling and humanized note onsets.
@@ -31,12 +31,9 @@ npm run dev      # http://localhost:3000
 
 No configuration or API keys required. Samples stream from a CDN on first play.
 
-To enable the AI mode locally, run the backend too (see [backend/README.md](backend/README.md)) —
-the app looks for it at `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`; copy `.env.example`):
-
-```bash
-cd backend && uv sync --extra ml && uv run uvicorn chordcraft.api.main:app --port 8000
-```
+The AI mode downloads its model from the Hugging Face Hub on first load — nothing to configure.
+The Python side (data pipeline, training, evaluation, and an optional FastAPI service) lives in
+[`backend/`](backend/README.md).
 
 ## Scripts
 
@@ -70,6 +67,8 @@ lib/
                      per-window chord detection
   audio/             Tone.js sample engine + metronome
   midi/              MIDI export (chord blocks or exact note events)
+  ai/                In-browser chord transformer: ONNX Runtime Web loader, constrained
+                     sampler (TS port of the Python decoder), theory post-processing
   data/              Popular-song progressions (87 songs), VST preset library
 backend/             FastAPI service + Python port of the theory engine (see backend/README.md)
 fixtures/theory.json Golden outputs pinning the TypeScript and Python engines together
@@ -79,9 +78,9 @@ fixtures/theory.json Golden outputs pinning the TypeScript and Python engines to
 
 ChordCraft is being rebuilt into an AI chord-progression generator:
 
-- **Chord model** — a custom decoder-only transformer written in PyTorch, trained on open chord datasets with mood/key/tempo control tokens and constrained decoding (only valid, in-key chords can be sampled).
+- **Chord model** — ✅ custom decoder-only transformer in PyTorch, trained on Chordonomicon with mode/genre/mood/length control tokens and constrained decoding (v1: test perplexity 4.12, 82% mood control vs 63% for the rule engine).
 - **LLM copilot** — a fine-tuned open model (Llama / Qwen, LoRA via Hugging Face PEFT + TRL) that turns natural-language requests into tool calls: generate, edit, analyze, search.
 - **RAG** — sentence-transformer embeddings + FAISS over the song library for "sounds like…" requests.
-- **Backend** — FastAPI with streaming responses; the theory engine validates and repairs every model output.
+- **Serving** — ✅ in-browser ONNX inference (int8, 15 MB); FastAPI service for the theory engine and server-side generation.
 - **Evals** — rule engine vs. chord model vs. LLM-only, scored on validity, key adherence, and cadence quality.
 - **Infra** — training on Modal and Kaggle GPUs, experiment tracking with W&B, models on the Hugging Face Hub, CI on GitHub Actions.

@@ -114,6 +114,33 @@ How to read it:
   blocking plus a 0.3 presence penalty brings that to 0% and raises distinct
   chords per 8-chord phrase from 4.26 to 4.88 (360 samples, 9 moods × 2 modes).
 
+## Publishing & in-browser inference
+
+The model is on the Hub at
+[ckeen302/chordcraft-chord-transformer](https://huggingface.co/ckeen302/chordcraft-chord-transformer)
+(safetensors + config + vocab + model card + ONNX).
+
+```bash
+uv run --extra ml python -m chordcraft.model.hub export --ckpt runs/kaggle_v1/v1/best.pt \
+    --results results/chord-transformer-v1 --out dist/chord-transformer
+uv sync --extra ml --group export
+uv run --extra ml --group export python -m chordcraft.model.onnx_export --model dist/chord-transformer --data data/processed
+uv run --extra ml python scripts/publish_hf.py model
+```
+
+ONNX parity on 512 real validation prefixes:
+
+| Export | Size | Top-1 agreement with PyTorch | Mean KL | Max logit diff |
+| ------ | ---- | ---------------------------- | ------- | -------------- |
+| fp32 | 58.0 MB | 100% | 0.0 | 1e-5 |
+| int8 (dynamic) | 15.1 MB | 98.2% | 0.0005 | 0.31 |
+
+The web app loads the int8 model with ONNX Runtime Web and runs the same
+constrained decoder, ported to TypeScript (`lib/ai/sampler.ts`), so the live
+site needs no inference server. `scripts/publish_hf.py space` can also deploy
+this API as a Docker Space, but Hugging Face now requires a PRO plan for
+Docker Spaces, so the deployed app uses in-browser inference instead.
+
 ## Checks
 
 ```bash

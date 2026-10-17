@@ -523,6 +523,28 @@ export function generateMoodProgression(
   }
 }
 
+// ─── Helpers for model output ────────────────────────────────────────────────
+
+/** Spell key-relative (semitone offset, quality) pairs as chord symbols in `key`. */
+export function spellDegrees(key: string, degrees: [number, ChordQuality][]): string[] {
+  const tonicPc = NOTE_MAP[key.split(' ')[0]]
+  if (tonicPc === undefined) throw new Error(`Unknown key: "${key}"`)
+  const spell = makeSpeller(key)
+  return degrees.map(([off, q]) => spell(tonicPc + off, off) + QUALITY_SUFFIX[q])
+}
+
+/** A mood's tempo (sampled from its range), timbre, harmonic rhythm, and articulation. */
+export function moodVibe(mood: Mood): { bpm: number; instrument: InstrumentName; rhythm: number[]; rollMs: number } {
+  const profile = PROFILES[mood]
+  const [lo, hi] = profile.bpm
+  return {
+    bpm: Math.round(lo + Math.random() * (hi - lo)),
+    instrument: pick(profile.instruments),
+    rhythm: profile.rhythm,
+    rollMs: profile.rollMs,
+  }
+}
+
 // ─── Secondary dominants (chromatic colour) ──────────────────────────────────
 
 /** Pitch class (0–11) of a chord symbol's root. */

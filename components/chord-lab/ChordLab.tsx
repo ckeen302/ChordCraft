@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Shuffle, ChevronDown, Download, Copy, ArrowRight, Music, Sparkles, Dices,
   Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check, Brain,
@@ -20,7 +20,8 @@ import {
 import { KEY_NAMES } from '@/lib/theory/keys'
 import { analyzeProgression } from '@/lib/theory/analysis'
 import { setChordRoll } from '@/lib/audio/engine'
-import { asInstrument, checkBackend, generateProgression, toParsedChords } from '@/lib/api/client'
+import { loadChordModel } from '@/lib/ai/model'
+import { generateWithModel } from '@/lib/ai/generate'
 import { downloadMidiFromNotes, GM_PROGRAM } from '@/lib/midi/export'
 import { copyToClipboard, progressionToString } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -91,11 +92,10 @@ export function ChordLab({ active = true }: { active?: boolean }) {
     handleRollChange, deleteChord, appendChordSlot, transpose,
   } = useProgressionEditor({ active })
 
-  const [mode, setMode]               = useState<'ai' | 'smart' | 'random' | string>('smart')
-  // The AI mode needs the FastAPI backend with the trained model loaded; the
-  // lab checks once on mount and switches to it unless the user already chose.
-  const [aiStatus, setAiStatus]       = useState<'checking' | 'ready' | 'no-model' | 'offline'>('checking')
-  const modeTouchedRef = useRef(false)
+  const [mode, setMode]               = useState<'ai' | 'smart' | 'random' | string>('ai')
+  // The AI model runs in the browser; it starts downloading (15 MB) shortly
+  // after the page loads so the first Generate doesn't wait on it.
+  const [aiStatus, setAiStatus]       = useState<'loading' | 'ready' | 'error'>('loading')
   // Default is 'random' — a fresh mood is rolled on every generate; picking
   // a specific mood pins it (like the old behaviour) until Random is chosen again.
   const [mood, setMood]               = useState<Mood | 'random'>('random')
@@ -110,30 +110,15 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   const [saveName, setSaveName]       = useState('')
 
   useEffect(() => {
-    // The hosted backend sleeps when idle and takes ~30 s to wake (the first
-    // request starts it), so keep checking for a while before giving up.
-    const RETRY_DELAYS_MS = [0, 8000, 20000, 40000]
     let cancelled = false
-    let timer: ReturnType<typeof setTimeout> | undefined
-    const attempt = async (i: number) => {
-      const { online, model } = await checkBackend()
-      if (cancelled) return
-      const status = !online ? 'offline' : model ? 'ready' : 'no-model'
-      if (status === 'ready' || i === RETRY_DELAYS_MS.length - 1) {
-        setAiStatus(status)
-        if (status === 'ready' && !modeTouchedRef.current) setMode('ai')
-        return
-      }
-      timer = setTimeout(() => attempt(i + 1), RETRY_DELAYS_MS[i + 1])
-    }
-    attempt(0)
+    const timer = setTimeout(() => {
+      loadChordModel().then(
+        () => { if (!cancelled) setAiStatus('ready') },
+        () => { if (!cancelled) setAiStatus('error') },
+      )
+    }, 1500)
     return () => { cancelled = true; clearTimeout(timer) }
   }, [])
-
-  function chooseMode(next: string) {
-    modeTouchedRef.current = true
-    setMode(next)
-  }
 
   function handleSaveConfirm() {
     saveCurrent(saveName)
@@ -186,15 +171,19 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       let patternName = ''
       let rolledMood: Mood | null = null
       if (isAI) {
-        const res = await generateProgression({
-          key: selectedKey, mood, length, excludeDiminished: excludeDim, engine: 'model',
+        setAiStatus(s => (s === 'ready' ? s : 'loading'))
+        const model = await loadChordModel()
+        setAiStatus('ready')
+        const effectiveMood: Mood = mood === 'random'
+          ? MOODS[Math.floor(Math.random() * MOODS.length)][0]
+          : mood
+        rolledMood = mood === 'random' ? effectiveMood : null
+        const res = await generateWithModel(model, {
+          key: selectedKey, mood: effectiveMood, length, excludeDiminished: excludeDim,
         })
         romans = res.romans
         patternName = res.patternName
-        if (mood === 'random' && Object.hasOwn(MOOD_LABELS, res.mood)) rolledMood = res.mood as Mood
-        chords = applyVibe(toParsedChords(res.chords), {
-          bpm: res.bpm, rollMs: res.rollMs, instrument: asInstrument(res.instrument),
-        })
+        chords = applyVibe(res.chords, { bpm: res.bpm, rollMs: res.rollMs, instrument: res.instrument })
       } else if (isSmart) {
         // 'random' rolls a fresh mood every generate; a pinned mood repeats it.
         const effectiveMood: Mood = mood === 'random'
@@ -223,8 +212,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       }
       loadGenerated({ chords, romans, patternName, rolledMood })
     } catch (e) {
+      if (isAI) setAiStatus('error')
       setError(isAI
-        ? `${(e as Error).message} Use Smart Generate, or start the backend (see backend/README.md).`
+        ? `The AI model couldn't run (${(e as Error).message}). Try again, or use Smart Generate.`
         : (e as Error).message)
     } finally {
       setGenerating(false)
@@ -271,11 +261,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           {KEY_NAMES.map(k => <option key={k} value={k}>{k}</option>)}
         </SelectField>
 
-        <SelectField label="Mode" value={mode} onChange={chooseMode}>
-          <option value="ai" disabled={aiStatus === 'offline' || aiStatus === 'no-model'}>
-            {'✦ AI · Chord Transformer' + ({
-              checking: ' (connecting…)', ready: '', 'no-model': ' (model not loaded)', offline: ' (backend offline)',
-            } as const)[aiStatus]}
+        <SelectField label="Mode" value={mode} onChange={setMode}>
+          <option value="ai">
+            {'✦ AI · Chord Transformer' + ({ loading: ' (loading model…)', ready: '', error: ' (unavailable)' } as const)[aiStatus]}
           </option>
           <option value="smart">◆ Smart Generate (rules)</option>
           <option value="random">🎲 Fully Random</option>
@@ -304,8 +292,8 @@ export function ChordLab({ active = true }: { active?: boolean }) {
             </div>
             {isAI && (
               <p className="text-[11px] text-text-dim leading-relaxed -mt-2">
-                A 14M-parameter transformer trained on 1.4M progressions from real songs. Mood steers it;
-                every chord is spelled and checked by the theory engine.
+                A 14M-parameter transformer trained on 1.4M progressions from real songs, running right in
+                your browser. Mood steers it; every chord is spelled and checked by the theory engine.
               </p>
             )}
 
