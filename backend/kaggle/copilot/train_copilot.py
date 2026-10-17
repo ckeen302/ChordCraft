@@ -30,7 +30,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, get_cosine_schedul
 BASE = "Qwen/Qwen2.5-0.5B-Instruct"
 REVISION = "7ae557604adf67be50417f59c2c2f167def9a775"
 EPOCHS = 2
-BATCH = 16
+BATCH = 4  # micro-batch: the 151k-token vocabulary makes logits large
+ACCUM = 4  # effective batch 16
 LR = 2e-4
 MAX_LEN = 640
 SEED = 0
@@ -90,7 +91,7 @@ def batches(rows, shuffle):
 
 
 opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=LR, weight_decay=0.0)
-steps = EPOCHS * math.ceil(len(train_rows) / BATCH)
+steps = EPOCHS * math.ceil(len(train_rows) / (BATCH * ACCUM))
 sched = get_cosine_schedule_with_warmup(opt, int(0.05 * steps), steps)
 scaler = torch.amp.GradScaler()
 
@@ -110,10 +111,12 @@ def val_loss():
 step, t0 = 0, time.time()
 print("val loss before", round(val_loss(), 4))
 for epoch in range(EPOCHS):
-    for ids, labels, mask in batches(train_rows, True):
+    for micro, (ids, labels, mask) in enumerate(batches(train_rows, True), 1):
         with torch.autocast("cuda", dtype=torch.float16):
             loss = model(input_ids=ids, attention_mask=mask, labels=labels).loss
-        scaler.scale(loss).backward()
+        scaler.scale(loss / ACCUM).backward()
+        if micro % ACCUM:
+            continue
         scaler.unscale_(opt)
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         scaler.step(opt)
