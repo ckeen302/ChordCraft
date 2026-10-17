@@ -51,7 +51,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SUMMARY: ${{ steps.ingest.outputs.summary }}
         run: |
-          branch="presets/refresh-$(date -u +%Y-%m-%d)"
+          branch="presets/refresh-$(date -u +%Y-%m-%d)-${{ github.run_number }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"
