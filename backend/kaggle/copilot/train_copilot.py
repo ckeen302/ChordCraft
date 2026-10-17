@@ -19,7 +19,7 @@ import subprocess
 import sys
 import time
 
-subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "peft==0.17.1"])
+subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-U", "peft"])
 
 import torch  # noqa: E402
 from peft import LoraConfig, get_peft_model  # noqa: E402
@@ -49,7 +49,7 @@ def load(name):
 train_rows, val_rows = load("train.jsonl"), load("val.jsonl")
 
 tok = AutoTokenizer.from_pretrained(BASE, revision=REVISION)
-model = AutoModelForCausalLM.from_pretrained(BASE, revision=REVISION, torch_dtype=torch.float32).to(device)
+model = AutoModelForCausalLM.from_pretrained(BASE, revision=REVISION, dtype=torch.float32).to(device)
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
 model = get_peft_model(model, LoraConfig(
