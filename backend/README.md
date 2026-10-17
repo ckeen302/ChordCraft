@@ -60,6 +60,52 @@ uv run python -m chordcraft.data.build --raw data/raw/chordonomicon/chordonomico
 Outputs `data/processed/{train,val,test}.jsonl.gz`, `vocab.json` (shared with
 training and serving), and `stats.json`.
 
+## Chord model
+
+`chordcraft/model` — a decoder-only transformer written from scratch in PyTorch
+(RMSNorm pre-norm blocks, causal attention with rotary embeddings, SwiGLU,
+tied embeddings; 14.3M parameters). Sequences are
+`<bos> mode genre mood len:N` followed by key-relative chord tokens; loss is on
+chords + EOS only. Training uses mood-balanced sampling and 30% conditioning
+dropout so the same model runs with or without a mood/genre.
+
+Sampling is constrained so every output is valid: exact requested length, no
+immediate repeats, optional no-diminished / diatonic-only. Outputs are degrees,
+spelled into any key with `spell_degrees`.
+
+```bash
+uv sync --extra ml
+uv run python -m chordcraft.model.train --data data/processed --out runs/v1          # local (MPS/CPU)
+kaggle kernels push -p kaggle --accelerator NvidiaTeslaT4                           # free cloud GPU
+uv run python -m chordcraft.model.evaluate --ckpt runs/v1/best.pt --data data/processed
+```
+
+### v1 results ([full report](results/chord-transformer-v1/eval.json))
+
+3 epochs on a Kaggle Tesla T4 (8,292 steps, 72 min, $0). **Test perplexity 4.12**
+over a 300-chord vocabulary (artist-disjoint test split, 77k phrases).
+
+1,800 progressions per generator (9 moods × 200, half major / half minor, lengths 4 and 8):
+
+| Generator | Valid | Mood control | Novelty | Distinct-2 | Diatonic | Ends on I/V |
+| --------- | ----- | ------------ | ------- | ---------- | -------- | ----------- |
+| **Chord transformer** | 100% | **82.4%** | 46.9% | **0.114** | 80.7% | **55.3%** |
+| Same model, no mood token | 100% | 10.9% | 34.8% | 0.073 | 87.4% | 56.2% |
+| Rule engine (baseline) | 100% | 63.2% | 81.0% | 0.090 | 81.2% | 51.2% |
+
+How to read it:
+- **Mood control** = share of outputs whose weak mood label matches the
+  requested mood. Chance is ~11% (the unconditioned row). The model was trained
+  on that same labeler's output, so this shows the conditioning works — it is
+  not a human judgement of mood.
+- **Novelty** = share of outputs that never appear in the training set. The
+  model writes new progressions about half the time; the rule engine's curated
+  patterns with substitutions are mostly unseen in real songs, which also means
+  they are less typical of them.
+- **Known issue:** at length 8 the model sometimes oscillates between two
+  chords (e.g. ii7–iii7–ii7–iii7). A decode-time repetition penalty is the
+  planned fix.
+
 ## Checks
 
 ```bash

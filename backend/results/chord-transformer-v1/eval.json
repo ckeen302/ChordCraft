@@ -1,0 +1,116 @@
+{
+ "checkpoint": "/kaggle/working/v1/best.pt",
+ "test_loss": 1.4152,
+ "test_perplexity": 4.117,
+ "generators": {
+  "model": {
+   "samples": 1800,
+   "validity": 1.0,
+   "diatonic_ratio": 0.8071,
+   "mood_control": 0.8244,
+   "novelty": 0.4694,
+   "distinct_2": 0.1138,
+   "tonic_or_dominant_ending": 0.5533
+  },
+  "model_unconditioned": {
+   "samples": 1800,
+   "validity": 1.0,
+   "diatonic_ratio": 0.8738,
+   "mood_control": 0.1089,
+   "novelty": 0.3478,
+   "distinct_2": 0.0731,
+   "tonic_or_dominant_ending": 0.5622
+  },
+  "rule_engine": {
+   "samples": 1800,
+   "validity": 1.0,
+   "diatonic_ratio": 0.8122,
+   "mood_control": 0.6322,
+   "novelty": 0.81,
+   "distinct_2": 0.0897,
+   "tonic_or_dominant_ending": 0.5122
+  }
+ },
+ "per_mood_control": {
+  "model": {
+   "uplifting": 0.49,
+   "melancholic": 0.995,
+   "dreamy": 0.91,
+   "romantic": 0.655,
+   "nostalgic": 0.96,
+   "tense": 0.985,
+   "jazz": 0.875,
+   "epic": 0.99,
+   "aggressive": 0.56
+  },
+  "model_unconditioned": {
+   "uplifting": 0.235,
+   "melancholic": 0.315,
+   "dreamy": 0.025,
+   "romantic": 0.03,
+   "nostalgic": 0.035,
+   "tense": 0.04,
+   "jazz": 0.07,
+   "epic": 0.215,
+   "aggressive": 0.015
+  },
+  "rule_engine": {
+   "uplifting": 0.54,
+   "melancholic": 0.595,
+   "dreamy": 0.71,
+   "romantic": 0.62,
+   "nostalgic": 0.685,
+   "tense": 0.62,
+   "jazz": 0.775,
+   "epic": 0.655,
+   "aggressive": 0.49
+  }
+ },
+ "examples": {
+  "uplifting": [
+   "E C G F",
+   "Cm Bb G C",
+   "Fadd9 C G Am7"
+  ],
+  "melancholic": [
+   "Am Em Dm G",
+   "Am G C G",
+   "Am G C G"
+  ],
+  "dreamy": [
+   "C Fadd9 Gsus4 Fadd9",
+   "C Fadd9 Am7 Fadd9",
+   "C F Am F"
+  ],
+  "romantic": [
+   "F Dm G7 C",
+   "Dm G7 F G",
+   "Cmaj7 Am7 Dm G"
+  ],
+  "nostalgic": [
+   "E Am D7 C",
+   "C G E7 F",
+   "C7 Am F G"
+  ],
+  "tense": [
+   "C Gm F Db",
+   "Fm Cm Db C",
+   "Eb Db C Bb"
+  ],
+  "jazz": [
+   "E7 Am D7 G7",
+   "C F C G7",
+   "Dm7 Em7 Dm7 Em7"
+  ],
+  "epic": [
+   "C Am Ab Bb",
+   "C Bb Am Ab",
+   "Ab Bb C C7"
+  ],
+  "aggressive": [
+   "C Bb F C",
+   "C D5 E5 A5",
+   "C F G7 C"
+  ]
+ }
+}
