@@ -119,14 +119,14 @@ export function useTransport() {
   // ── Live BPM: the clock reads bpmRef each tick; just re-time the click ───
   useEffect(() => {
     bpmRef.current = bpm
-    if (isPlayingRef.current && metronomeRef.current) startMetronome(bpm, useStore.getState().beatsPerBar)
+    if (isPlayingRef.current && metronomeRef.current) startMetronome(bpm, useStore.getState().beatsPerBar, posBeatsRef.current)
   }, [bpm])
 
   // ── Metronome toggle (transport-tied: clicks only while playing) ─────────
   useEffect(() => {
     metronomeRef.current = metronomeEnabled
     if (metronomeEnabled && isPlayingRef.current) {
-      startMetronome(bpmRef.current, useStore.getState().beatsPerBar)
+      startMetronome(bpmRef.current, useStore.getState().beatsPerBar, posBeatsRef.current)
     } else {
       stopMetronome()
     }
@@ -273,7 +273,7 @@ export function useTransport() {
       setPaused(false)
 
       if (metronomeRef.current) {
-        startMetronome(bpmRef.current, useStore.getState().beatsPerBar)
+        startMetronome(bpmRef.current, useStore.getState().beatsPerBar, posBeatsRef.current)
       }
     } finally {
       startingRef.current = false

@@ -7,6 +7,8 @@ export default defineConfig({
   },
   test: {
     include: ['**/*.test.ts'],
-    exclude: ['node_modules/**', '.next/**'],
+    // Skip hidden folders (build output, local tool worktrees with their own
+    // node_modules) so only this repo's tests run.
+    exclude: ['**/node_modules/**', '**/.*/**'],
   },
 })

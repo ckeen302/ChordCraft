@@ -32,6 +32,9 @@ export interface ParsedRequest {
   transpose?: number
   /** Only tempo/instrument changed — keep the chords. */
   keepChords: boolean
+  /** The message itself set a tempo / an instrument (otherwise the generator picks). */
+  tempoSet: boolean
+  instrumentSet: boolean
   /** Nothing recognisable: ask the user to rephrase. */
   unknown: boolean
   help: boolean
@@ -43,10 +46,10 @@ export const DEFAULT_SETTINGS: ChatSettings = {
 
 // When several moods are mentioned, the earliest in the message wins (see detectMood).
 const MOOD_WORDS: [Mood, RegExp][] = [
-  ['melancholic', /\b(sad|melanchol\w*|depress\w*|heartbr\w*|cry\w*|lonely|blue|emotional|emo|somber|sombre|grief|bittersweet)\b/],
+  ['melancholic', /\b(sad|melanchol\w*|depress\w*|heartbr\w*|cry(?:ing|ies)?|lonely|blue|emotional|emo|somber|sombre|grief|bittersweet)\b/],
   ['uplifting', /\b(happy|uplift\w*|upbeat|joy\w*|bright|hopeful|cheer\w*|anthem\w*|euphori\w*|positive|feel ?good|summer\w*|triumphant)\b/],
   ['dreamy', /\b(dream\w*|chill|lo-?fi|ambient|floaty|float\w*|ethereal|spacey|spacy|hazy|relax\w*|calm|peaceful|airy)\b/],
-  ['romantic', /\b(romanti\w*|love|lovely|tender|sensual|r&b|rnb|neo[- ]?soul|soulful|intimate|wedding)\b/],
+  ['romantic', /\b(romanti\w*|love songs?|tender|sensual|r&b|rnb|neo[- ]?soul|soulful|intimate|wedding)\b/],
   ['nostalgic', /\b(nostalgi\w*|retro|vintage|oldies|doo-?wop|throwback|50s|60s|motown|old[- ]school)\b/],
   ['tense', /\b(tense|tension|dark|scary|spooky|creepy|horror|suspense\w*|ominous|eerie|sinister|villain\w*|mysterio\w*|noir)\b/],
   ['jazz', /\b(jazz\w*|bossa|swing|bebop|smooth|lounge|sophisticated|neo[- ]?jazz)\b/],
@@ -132,19 +135,30 @@ export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTING
   let recognised = false
   let transpose: number | undefined
   let chordsTouched = false
+  let tempoSet = false
+  let instrumentSet = false
 
   if (/^\s*(help|\?|what can you do|how does this work)/.test(text)) {
-    return { settings: s, notes, keepChords: true, unknown: false, help: true }
+    return { settings: s, notes, keepChords: true, tempoSet: false, instrumentSet: false, unknown: false, help: true }
   }
 
   // ── Follow-up edits relative to the last progression ─────────────────────
-  const steps = text.match(/\b(up|down|higher|lower)\s+(a\s+|one\s+|1\s+)?(half[- ]?step|semitone|step|whole step|tone|octave)?/)
-  if (steps && /\b(transpose|up|down|higher|lower)\b/.test(text) && !/\btempo|bpm|faster|slower\b/.test(text)) {
-    const dir = /up|higher/.test(steps[1]) ? 1 : -1
-    const size = /whole|tone\b|(?<!half[- ]?)step\b/.test(steps[3] ?? '') && !/half|semitone/.test(steps[3] ?? '') ? 2 : 1
+  // A key change needs an interval ("up a step", "down 3 semitones", "up an octave") or
+  // the word "transpose", so "slow it down a bit" or "higher energy" aren't read as one.
+  const shift = text.match(/\b(up|down|higher|lower)\s+(?:by\s+)?(a|an|one|two|three|four|five|six|seven|\d{1,2})?\s*(half[- ]?steps?|semitones?|whole[- ]?(?:steps?|tones?)|steps?|tones?|octaves?)\b/)
+  const bare = text.match(/\btranspose\s+(?:it\s+)?(up|down)\b/)
+  if (shift || bare) {
+    const dir = /up|higher/.test((shift ?? bare)![1]) ? 1 : -1
+    let size = 1
+    if (shift) {
+      const count = shift[2] ? (NUMBER_WORDS[shift[2]] ?? (shift[2].startsWith('a') ? 1 : Number(shift[2]))) : 1
+      const per = /octave/.test(shift[3]) ? 12 : /half|semitone/.test(shift[3]) ? 1 : 2
+      size = clamp(count * per, 1, 24)
+    }
     transpose = dir * size
     recognised = true
-    notes.push(`transposed ${dir > 0 ? 'up' : 'down'} ${size === 2 ? 'a whole step' : 'a semitone'}`)
+    const amount = size === 1 ? 'a semitone' : size === 2 ? 'a whole step' : size === 12 ? 'an octave' : `${size} semitones`
+    notes.push(`transposed ${dir > 0 ? 'up' : 'down'} ${amount}`)
   }
   if (/\b(darker|sadder|moodier|gloomier)\b/.test(text)) {
     s.mood = /\b(sadder|gloomier)\b/.test(text) ? 'melancholic' : 'tense'
@@ -162,25 +176,27 @@ export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTING
   }
   if (/\b(longer|extend|more chords)\b/.test(text)) { s.length = clamp(s.length * 2, 2, 16); chordsTouched = recognised = true }
   if (/\b(shorter|fewer chords|less chords)\b/.test(text)) { s.length = clamp(Math.ceil(s.length / 2), 2, 16); chordsTouched = recognised = true }
-  if (/\b(faster|speed up|quicker|uptempo)\b/.test(text)) { s.bpm = clamp(Math.round((prev.bpm ?? 100) * 1.25), 40, 240); recognised = true; notes.push('faster') }
-  if (/\b(slower|slow it down|chiller tempo|downtempo)\b/.test(text)) { s.bpm = clamp(Math.round((prev.bpm ?? 100) * 0.8), 40, 240); recognised = true; notes.push('slower') }
+  if (/\b(faster|speed (?:it )?up|quicker|uptempo)\b/.test(text)) { tempoSet = true; s.bpm = clamp(Math.round((prev.bpm ?? 100) * 1.25), 40, 240); recognised = true; notes.push('faster') }
+  if (/\b(slower|slow (?:it )?down|chiller tempo|downtempo)\b/.test(text)) { tempoSet = true; s.bpm = clamp(Math.round((prev.bpm ?? 100) * 0.8), 40, 240); recognised = true; notes.push('slower') }
   if (/\b(again|another|regenerate|new one|different one|try again|re-?roll|one more)\b/.test(text)) { chordsTouched = recognised = true }
   if (/\b(no|without|avoid)\s+(dim\w*|diminished)\b/.test(text)) { s.excludeDiminished = true; recognised = true }
   if (/\b(resolve|resolves|resolving|end(s|ing)? (on|at) (home|the tonic|the root|i\b|one))\b/.test(text)) { s.resolve = true; chordsTouched = recognised = true }
 
   // ── Fresh descriptions ───────────────────────────────────────────────────
+  let styleMood = false
   for (const [re, hint] of STYLE_HINTS) {
     if (re.test(text)) {
-      if (hint.mood) s.mood = hint.mood
-      if (hint.bpm) s.bpm = hint.bpm
-      if (hint.instrument) s.instrument = hint.instrument
+      if (hint.mood) { s.mood = hint.mood; styleMood = true }
+      if (hint.bpm) { s.bpm = hint.bpm; tempoSet = true }
+      if (hint.instrument) { s.instrument = hint.instrument; instrumentSet = true }
       notes.push(hint.note)
       chordsTouched = recognised = true
       break
     }
   }
   const mood = detectMood(text)
-  if (mood && !/\b(darker|sadder|happier|brighter|jazzier)\b/.test(text)) { s.mood = mood; chordsTouched = recognised = true }
+  // A style preset ("drill", "lo-fi") already chose the mood its sound needs.
+  if (mood && !styleMood && !/\b(darker|sadder|happier|brighter|jazzier)\b/.test(text)) { s.mood = mood; chordsTouched = recognised = true }
 
   const key = detectKey(input)
   if (key) { s.key = key; s.keyPinned = true; chordsTouched = recognised = true }
@@ -191,14 +207,14 @@ export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTING
   if (len) { s.length = clamp(NUMBER_WORDS[len[1]] ?? Number(len[1]), 2, 16); chordsTouched = recognised = true }
 
   const bpm = text.match(/\b(\d{2,3})\s?bpm\b/)
-  if (bpm) { s.bpm = clamp(Number(bpm[1]), 40, 240); recognised = true }
-  else if (!/\b(faster|slower)\b/.test(text)) {
-    if (/\b(slow|very slow)\b/.test(text)) { s.bpm = 68; recognised = true }
-    else if (/\b(fast|quick|energetic)\b/.test(text)) { s.bpm = 150; recognised = true }
+  if (bpm) { s.bpm = clamp(Number(bpm[1]), 40, 240); tempoSet = true; recognised = true }
+  else if (!/\b(faster|slower|slow (?:it )?down|speed (?:it )?up)\b/.test(text)) {
+    if (/\b(slow|very slow)\b/.test(text)) { s.bpm = 68; tempoSet = true; recognised = true }
+    else if (/\b(fast|quick|energetic)\b/.test(text)) { s.bpm = 150; tempoSet = true; recognised = true }
   }
 
   for (const [name, re] of INSTRUMENTS) {
-    if (re.test(text)) { s.instrument = name; recognised = true; break }
+    if (re.test(text)) { s.instrument = name; instrumentSet = true; recognised = true; break }
   }
 
   if (/\b(progression|chords?|loop|something|make|write|give|generate|create|song|beat|vibe)\b/.test(text)) {
@@ -210,6 +226,8 @@ export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTING
     notes,
     transpose,
     keepChords: transpose !== undefined || (recognised && !chordsTouched),
+    tempoSet,
+    instrumentSet,
     unknown: !recognised,
     help: false,
   }

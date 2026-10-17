@@ -17,7 +17,7 @@ import { voiceLeadProgression } from '@/lib/theory/voicing'
 import { transposeProgression, transposeKeyName, keyPrefersFlats } from '@/lib/theory/transpose'
 import {
   chordsToNotes, chordWindows, detectWindowChords, deleteWindowNotes,
-  newNoteId, totalBeatsOf, type ChordWindow,
+  newNoteId, totalBeatsOf, ROLL_HI_MIDI, ROLL_LO_MIDI, type ChordWindow,
 } from '@/lib/roll/notes'
 import {
   readHistory, persistHistory, clearStoredHistory, HISTORY_MAX,
@@ -78,7 +78,7 @@ export function useProgressionEditor({ active }: { active: boolean }) {
   function syncTransport(chords: ParsedChord[], key: string, notes: NoteEvent[]) {
     const st = useStore.getState()
     if (st.progression.length && st.source.startsWith('Chord Lab')) {
-      st.updateProgressionAndNotes(chords, notes)
+      st.updateProgressionAndNotes(chords, notes, `Chord Lab · ${key}`)
     } else {
       st.loadProgressionWithNotes(chords, notes, `Chord Lab · ${key}`)
     }
@@ -89,10 +89,24 @@ export function useProgressionEditor({ active }: { active: boolean }) {
   function snapshot(): Snapshot {
     return { chords: localChords, notes: localNotes, romans, patternName, key: selectedKey, rolledMood }
   }
+  // Async callers (AI generation awaits the model) hold an old render's closure;
+  // the ref always has the state as of the latest render.
+  const latestRef = useRef<Snapshot>(snapshot())
+  latestRef.current = snapshot()
+
+  /**
+   * Fix each chord's length when it enters the lab. Chord windows otherwise fall
+   * back to the live beats-per-chord, which drifts from the notes once the user
+   * changes that setting (deletes and labels then hit the wrong columns).
+   */
+  function withBeats(chords: ParsedChord[]): ParsedChord[] {
+    const bpc = useStore.getState().beatsPerChord
+    return chords.map(c => (c.beats ? c : { ...c, beats: bpc }))
+  }
 
   /** Push the current state onto the undo stack; every new edit clears redo. */
   function pushUndo() {
-    const snap = snapshot()
+    const snap = latestRef.current
     setPast(p => [...p.slice(-(UNDO_MAX - 1)), snap])
     setFuture([])
   }
@@ -155,8 +169,8 @@ export function useProgressionEditor({ active }: { active: boolean }) {
   }
 
   function recallHistory(entry: HistoryEntry) {
-    const chords = voiceLeadProgression(parseChords(entry.symbols))
-      .map((c, i) => ({ ...c, beats: entry.beats?.[i] }))
+    const chords = withBeats(voiceLeadProgression(parseChords(entry.symbols))
+      .map((c, i) => ({ ...c, beats: entry.beats?.[i] })))
     if (!chords.length) return
     pushUndo()
     const notes = chordsToNotes(chords, useStore.getState().beatsPerChord)
@@ -177,9 +191,10 @@ export function useProgressionEditor({ active }: { active: boolean }) {
   // ── Generated progressions ─────────────────────────────────────────────────
 
   /** Load a freshly generated progression: undoable, logged, and sent to the transport. */
-  function loadGenerated({ chords, romans = [], patternName = '', rolledMood = null, key }: GeneratedProgression) {
+  function loadGenerated({ chords: raw, romans = [], patternName = '', rolledMood = null, key }: GeneratedProgression) {
     pushUndo()
-    const k = key ?? selectedKey
+    const chords = withBeats(raw)
+    const k = key ?? latestRef.current.key
     setSelectedKey(k)
     setRomans(romans)
     setPatternName(patternName)
@@ -221,16 +236,17 @@ export function useProgressionEditor({ active }: { active: boolean }) {
   function loadSaved(s: SavedProg) {
     if (!s.chords.length) return
     pushUndo()
+    const chords = withBeats(s.chords)
     const notes = Array.isArray(s.notes) && s.notes.length
       ? s.notes
-      : chordsToNotes(s.chords, useStore.getState().beatsPerChord)
+      : chordsToNotes(chords, useStore.getState().beatsPerChord)
     if (KEY_NAMES.includes(s.key)) setSelectedKey(s.key)
-    setLocalChords(s.chords)
+    setLocalChords(chords)
     setLocalNotes(notes)
     setRomans([])
     setPatternName('')
     setRolledMood(null)
-    useStore.getState().loadProgressionWithNotes(s.chords, notes, `Chord Lab · ${s.key}`)
+    useStore.getState().loadProgressionWithNotes(chords, notes, `Chord Lab · ${s.key}`)
   }
 
   // ── Editing ────────────────────────────────────────────────────────────────
@@ -287,20 +303,23 @@ export function useProgressionEditor({ active }: { active: boolean }) {
     syncTransport(nextChords, selectedKey, nextNotes)
   }
 
-  /** Shift everything by ±1 semitone; voicings, beats, and romans survive. */
-  function transpose(semitones: number) {
-    if (!localChords.length) return
+  /**
+   * Shift everything by `semitones`; voicings, beats, and romans survive.
+   * Returns false (and changes nothing) when a note would leave the roll's range.
+   */
+  function transpose(semitones: number): boolean {
+    if (!localChords.length) return false
     const newKey = transposeKeyName(selectedKey, semitones)
     const next = transposeProgression(localChords, semitones, keyPrefersFlats(newKey))
-    // Keep the whole progression inside a sane playable register.
-    const all = next.flatMap(c => c.notes)
-    if (all.length && (Math.min(...all) < 24 || Math.max(...all) > 108)) return
+    const all = [...next.flatMap(c => c.notes), ...localNotes.map(n => n.midi + semitones)]
+    if (all.length && (Math.min(...all) < ROLL_LO_MIDI || Math.max(...all) > ROLL_HI_MIDI)) return false
     pushUndo()
     const nextNotes = localNotes.map(n => ({ ...n, midi: n.midi + semitones }))
     setLocalChords(next)
     setLocalNotes(nextNotes)
     setSelectedKey(newKey)
     syncTransport(next, newKey, nextNotes)
+    return true
   }
 
   return {

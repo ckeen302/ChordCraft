@@ -76,7 +76,7 @@ class GenerateRequest(BaseModel):
     length: int = Field(4, ge=2, le=16)
     excludeDiminished: bool = False  # noqa: N815
     chromaticColor: bool = False  # noqa: N815
-    seed: int | None = None
+    seed: int | None = Field(None, ge=0, le=2**63 - 1)
     engine: Literal["auto", "model", "rules"] = "auto"
     """auto = the trained chord transformer when loaded, else the rule engine."""
 

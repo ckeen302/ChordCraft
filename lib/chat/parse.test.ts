@@ -84,3 +84,34 @@ describe('parseRequest', () => {
     expect(parseRequest('asdfgh qwerty').unknown).toBe(true)
   })
 })
+
+describe('review fixes', () => {
+  it('tempo phrases and vague "up/down" are not transposes', () => {
+    for (const t of ['slow it down a bit', 'speed it up a little', 'something with higher energy'])
+      expect(parseRequest(t).transpose, t).toBeUndefined()
+    expect(parseRequest('slow it down a bit', { ...DEFAULT_SETTINGS, bpm: 100 }).settings.bpm).toBe(80)
+  })
+
+  it('reads interval sizes', () => {
+    expect(parseRequest('transpose up 3 semitones').transpose).toBe(3)
+    expect(parseRequest('up an octave').transpose).toBe(12)
+    expect(parseRequest('down two whole steps').transpose).toBe(-4)
+    expect(parseRequest('transpose it down').transpose).toBe(-1)
+  })
+
+  it('casual words do not override the real mood', () => {
+    expect(parseRequest("I'd love a sad song").settings.mood).toBe('melancholic')
+    expect(parseRequest("I'd love something jazzy").settings.mood).toBe('jazz')
+    expect(parseRequest('crystal clear pads').settings.mood).not.toBe('melancholic')
+    expect(parseRequest('drill beat').settings.mood).toBe('tense')
+    expect(parseRequest('a love song').settings.mood).toBe('romantic')
+  })
+
+  it('flags only the tempo and instrument the message set', () => {
+    const plain = parseRequest('epic movie trailer', { ...DEFAULT_SETTINGS, bpm: 100, instrument: 'Piano' })
+    expect(plain).toMatchObject({ tempoSet: false, instrumentSet: false })
+    expect(parseRequest('faster', { ...DEFAULT_SETTINGS, bpm: 100 }).tempoSet).toBe(true)
+    expect(parseRequest('on strings').instrumentSet).toBe(true)
+    expect(parseRequest('trap beat')).toMatchObject({ tempoSet: true, instrumentSet: true })
+  })
+})
