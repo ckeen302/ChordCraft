@@ -44,6 +44,7 @@ export const QUALITY_INTERVALS: Record<ChordQuality, number[]> = {
   '13':    [0, 4, 7, 10, 14, 21],   // 11th omitted — it clashes with the 3rd
   '7b9':   [0, 4, 7, 10, 13],
   '7#9':   [0, 4, 7, 10, 15],
+  '5':     [0, 7],                  // power chord (no third)
 }
 
 // ─── Display labels rendered on chord cards ──────────────────────────────────
@@ -73,6 +74,7 @@ export const QUALITY_DISPLAY: Record<ChordQuality, string> = {
   '13':    '13',
   '7b9':   '7♭9',
   '7#9':   '7♯9',
+  '5':     '5',
 }
 
 /** Canonical suffix appended to a root when spelling a symbol from a quality. */
@@ -82,7 +84,7 @@ export const QUALITY_SUFFIX: Record<ChordQuality, string> = {
   sus2: 'sus2', sus4: 'sus4', '6': '6', m6: 'm6',
   '7sus4': '7sus4', add9: 'add9', '9': '9', m9: 'm9', mmaj7: 'mmaj7',
   maj9: 'maj9', m7b5: 'm7b5', '11': '11', m11: 'm11', '13': '13',
-  '7b9': '7b9', '7#9': '7#9',
+  '7b9': '7b9', '7#9': '7#9', '5': '5',
 }
 
 // ─── Quality normalisation ───────────────────────────────────────────────────

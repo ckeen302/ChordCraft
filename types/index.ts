@@ -8,7 +8,7 @@ export type ChordQuality =
   | '7sus4' | 'add9' | '9' | 'm9'
   | 'mmaj7' | 'maj9' | 'm7b5'
   | '11' | 'm11' | '13'
-  | '7b9' | '7#9';
+  | '7b9' | '7#9' | '5';
 
 export interface ParsedChord {
   /** Original symbol as written, e.g. "F#m7" or "G/B" */

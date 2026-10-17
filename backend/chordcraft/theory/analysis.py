@@ -21,7 +21,7 @@ FAMILY: dict[str, str] = {
     "m": "min", "m7": "min", "m6": "min", "m9": "min", "mmaj7": "min", "m11": "min",
     "dim": "dim", "dim7": "dim", "m7b5": "dim",
     "aug": "aug",
-    "sus2": "sus", "sus4": "sus", "7sus4": "sus",
+    "sus2": "sus", "sus4": "sus", "7sus4": "sus", "5": "sus",
 }
 
 DOMINANT_QUALITIES = {"7", "9", "11", "13", "7b9", "7#9"}

@@ -25,6 +25,10 @@
    "Cb": 71
   },
   "qualityIntervals": {
+   "5": [
+    0,
+    7
+   ],
    "6": [
     0,
     4,
@@ -176,6 +180,7 @@
    ]
   },
   "qualityDisplay": {
+   "5": "5",
    "6": "6",
    "7": "7",
    "9": "9",
@@ -202,6 +207,7 @@
    "7#9": "7♯9"
   },
   "qualitySuffix": {
+   "5": "5",
    "6": "6",
    "7": "7",
    "9": "9",
@@ -447,6 +453,35 @@
   }
  },
  "parse": [
+  {
+   "symbol": "C5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "C5",
+     "root": "C",
+     "quality": "5",
+     "notes": [
+      60,
+      67
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "C5",
+     "root": "C",
+     "quality": "5",
+     "notes": [
+      60,
+      67
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
   {
    "symbol": "C6",
    "lenient": {
@@ -1246,6 +1281,35 @@
       75
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "C#5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "C#5",
+     "root": "C#",
+     "quality": "5",
+     "notes": [
+      61,
+      68
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "C#5",
+     "root": "C#",
+     "quality": "5",
+     "notes": [
+      61,
+      68
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -2052,6 +2116,35 @@
    }
   },
   {
+   "symbol": "Db5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "Db5",
+     "root": "Db",
+     "quality": "5",
+     "notes": [
+      61,
+      68
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "Db5",
+     "root": "Db",
+     "quality": "5",
+     "notes": [
+      61,
+      68
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "Db6",
    "lenient": {
     "ok": true,
@@ -2850,6 +2943,35 @@
       76
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "D5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "D5",
+     "root": "D",
+     "quality": "5",
+     "notes": [
+      62,
+      69
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "D5",
+     "root": "D",
+     "quality": "5",
+     "notes": [
+      62,
+      69
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -3656,6 +3778,35 @@
    }
   },
   {
+   "symbol": "D#5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "D#5",
+     "root": "D#",
+     "quality": "5",
+     "notes": [
+      63,
+      70
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "D#5",
+     "root": "D#",
+     "quality": "5",
+     "notes": [
+      63,
+      70
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "D#6",
    "lenient": {
     "ok": true,
@@ -4454,6 +4605,35 @@
       78
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "Eb5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "Eb5",
+     "root": "Eb",
+     "quality": "5",
+     "notes": [
+      63,
+      70
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "Eb5",
+     "root": "Eb",
+     "quality": "5",
+     "notes": [
+      63,
+      70
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -5260,6 +5440,35 @@
    }
   },
   {
+   "symbol": "E5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "E5",
+     "root": "E",
+     "quality": "5",
+     "notes": [
+      64,
+      71
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "E5",
+     "root": "E",
+     "quality": "5",
+     "notes": [
+      64,
+      71
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "E6",
    "lenient": {
     "ok": true,
@@ -6058,6 +6267,35 @@
       79
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "F5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "F5",
+     "root": "F",
+     "quality": "5",
+     "notes": [
+      65,
+      72
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "F5",
+     "root": "F",
+     "quality": "5",
+     "notes": [
+      65,
+      72
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -6864,6 +7102,35 @@
    }
   },
   {
+   "symbol": "F#5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "F#5",
+     "root": "F#",
+     "quality": "5",
+     "notes": [
+      66,
+      73
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "F#5",
+     "root": "F#",
+     "quality": "5",
+     "notes": [
+      66,
+      73
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "F#6",
    "lenient": {
     "ok": true,
@@ -7662,6 +7929,35 @@
       81
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "Gb5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "Gb5",
+     "root": "Gb",
+     "quality": "5",
+     "notes": [
+      66,
+      73
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "Gb5",
+     "root": "Gb",
+     "quality": "5",
+     "notes": [
+      66,
+      73
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -8468,6 +8764,35 @@
    }
   },
   {
+   "symbol": "G5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "G5",
+     "root": "G",
+     "quality": "5",
+     "notes": [
+      67,
+      74
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "G5",
+     "root": "G",
+     "quality": "5",
+     "notes": [
+      67,
+      74
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "G6",
    "lenient": {
     "ok": true,
@@ -9266,6 +9591,35 @@
       82
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "G#5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "G#5",
+     "root": "G#",
+     "quality": "5",
+     "notes": [
+      68,
+      75
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "G#5",
+     "root": "G#",
+     "quality": "5",
+     "notes": [
+      68,
+      75
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -10072,6 +10426,35 @@
    }
   },
   {
+   "symbol": "Ab5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "Ab5",
+     "root": "Ab",
+     "quality": "5",
+     "notes": [
+      68,
+      75
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "Ab5",
+     "root": "Ab",
+     "quality": "5",
+     "notes": [
+      68,
+      75
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "Ab6",
    "lenient": {
     "ok": true,
@@ -10870,6 +11253,35 @@
       83
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "A5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "A5",
+     "root": "A",
+     "quality": "5",
+     "notes": [
+      69,
+      76
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "A5",
+     "root": "A",
+     "quality": "5",
+     "notes": [
+      69,
+      76
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -11676,6 +12088,35 @@
    }
   },
   {
+   "symbol": "A#5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "A#5",
+     "root": "A#",
+     "quality": "5",
+     "notes": [
+      70,
+      77
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "A#5",
+     "root": "A#",
+     "quality": "5",
+     "notes": [
+      70,
+      77
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "A#6",
    "lenient": {
     "ok": true,
@@ -12478,6 +12919,35 @@
    }
   },
   {
+   "symbol": "Bb5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "Bb5",
+     "root": "Bb",
+     "quality": "5",
+     "notes": [
+      70,
+      77
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "Bb5",
+     "root": "Bb",
+     "quality": "5",
+     "notes": [
+      70,
+      77
+     ],
+     "displayQuality": "5"
+    }
+   }
+  },
+  {
    "symbol": "Bb6",
    "lenient": {
     "ok": true,
@@ -13276,6 +13746,35 @@
       85
      ],
      "displayQuality": "7♯9"
+    }
+   }
+  },
+  {
+   "symbol": "B5",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "B5",
+     "root": "B",
+     "quality": "5",
+     "notes": [
+      71,
+      78
+     ],
+     "displayQuality": "5"
+    }
+   },
+   "strict": {
+    "ok": true,
+    "chord": {
+     "symbol": "B5",
+     "root": "B",
+     "quality": "5",
+     "notes": [
+      71,
+      78
+     ],
+     "displayQuality": "5"
     }
    }
   },
@@ -16384,6 +16883,40 @@
     ],
     "displayQuality": "m7"
    }
+  },
+  {
+   "notes": [
+    40,
+    47
+   ],
+   "chord": {
+    "symbol": "E5",
+    "root": "E",
+    "quality": "5",
+    "notes": [
+     40,
+     47
+    ],
+    "displayQuality": "5"
+   }
+  },
+  {
+   "notes": [
+    52,
+    59,
+    64
+   ],
+   "chord": {
+    "symbol": "E5",
+    "root": "E",
+    "quality": "5",
+    "notes": [
+     52,
+     59,
+     64
+    ],
+    "displayQuality": "5"
+   }
   }
  ],
  "voiceLead": [
@@ -16834,6 +17367,37 @@
      68,
      71,
      74
+    ]
+   ]
+  },
+  {
+   "symbols": [
+    "E5",
+    "G5",
+    "A5",
+    "C5",
+    "D5"
+   ],
+   "notes": [
+    [
+     64,
+     71
+    ],
+    [
+     67,
+     74
+    ],
+    [
+     69,
+     76
+    ],
+    [
+     60,
+     79
+    ],
+    [
+     62,
+     81
     ]
    ]
   }
@@ -21222,6 +21786,258 @@
      "displayQuality": "7"
     }
    ]
+  },
+  {
+   "symbols": [
+    "E5",
+    "G5",
+    "A5",
+    "C5",
+    "D5"
+   ],
+   "semitones": -3,
+   "preferFlats": false,
+   "result": [
+    {
+     "symbol": "C#5",
+     "root": "C#",
+     "quality": "5",
+     "notes": [
+      61,
+      68
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "E5",
+     "root": "E",
+     "quality": "5",
+     "notes": [
+      64,
+      71
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "F#5",
+     "root": "F#",
+     "quality": "5",
+     "notes": [
+      66,
+      73
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "A5",
+     "root": "A",
+     "quality": "5",
+     "notes": [
+      57,
+      64
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "B5",
+     "root": "B",
+     "quality": "5",
+     "notes": [
+      59,
+      66
+     ],
+     "displayQuality": "5"
+    }
+   ]
+  },
+  {
+   "symbols": [
+    "E5",
+    "G5",
+    "A5",
+    "C5",
+    "D5"
+   ],
+   "semitones": 1,
+   "preferFlats": true,
+   "result": [
+    {
+     "symbol": "F5",
+     "root": "F",
+     "quality": "5",
+     "notes": [
+      65,
+      72
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Ab5",
+     "root": "Ab",
+     "quality": "5",
+     "notes": [
+      68,
+      75
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Bb5",
+     "root": "Bb",
+     "quality": "5",
+     "notes": [
+      70,
+      77
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Db5",
+     "root": "Db",
+     "quality": "5",
+     "notes": [
+      61,
+      68
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Eb5",
+     "root": "Eb",
+     "quality": "5",
+     "notes": [
+      63,
+      70
+     ],
+     "displayQuality": "5"
+    }
+   ]
+  },
+  {
+   "symbols": [
+    "E5",
+    "G5",
+    "A5",
+    "C5",
+    "D5"
+   ],
+   "semitones": 1,
+   "preferFlats": false,
+   "result": [
+    {
+     "symbol": "F5",
+     "root": "F",
+     "quality": "5",
+     "notes": [
+      65,
+      72
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "G#5",
+     "root": "G#",
+     "quality": "5",
+     "notes": [
+      68,
+      75
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "A#5",
+     "root": "A#",
+     "quality": "5",
+     "notes": [
+      70,
+      77
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "C#5",
+     "root": "C#",
+     "quality": "5",
+     "notes": [
+      61,
+      68
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "D#5",
+     "root": "D#",
+     "quality": "5",
+     "notes": [
+      63,
+      70
+     ],
+     "displayQuality": "5"
+    }
+   ]
+  },
+  {
+   "symbols": [
+    "E5",
+    "G5",
+    "A5",
+    "C5",
+    "D5"
+   ],
+   "semitones": 6,
+   "preferFlats": true,
+   "result": [
+    {
+     "symbol": "Bb5",
+     "root": "Bb",
+     "quality": "5",
+     "notes": [
+      70,
+      77
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Db5",
+     "root": "Db",
+     "quality": "5",
+     "notes": [
+      73,
+      80
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Eb5",
+     "root": "Eb",
+     "quality": "5",
+     "notes": [
+      75,
+      82
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Gb5",
+     "root": "Gb",
+     "quality": "5",
+     "notes": [
+      66,
+      73
+     ],
+     "displayQuality": "5"
+    },
+    {
+     "symbol": "Ab5",
+     "root": "Ab",
+     "quality": "5",
+     "notes": [
+      68,
+      75
+     ],
+     "displayQuality": "5"
+    }
+   ]
   }
  ],
  "analyze": [
@@ -21467,6 +22283,24 @@
      "V7sus4"
     ],
     "summary": "Isus4 – I – IVsus2 – V7sus4 — a 4-chord major-key progression in C Major. Ends on V — a half cadence that leaves the loop hungry to start over. Every chord is diatonic to C Major — a clean, stable palette."
+   }
+  },
+  {
+   "symbols": [
+    "E5",
+    "G5",
+    "A5",
+    "F5"
+   ],
+   "key": "E Minor",
+   "result": {
+    "romans": [
+     "I5",
+     "III5",
+     "IV5",
+     "bII5"
+    ],
+    "summary": "I5 – III5 – IV5 – bII5 — a 4-chord minor-key progression in E Minor. Ends away from home on bII5 — open-ended, made to loop. F5 is the Phrygian bII — instant menace, one semitone above home."
    }
   },
   {

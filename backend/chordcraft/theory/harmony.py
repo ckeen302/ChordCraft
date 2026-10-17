@@ -268,6 +268,15 @@ def _speller(key: str):
     return spell
 
 
+def spell_degrees(key: str, degrees: list[Spec]) -> list[str]:
+    """Spell key-relative (semitone offset, quality) pairs as chord symbols in ``key``."""
+    tonic = key.split(" ")[0]
+    if tonic not in NOTE_MAP:
+        raise ValueError(f'Unknown key: "{key}"')
+    spell = _speller(key)
+    return [spell(NOTE_MAP[tonic] + off, off) + QUALITY_SUFFIX[q] for off, q in degrees]
+
+
 def _roman(spec: Spec, minor_key: bool) -> str:
     off, q = spec
     base = (ROMAN_MINOR if minor_key else ROMAN_MAJOR).get(off, "?")

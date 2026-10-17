@@ -48,6 +48,7 @@ QUALITY_INTERVALS: dict[str, list[int]] = {
     "13": [0, 4, 7, 10, 14, 21],
     "7b9": [0, 4, 7, 10, 13],
     "7#9": [0, 4, 7, 10, 15],
+    "5": [0, 7],  # power chord (no third)
 }
 
 QUALITY_DISPLAY: dict[str, str] = {
@@ -56,7 +57,7 @@ QUALITY_DISPLAY: dict[str, str] = {
     "sus2": "sus2", "sus4": "sus4", "6": "6", "m6": "m6",
     "7sus4": "7sus4", "add9": "add9", "9": "9", "m9": "m9", "mmaj7": "mΔ7",
     "maj9": "Δ9", "m7b5": "ø7", "11": "11", "m11": "m11", "13": "13",
-    "7b9": "7♭9", "7#9": "7♯9",
+    "7b9": "7♭9", "7#9": "7♯9", "5": "5",
 }
 
 QUALITY_SUFFIX: dict[str, str] = {
@@ -65,7 +66,7 @@ QUALITY_SUFFIX: dict[str, str] = {
     "sus2": "sus2", "sus4": "sus4", "6": "6", "m6": "m6",
     "7sus4": "7sus4", "add9": "add9", "9": "9", "m9": "m9", "mmaj7": "mmaj7",
     "maj9": "maj9", "m7b5": "m7b5", "11": "11", "m11": "m11", "13": "13",
-    "7b9": "7b9", "7#9": "7#9",
+    "7b9": "7b9", "7#9": "7#9", "5": "5",
 }
 
 # Exact alternative spellings — accepted by strict parsing.

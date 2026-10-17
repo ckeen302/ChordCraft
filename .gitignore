@@ -42,3 +42,6 @@ backend/.venv/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+
+# Datasets (downloaded / generated, not committed)
+backend/data/
