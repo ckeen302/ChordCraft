@@ -31,31 +31,32 @@ Training ran for 3 epochs on a free Kaggle Tesla T4 (8,292 steps, 72 minutes, $0
 
 ```mermaid
 flowchart TB
-    subgraph Data["Data pipeline (Python)"]
-        A[Chordonomicon<br/>~680k songs] --> B[Normalise chords<br/>estimate key per song]
-        B --> C[Key-relative phrases<br/>+ weak mood labels<br/>artist-disjoint splits]
+    subgraph Data["1 · Data pipeline (Python)"]
+        direction LR
+        A[Chordonomicon<br/>~680k songs] --> B[Normalise chords<br/>estimate key per song] --> C[Key-relative phrases<br/>weak mood labels<br/>artist-disjoint splits]
     end
-    subgraph Train["Training (PyTorch)"]
-        C --> D[Decoder-only transformer<br/>14.3M params, RoPE, SwiGLU<br/>Kaggle T4]
-        D --> E[Eval: perplexity,<br/>mood control, novelty]
+    subgraph Train["2 · Training (PyTorch, Kaggle T4)"]
+        direction LR
+        D[Decoder-only transformer<br/>14.3M params, RoPE, SwiGLU] --> E[Eval: perplexity,<br/>mood control, novelty]
     end
-    subgraph Hub["Hugging Face Hub"]
-        D --> F[safetensors + config<br/>+ vocab + model card]
-        F --> G[int8 ONNX, 15 MB]
+    subgraph Hub["3 · Hugging Face Hub"]
+        direction LR
+        F[safetensors + config<br/>+ vocab + model card] --> G[int8 ONNX export<br/>15 MB]
     end
-    subgraph Browser["Browser (Next.js, no server)"]
-        G --> H[ONNX Runtime Web]
-        H --> I[TypeScript constrained decoder<br/>guidance, loop blocking]
+    subgraph Browser["4 · Browser (Next.js, no inference server)"]
+        direction LR
         J[Chord Chat parser] --> I
-        I --> K[Theory engine<br/>spelling, voice leading, analysis]
-        K --> L[Piano roll / Tone.js playback / .mid export]
+        H[ONNX Runtime Web] --> I[TS constrained decoder<br/>guidance, loop blocking] --> K[Theory engine<br/>spelling, voice leading] --> L[Piano roll<br/>playback, .mid export]
     end
-    subgraph API["FastAPI service (optional)"]
-        M[Python port of theory engine<br/>/v1/generate · /v1/analyze · /v1/presets]
+    subgraph Server["FastAPI service (optional)"]
+        direction LR
+        M[Python theory engine<br/>/v1/generate, /v1/analyze, /v1/presets]
     end
-    K -.-|"parity tests: fixtures/theory.json"| M
-    N[GitHub Actions CI<br/>Vitest · tsc · ESLint · build<br/>pytest · ruff] -.-> Browser
-    N -.-> API
+    CI[GitHub Actions CI<br/>Vitest, tsc, ESLint, build<br/>pytest, ruff]
+    Data --> Train --> Hub --> Browser
+    Browser -.-|"parity tests: fixtures/theory.json"| Server
+    CI -.-> Browser
+    CI -.-> Server
 ```
 
 ## Technical decisions
