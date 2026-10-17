@@ -99,3 +99,33 @@ class MetaResponse(BaseModel):
     moods: dict[str, str]
     qualities: list[str]
     model: dict
+
+
+class PresetOut(BaseModel):
+    id: str
+    artist: str
+    context: str
+    vst: str
+    preset: str
+    notes: str
+    status: Literal["confirmed", "community"]
+    sourceUrl: str  # noqa: N815
+    sourceLabel: str  # noqa: N815
+
+
+class PresetPage(BaseModel):
+    total: int
+    offset: int
+    limit: int
+    items: list[PresetOut]
+
+
+class VstCount(BaseModel):
+    vst: str
+    count: int
+
+
+class PresetFacets(BaseModel):
+    total: int
+    vsts: list[VstCount]
+    sources: dict[str, int]
