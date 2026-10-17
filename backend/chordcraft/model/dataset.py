@@ -17,12 +17,24 @@ from chordcraft.theory.harmony import MOODS
 GENRE_POS, MOOD_POS = 2, 3  # positions of the genre / mood control tokens
 
 
+def split_file(data: Path, split: str) -> Path:
+    """``{split}.jsonl.gz``, or ``{split}.jsonl`` where a host (e.g. Kaggle) auto-decompressed it."""
+    for name in (f"{split}.jsonl.gz", f"{split}.jsonl"):
+        if (data / name).exists():
+            return data / name
+    raise FileNotFoundError(f"no {split}.jsonl[.gz] in {data}")
+
+
+def open_split(path: Path):
+    return gzip.open(path, "rt", encoding="utf-8") if path.suffix == ".gz" else open(path, encoding="utf-8")
+
+
 class PhraseDataset(Dataset):
     """Pre-tokenised phrases stored as one padded int16 matrix (compact for ~1.5M rows)."""
 
     def __init__(self, path: Path, tok: ChordTokenizer, limit: int | None = None) -> None:
         rows, moods = [], []
-        with gzip.open(path, "rt", encoding="utf-8") as f:
+        with open_split(path) as f:
             for i, line in enumerate(f):
                 if limit and i >= limit:
                     break

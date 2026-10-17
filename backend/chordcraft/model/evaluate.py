@@ -17,7 +17,6 @@ Metrics (per generator):
 from __future__ import annotations
 
 import argparse
-import gzip
 import json
 import math
 import random
@@ -33,7 +32,7 @@ from chordcraft.theory import NOTE_MAP, parse_chord_strict
 from chordcraft.theory.analysis import FAMILY
 from chordcraft.theory.harmony import MOODS, generate_mood_progression, spell_degrees
 
-from .dataset import Collator, PhraseDataset
+from .dataset import Collator, PhraseDataset, open_split, split_file
 from .generate import _MAJOR, _MINOR, load_model, sample
 from .train import evaluate as eval_loss
 from .train import pick_device
@@ -44,7 +43,7 @@ MOOD_MODE_MIX = 0.5  # half the samples in major, half in minor
 
 def load_train_phrases(path: Path) -> set[tuple[str, tuple]]:
     seen = set()
-    with gzip.open(path, "rt", encoding="utf-8") as f:
+    with open_split(path) as f:
         for line in f:
             r = json.loads(line)
             seen.add((r["mode"], tuple(tuple(d) for d in r["degrees"])))
@@ -106,10 +105,10 @@ def run(ckpt: Path, data: Path, per_mood: int, lengths: list[int], seed: int) ->
     rng = random.Random(seed)
     gen = torch.Generator(device="cpu").manual_seed(seed)
 
-    test = PhraseDataset(data / "test.jsonl.gz", tok)
+    test = PhraseDataset(split_file(data, "test"), tok)
     test_loss = eval_loss(model, DataLoader(test, batch_size=1024, collate_fn=Collator(tok)), device, None, 10**9)
 
-    train_set = load_train_phrases(data / "train.jsonl.gz")
+    train_set = load_train_phrases(split_file(data, "train"))
     rule = rule_engine_sampler(rng)
     results: dict[str, list] = {"model": [], "model_unconditioned": [], "rule_engine": []}
     for mood in MOODS:

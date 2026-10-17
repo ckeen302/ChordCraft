@@ -23,7 +23,7 @@ from torch.utils.data import DataLoader
 
 from chordcraft.data.tokenizer import ChordTokenizer
 
-from .dataset import Collator, PhraseDataset
+from .dataset import Collator, PhraseDataset, split_file
 from .transformer import ChordTransformer, ModelConfig
 
 
@@ -102,8 +102,8 @@ def train(cfg: TrainConfig) -> dict:
     data = Path(cfg.data)
     ChordTokenizer.check_compatible(data / "vocab.json")
     t0 = time.time()
-    train_ds = PhraseDataset(data / "train.jsonl.gz", tok, cfg.limit)
-    val_ds = PhraseDataset(data / "val.jsonl.gz", tok, cfg.limit and max(2000, cfg.limit // 18))
+    train_ds = PhraseDataset(split_file(data, "train"), tok, cfg.limit)
+    val_ds = PhraseDataset(split_file(data, "val"), tok, cfg.limit and max(2000, cfg.limit // 18))
     print(f"loaded {len(train_ds):,} train / {len(val_ds):,} val phrases in {time.time() - t0:.0f}s on {device}")
 
     train_loader = DataLoader(
