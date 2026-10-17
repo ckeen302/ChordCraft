@@ -30,7 +30,7 @@ Training ran for 3 epochs on a free Kaggle Tesla T4 (8,292 steps, 72 minutes, $0
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph Data["Data pipeline (Python)"]
         A[Chordonomicon<br/>~680k songs] --> B[Normalise chords<br/>estimate key per song]
         B --> C[Key-relative phrases<br/>+ weak mood labels<br/>artist-disjoint splits]
