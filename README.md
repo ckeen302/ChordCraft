@@ -1,158 +1,78 @@
 # ChordCraft
 
-**Describe a chord progression in plain English and get playable MIDI, written by a 14M-parameter transformer I trained from scratch that runs entirely in your browser.**
+ChordCraft writes chord progressions. You can describe what you want in plain English ("sad lo-fi in A minor, 8 chords") and it puts the chords into a piano roll that you can play, edit, and export as MIDI. The chords come from a small transformer model I trained from scratch, and it runs in the browser.
 
-**[▶ Try it live: chord-craft-live.vercel.app](https://chord-craft-live.vercel.app)**
+Live site: https://chord-craft-live.vercel.app
 
-[![CI](https://github.com/ckeen302/ChordCraft/actions/workflows/ci.yml/badge.svg)](https://github.com/ckeen302/ChordCraft/actions/workflows/ci.yml)
-[![Model on Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20model-chordcraft--chord--transformer-yellow)](https://huggingface.co/ckeen302/chordcraft-chord-transformer)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Typing "sad lo-fi in A minor, 8 chords" into Chord Chat, then "make it darker"](docs/demo.gif)
 
-![Chord Chat demo: "sad lo-fi in A minor, 8 chords" lands in the piano roll, then "make it darker" rewrites it](docs/demo.gif)
+## How it works
 
-*Chord Chat on the live site: the request is parsed in the browser, the chord transformer writes eight chords into the piano roll, and "make it darker" re-generates them with a tenser mood.*
+The model is a 14.3M-parameter decoder-only transformer written in PyTorch. It was trained on [Chordonomicon](https://huggingface.co/datasets/ailsntua/Chordonomicon), a dataset of about 680k songs' chord charts. The dataset has no key labels, so the data pipeline estimates each song's key and stores every phrase as scale degrees relative to that key instead of as chord names. That way "vi IV I V" is one pattern rather than twelve, and the output can be spelled in any key afterwards. Each training sequence starts with mode, genre, mood, and length tokens, so you can ask for a mood and a length.
+
+Training took 72 minutes on a free Kaggle T4. The weights are on the Hugging Face Hub at [ckeen302/chordcraft-chord-transformer](https://huggingface.co/ckeen302/chordcraft-chord-transformer), along with an int8 ONNX export. The website downloads that ONNX file once and runs it with ONNX Runtime Web, so there is no inference server to pay for or wait on. A progression takes about 0.4 s.
+
+The decoder is constrained so every output is usable. It enforces the exact length you asked for, blocks immediate repeats, and blocks short loops. Mood is steered with classifier-free guidance: the model was trained with the mood token dropped 30% of the time, and while decoding it compares each step against a "no mood" prediction and pushes away from it. The decoder was written in Python first and then ported to TypeScript (`lib/ai/sampler.ts`).
+
+After the model picks scale degrees, a theory engine spells the chords in the chosen key, voices them, and labels them with roman numerals. The same engine exists in TypeScript (`lib/theory`) and Python (`backend/chordcraft/theory`). Both have to produce the same output for about 500 shared test cases in `fixtures/theory.json`.
+
+Chord Chat parses the request in the browser (mood words, styles like lo-fi or trap, key, length, tempo, instrument). Follow-ups like "darker", "jazzier", "longer", or "up a step" change the previous request.
+
+There is also an optional FastAPI service in `backend/` that serves the theory engine, server-side generation, and the Preset Finder database. Details are in [backend/README.md](backend/README.md).
 
 ## Results
 
-All numbers come from [`backend/results/`](backend/results) and the evaluation write-up in [backend/README.md](backend/README.md).
+These come from `backend/results/` and are explained in more detail in [backend/README.md](backend/README.md).
 
-| What | Result |
-| ---- | ------ |
-| Language-model quality | **Test perplexity 4.12** over a 300-chord vocabulary (artist-disjoint test split, 77k phrases) |
-| Mood control (1,800 progressions, 9 moods) | **90.4%** for the chord transformer with classifier-free guidance, vs **63.2%** for the hand-written rule engine (chance ≈ 11%) |
-| Browser model | **int8 ONNX, 15 MB**, with **98.2% top-1 agreement** with the PyTorch model on 512 real validation prefixes |
-| Repeated-loop bug | Outputs with an immediately repeated block (ii7–iii7–ii7–iii7) went from **53.6% → 0%** with decode-time loop blocking plus a presence penalty |
+- Test perplexity: 4.12 over a 300-chord vocabulary, on a test split with no artists shared with training.
+- Mood control: 90.4% with guidance, compared to 63.2% for the older rule-based generator (1,800 progressions each, 9 moods; chance is about 11%). The mood labels come from a rule-based labeler, and the model was trained on that labeler's output, so this shows that the mood conditioning works. It doesn't show that people would hear the mood.
+- Browser model: the int8 ONNX file is 15 MB and picks the same top token as the PyTorch model 98.2% of the time (512 validation prefixes).
+- Repeated loops: before loop blocking, 53.6% of 8-chord outputs repeated a block right away (like ii7 iii7 ii7 iii7). With loop blocking and a presence penalty it is 0%.
 
-> **Caveat on mood control:** "mood" is a weak label produced by a rule-based labeler, and the model was trained on that labeler's output. The score shows that the mood conditioning works; it is not a human judgement of how sad or epic a progression sounds.
+## Other parts of the app
 
-Training ran for 3 epochs on a free Kaggle Tesla T4 (8,292 steps, 72 minutes, $0).
+- Smart Generate, a rule-based generator with 9 moods, plus fully random and fixed templates (I V vi IV, ii V I).
+- A piano roll where every note can be drawn, moved, resized, and given its own velocity.
+- 11 sampled instruments through Tone.js, with loop, metronome, and BPM from 40 to 240.
+- MIDI export, undo/redo, transpose, saved progressions, and a short harmonic analysis of each progression.
+- Popular Songs: 87 progressions from well-known songs with their real key and tempo.
+- Preset Finder: 832 "what preset is that sound?" identifications from r/findthepreset, YouTube, and the web. They live in SQLite with full-text search. A weekly GitHub Action looks for new solved threads and opens a pull request with them.
 
-## Architecture
-
-```mermaid
-flowchart TB
-    subgraph Data["1 · Data pipeline (Python)"]
-        direction LR
-        A[Chordonomicon<br/>~680k songs] --> B[Normalise chords<br/>estimate key per song] --> C[Key-relative phrases<br/>weak mood labels<br/>artist-disjoint splits]
-    end
-    subgraph Train["2 · Training (PyTorch, Kaggle T4)"]
-        direction LR
-        D[Decoder-only transformer<br/>14.3M params, RoPE, SwiGLU] --> E[Eval: perplexity,<br/>mood control, novelty]
-    end
-    subgraph Hub["3 · Hugging Face Hub"]
-        direction LR
-        F[safetensors + config<br/>+ vocab + model card] --> G[int8 ONNX export<br/>15 MB]
-    end
-    subgraph Browser["4 · Browser (Next.js, no inference server)"]
-        direction LR
-        J[Chord Chat parser] --> I
-        H[ONNX Runtime Web] --> I[TS constrained decoder<br/>guidance, loop blocking] --> K[Theory engine<br/>spelling, voice leading] --> L[Piano roll<br/>playback, .mid export]
-    end
-    subgraph Server["FastAPI service (optional)"]
-        direction LR
-        M[Python theory engine<br/>/v1/generate, /v1/analyze, /v1/presets]
-    end
-    CI[GitHub Actions CI<br/>Vitest, tsc, ESLint, build<br/>pytest, ruff]
-    Data --> Train --> Hub --> Browser
-    Browser -.-|"parity tests: fixtures/theory.json"| Server
-    CI -.-> Browser
-    CI -.-> Server
-```
-
-## Technical decisions
-
-- **Inference runs in the browser.** The live site has no inference server: the int8 model downloads once from the Hugging Face Hub and runs in ONNX Runtime Web, about 0.4 s per progression. Hosting costs nothing, there is no network round trip per generation, and the demo can't go down because a GPU endpoint is asleep. A free GPU-backed server was also ruled out because Hugging Face Docker Spaces now need a paid plan. The FastAPI service still exists for server-side use and shares the same theory engine.
-- **Tokens are key-relative.** Chords are stored as scale degrees relative to the song's tonic (`0:m 8:maj 3:maj 10:maj`), not absolute names. "vi–IV–I–V" is one pattern rather than 12, so the 300-token vocabulary carries far more evidence per token, and any output can be spelled in any of the 24 keys afterwards. It also tolerates the key estimator's most common mistake, confusing a relative major and minor.
-- **Classifier-free guidance controls mood.** Training drops the mood/genre conditioning 30% of the time, so the same model can also predict with `mood:any`. At decode time each step is pushed away from that unconditioned prediction (w = 2). This raised mood control from 83% to 90.4%, lifting the weakest moods (aggressive 64% → 96%), without retraining and without losing diversity (distinct-2 went up, 0.114 → 0.133).
-- **Decoding is constrained, so every output is valid.** The decoder enforces exact length, no immediate repeats, and loop blocking, and the same sampler is implemented in Python and ported to TypeScript ([`lib/ai/sampler.ts`](lib/ai/sampler.ts)). The TypeScript and Python theory engines are pinned to ~500 shared golden cases in [`fixtures/theory.json`](fixtures/theory.json).
-
-Model, data pipeline, evaluation and ONNX export are documented in [backend/README.md](backend/README.md).
-
-## Getting started
+## Running it
 
 ```bash
 npm install
 npm run dev      # http://localhost:3000
 ```
 
-No configuration or API keys required. Samples stream from a CDN on first play.
+No API keys are needed. The model downloads from Hugging Face the first time you use it.
 
-The AI mode downloads its model from the Hugging Face Hub on first load — nothing to configure.
-The Python side (data pipeline, training, evaluation, and an optional FastAPI service) lives in
-[`backend/`](backend/README.md).
+Other commands: `npm test` (Vitest), `npm run type-check`, `npm run lint`, and `npm run build`. Don't run `npm run build` while the dev server is running, because both write to `.next/`.
 
-## Scripts
+The Python side (data pipeline, training, evaluation, and the API) uses uv:
 
-| Command              | Purpose                       |
-| -------------------- | ----------------------------- |
-| `npm run dev`        | Dev server (localhost:3000)   |
-| `npm run build`      | Production build              |
-| `npm start`          | Serve the production build    |
-| `npm run type-check` | TypeScript check              |
-| `npm run lint`       | ESLint                        |
-| `npm test`           | Vitest unit tests             |
+```bash
+cd backend
+uv sync
+uv run uvicorn chordcraft.api.main:app --reload   # http://localhost:8000/docs
+uv run pytest -q
+```
 
-> Note: don't run `npm run build` while a dev server is running — both write to `.next/` and the dev server's chunk manifest gets corrupted (ChunkLoadError). Stop the dev server first, or just rely on `type-check`.
-
-## Features
-
-- **AI · Chord Transformer** — progressions written by a 14M-parameter transformer trained from scratch in PyTorch on 1.4M real-song progressions, steered by mood and length. It runs **in the browser**: the int8 ONNX export (15 MB, [on the Hugging Face Hub](https://huggingface.co/ckeen302/chordcraft-chord-transformer)) executes in ONNX Runtime Web with constrained decoding ported to TypeScript (~0.4 s per progression, no server). Every chord is spelled, voice-led, and analysed by the theory engine. Model, data, and evaluation: [backend/README.md](backend/README.md).
-- **Chord Chat** — describe what you want in plain English ("sad lo-fi in A minor, 8 chords", "epic trailer", "smooth jazz on rhodes") and the chord transformer writes it straight into the piano roll as MIDI, with a reply explaining the harmony. Refine it conversationally: "darker", "jazzier", "longer", "faster", "up a step", "make it resolve", "another one". Requests are parsed in the browser (moods and synonyms, style presets like lo-fi/trap/punk, keys, length, tempo, instrument).
-- **Mood-true AI output** — classifier-free guidance (mood control 83% → 90%), keys that follow the mood (melancholic in C plays in C minor), and a mood colouring layer that gives the model's chords each mood's signature extensions.
-- **Smart Generate** — a mood-driven harmony engine. Defaults to **Random**, rolling a fresh mood on every generate (shown as a badge, e.g. "🎲 Nostalgic"); pin one of the 9 moods (Uplifting, Melancholic, Dreamy, Romantic, Nostalgic, Tense, Jazz, Epic, Aggressive) to repeat it instead. Each blends signature progressions from real repertoire (doo-wop changes, ii–V–I turnarounds, the minor axis, sad-pop loops) with a weighted Markov chain over functional harmony, plus mood-specific cadences and chord extensions.
-- **Fully Random & Classic Templates** — pure-chance diatonic progressions, or fixed patterns like I–V–vi–IV and ii–V–I.
-- **Real sampled instruments** — 11 voices played from recorded multisamples via Tone.js (grand piano, acoustic guitar, organ, layered string/brass ensembles, harp, bass, bells) with an FM electric piano, pad, and lead. Root-octave doubling and humanized note onsets.
-- **FL Studio–style piano roll** — a real note editor, not just a chord grid: every note has its own start, length, and velocity. Pencil-draw on empty cells, drag to move (whole selection follows), drag a note's right edge to resize, right-click to erase, ⌘drag for box selection, ⌘A/⌘C/⌘X/⌘V and ⌘B (duplicate right), Delete key, snap grid (1/4 · 1/2 · 1 · off), horizontal zoom, a velocity lane with draggable bars, full C1–B7 pitch range with scroll, and a beat-accurate playhead. Chord columns relabel themselves via chord detection as you edit, and playback follows edits live.
-- **Popular Songs library** — 87 research-verified progressions with the record's real key, tempo, and per-chord harmonic rhythm.
-- **Transport** — play/pause/stop (Space), loop, transport-tied metronome (M), live BPM 40–240, beats-per-chord, volume.
-- **Export** — standards-compliant `.mid` files (correct tempo, beats-per-chord, and General MIDI program for the selected instrument), or copy the progression as text.
-- **Undo / Redo** — every edit (generate, note edits, deletions, transpose) is undoable via buttons or ⌘Z / ⇧⌘Z.
-- **Transpose** — shift the whole progression ±1 semitone; voicings, rhythm, and roman numerals survive, and the key select follows (all 24 keys covered).
-- **Harmonic analysis** — an instant rule-based breakdown of every progression (cadence type, borrowed chords, named devices like the Phrygian bII or the IV→iv "saddest move").
-- **Robust chord parsing** — 24 chord qualities including extended and altered chords (maj9, m11, 13, m7b5, 7♭9, 7♯9), common notations (Δ, ø, °, mM7), and a strict mode that rejects anything it would have to guess at.
-- **Saved progressions** — name and keep favourites (exact voicings round-trip), separate from the auto-history of recent generations.
-- **Settings** — persisted defaults for BPM, instrument, beats-per-chord, and volume, applied every launch.
-- **Preset Finder** — a searchable library of 832 famous VST preset identifications ("what preset is that sound?") mined from solved [r/findthepreset](https://www.reddit.com/r/findthepreset/) threads, YouTube, and the web: full-text search, filter by VST or source, every entry labelled **Confirmed** (official documentation) or **Community ID** with a source link. It lives in SQLite with an FTS5 index (`backend/db/presets.sqlite`), is served by the FastAPI `/v1/presets` API, and a weekly GitHub Action ingests new threads and opens a PR. The deployed site reads an exported JSON snapshot and runs the same query in the browser.
-- **Shortcuts reference** — keyboard icon in the header lists every transport key and piano-roll gesture.
-- **No lost work** — both tabs stay live in the background: switch between Generator and Popular Songs without losing your progression, undo history, or selected song. Metronome accents follow each song's meter (3/4, 6/8, 12/8).
+CI runs the web and backend checks on every push.
 
 ## Repo layout
 
 ```
-app/                 Next.js App Router shell (SSR-safe; audio loads client-side only)
-components/
-  ChordCraftApp.tsx  Root layout: header, Chord Lab, transport bar
-  chord-lab/         Generator UI, chord strip/cards
-  piano/PianoRoll.tsx  Real-time MIDI roll
-  layout/TransportBar.tsx
-hooks/useTransport.ts  Note-level playback: lookahead scheduler over NoteEvents
-                       (velocity, exact starts/lengths, loop, live BPM, playhead clock)
-store/useStore.ts      Zustand store — pure state, no side effects
-lib/
-  theory/            Chord parsing, keys, harmony engine (moods, Markov, signatures),
-                     transpose, rule-based analysis
-  roll/notes.ts      NoteEvent model — chords ⇄ notes conversion, chord windows,
-                     per-window chord detection
-  audio/             Tone.js sample engine + metronome
-  midi/              MIDI export (chord blocks or exact note events)
-  ai/                In-browser chord transformer: ONNX Runtime Web loader, constrained
-                     sampler (TS port of the Python decoder), theory post-processing
-  data/              Popular-song progressions (87 songs), VST preset library
-backend/             FastAPI service + Python port of the theory engine (see backend/README.md)
-fixtures/theory.json Golden outputs pinning the TypeScript and Python engines together
+app/, components/   Next.js UI (Chord Lab, piano roll, transport bar)
+hooks/, store/      Playback scheduler and Zustand state
+lib/ai/             ONNX model loader and the TypeScript decoder
+lib/chat/           Chord Chat request parser
+lib/theory/         Chord parsing, keys, rule-based generator, analysis
+lib/audio/, lib/midi/  Tone.js playback and MIDI export
+backend/            Data pipeline, PyTorch model, evaluation, FastAPI service
+fixtures/           Shared test cases for the TypeScript and Python theory engines
 ```
-
-## Roadmap — AI rebuild
-
-ChordCraft is being rebuilt into an AI chord-progression generator:
-
-- **Chord model** — ✅ custom decoder-only transformer in PyTorch, trained on Chordonomicon with mode/genre/mood/length control tokens and constrained decoding (v1: test perplexity 4.12, 82% mood control vs 63% for the rule engine).
-- **LLM copilot** — a fine-tuned open model (Llama / Qwen, LoRA via Hugging Face PEFT + TRL) that turns natural-language requests into tool calls: generate, edit, analyze, search.
-- **RAG** — sentence-transformer embeddings + FAISS over the song library for "sounds like…" requests.
-- **Serving** — ✅ in-browser ONNX inference (int8, 15 MB); FastAPI service for the theory engine and server-side generation.
-- **Evals** — rule engine vs. chord model vs. LLM-only, scored on validity, key adherence, and cadence quality.
-- **Infra** — training on Modal and Kaggle GPUs, experiment tracking with W&B, models on the Hugging Face Hub, CI on GitHub Actions.
 
 ## License
 
-Code is [MIT](LICENSE). The chord model is trained on [Chordonomicon](https://huggingface.co/datasets/ailsntua/Chordonomicon) (CC BY-NC 4.0), so the model weights inherit its non-commercial restriction.
+The code is MIT. The model was trained on Chordonomicon, which is CC BY-NC 4.0, so the model weights are for non-commercial use only.
