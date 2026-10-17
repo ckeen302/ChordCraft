@@ -129,3 +129,37 @@ describe('mood quality', () => {
     expect(recurring[0]).toEqual(recurring[2]) // style-coherent: same chord, same colour
   })
 })
+
+describe('one-chord edits', () => {
+  it('sampleSlot reads the prefix, honours the filter, and never repeats the excluded chord', async () => {
+    const { sampleSlot, isDiatonic } = await import('./sampler')
+    const rows: number[][] = []
+    const logits: LogitsFn = async r => { rows.push(...r); return fakeLogits(5)(r) }
+    for (let s = 0; s < 10; s++) {
+      const d = await sampleSlot(logits, vocab, {
+        mode: 'major', length: 4, mood: 'dreamy', prefix: [[0, 'maj'], [7, 'maj']],
+        exclude: [[9, 'm']], filter: deg => !isDiatonic('major', deg), rng: seededRng(s),
+      })
+      expect(isDiatonic('major', d)).toBe(false)
+      expect(d).not.toEqual([9, 'm'])
+      expect(d).not.toEqual([7, 'maj'])
+    }
+    expect(rows[0].slice(5).map(i => tokens[i])).toEqual(['0:maj', '7:maj'])
+  })
+
+  it('reharmonizeWithModel replaces only the chosen bar and keeps durations', async () => {
+    const { reharmonizeWithModel, chordToDegree } = await import('./generate')
+    const chords = ['C', 'G', 'Am', 'F'].map((s, i) => ({ ...parseChordStrict(s), beats: i + 1 }))
+    expect(chordToDegree(chords[2], 'C Major')).toEqual([9, 'm'])
+    const r = await reharmonizeWithModel({ vocab, logits: fakeLogits(9) }, {
+      key: 'C Major', mood: 'jazz', chords, index: 2, intent: 'darker', seed: 3,
+    })
+    expect(r.from).toBe('Am')
+    expect(r.chords.map(c => c.symbol)).toEqual(['C', 'G', r.to, 'F'])
+    expect(r.to).not.toBe('Am')
+    expect(['min', 'dim']).toContain((await import('./sampler')).chordFamily(r.chords[2].quality))
+    expect(r.chords.map(c => c.beats)).toEqual([1, 2, 3, 4])
+    await expect(reharmonizeWithModel({ vocab, logits: fakeLogits() }, { key: 'C Major', mood: 'jazz', chords, index: 7, intent: 'darker' }))
+      .rejects.toThrow(/no bar 8/)
+  })
+})

@@ -1,0 +1,15 @@
+{
+  "id": "cadenkeen/chordcraft-copilot-onnx",
+  "title": "chordcraft-copilot-onnx",
+  "code_file": "export_onnx.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": ["cadenkeen/chordcraft-copilot-lora"],
+  "model_sources": []
+}
