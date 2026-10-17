@@ -180,3 +180,72 @@ def test_api_serves_songs(tmp_path, monkeypatch):
     assert page["total"] == 1 and page["items"][0]["chords"][0] == {"symbol": "Am7", "beats": 2}
     assert client.get("/v1/songs/let-it-be").json()["bpm"] == 73
     assert client.get("/v1/songs/nope").status_code == 404
+
+
+# ── tempo overrides ─────────────────────────────────────────────────────────
+
+TAB = "https://www.songsterr.com/a/wsa/led-zeppelin-stairway-to-heaven-tab-s27"
+
+
+def tab(*runs, sig="4/4"):
+    from chordcraft.songs.songsterr import TempoMap
+    return TempoMap(TAB, "Led Zeppelin", "Stairway to Heaven", [(b, sig) for b, n in runs for _ in range(n)])
+
+
+def test_tempo_map_main_tempo_and_section_runs():
+    t = tab((71, 40), (77, 8), (98, 20), (85, 18), (102, 18))
+    assert t.main == 85 and not t.compound
+    assert t.supporting(84, False) == 85           # the song's main tempo
+    assert t.supporting(77, False) == 77           # a section of a drifting song, 8+ bars
+    assert tab((71, 40), (77, 7), (98, 20)).supporting(77, False) is None  # too short a stretch
+    assert tab((106, 39), sig="6/4").supporting(72, False) == 106  # triplet feel notated in 6/4
+
+
+def test_candidates_carry_tempo_overrides(tmp_path):
+    from chordcraft.songs.ingest import read_candidates
+    p = tmp_path / "c.txt"
+    p.write_text(f"# comment\nHey Jude|The Beatles|1968||hey-jude\nStairway to Heaven|Led Zeppelin|1971|||77|{TAB}\n")
+    plain, override = read_candidates(p)
+    assert plain.tempo is None and plain.song_id == "hey-jude"
+    assert override.tempo == 77 and override.tempo_source == TAB and override.slugs is None
+    p.write_text("Stairway to Heaven|Led Zeppelin|1971|||77|\n")
+    with pytest.raises(ValueError):
+        read_candidates(p)
+
+
+def test_override_needs_songsterr_and_a_second_source(monkeypatch):
+    from chordcraft.songs import ingest
+    monkeypatch.setattr(ingest.songsterr, "tempo_map", lambda url: tab((71, 40), (77, 8), (85, 60)))
+    c = ingest.Candidate("Stairway to Heaven", "Led Zeppelin", 1971, tempo=77, tempo_source=TAB)
+    assert ingest._override(c, 77, 82, False) == (77, TAB, 77)       # Songsterr + TheoryTab
+    c.tempo = 84
+    assert ingest._override(c, 77, 82, False) == (84, TAB, 85)       # Songsterr + songbpm
+    for tempo, theorytab, songbpm_, source in [
+        (64, 77, 82, TAB),                                           # Songsterr doesn't confirm it
+        (85, 77, 120, TAB),                                          # neither TheoryTab nor songbpm agrees
+        (85, 70, 85, TAB),                                           # off TheoryTab's pulse (>10%)
+        (77, 77, 82, "https://example.com/tab"),                     # not a Songsterr tab
+    ]:
+        c.tempo, c.tempo_source = tempo, source
+        with pytest.raises(Unusable):
+            ingest._override(c, theorytab, songbpm_, False)
+
+
+def test_tempo_source_is_stored_exported_and_migrated(tmp_path):
+    path = tmp_path / "old.sqlite"
+    old = sqlite3.connect(path)  # a database from before tempo_source_* existed
+    old.executescript(db.SCHEMA.replace(
+        "    tempo_source_url TEXT CHECK (tempo_source_url IS NULL OR tempo_source_url LIKE 'https://www.songsterr.com/%'),\n"
+        "    tempo_source_bpm REAL,\n", ""))
+    old.close()
+    with db.open_db(path) as c:
+        db.upsert(c, make())
+        db.upsert(c, make(id_="stairway-to-heaven", title="Stairway to Heaven", tempoSourceUrl=TAB, tempoSourceBpm=77))
+        with pytest.raises(sqlite3.IntegrityError):
+            db.upsert(c, make(id_="x", title="X", tempoSourceUrl="https://example.com/x", tempoSourceBpm=1))
+        assert db.get(c, "stairway-to-heaven").tempoSourceUrl == TAB
+        out = tmp_path / "songs.json"
+        db.export_json(c, out)
+    by_id = {s["id"]: s for s in json.loads(out.read_text())}
+    assert "tempoSourceUrl" not in by_id["let-it-be"]
+    assert by_id["stairway-to-heaven"]["tempoSourceUrl"] == TAB and by_id["stairway-to-heaven"]["tempoSourceBpm"] == 77

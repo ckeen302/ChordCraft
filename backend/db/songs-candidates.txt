@@ -1,12 +1,20 @@
-# Popular Songs candidates: title|artist|year|theorytab-artist/song slug (optional)|id (optional)
+# Popular Songs candidates: title|artist|year|theorytab-artist/song slug (optional)|id (optional)|bpm|tempo source
 # Ingest: uv run python -m chordcraft.songs ingest db/songs-candidates.txt
+#
+# The last two fields are an optional tempo override, for songs whose TheoryTab section tempo and
+# songbpm.com disagree by more than 4% (live drift, triplet feel). The BPM is the tempo to publish,
+# in TheoryTab's pulse; the URL is the Songsterr tab whose tempo map confirms it. Ingest re-checks
+# that the tab confirms it and that it also agrees with TheoryTab or songbpm (see ingest.py).
+# Each override was chosen from Songsterr's tempo by: TheoryTab's tempo when the tab confirms it
+# (its main tempo or a stretch of 8+ bars at that tempo), else songbpm's tempo when the tab confirms
+# that and it is within 10% of TheoryTab's. Songs where no two sources agree stay rejected.
 Stand By Me|Ben E. King|1961||stand-by-me
 Let It Be|The Beatles|1970||let-it-be
 Hey Jude|The Beatles|1968||hey-jude
-House of the Rising Sun|The Animals|1964||house-of-the-rising-sun
+House of the Rising Sun|The Animals|1964||house-of-the-rising-sun|82|https://www.songsterr.com/a/wsa/the-animals-the-house-of-the-rising-sun-tab-s63
 Can't Help Falling in Love|Elvis Presley|1961||cant-help-falling-in-love
 Knockin' on Heaven's Door|Bob Dylan|1973||knockin-on-heavens-door
-No Woman, No Cry|Bob Marley|1974||no-woman-no-cry
+No Woman, No Cry|Bob Marley|1974||no-woman-no-cry|79|https://www.songsterr.com/a/wsa/bob-marley-no-woman-no-cry-tab-s115
 Don't Stop Believin'|Journey|1981||dont-stop-believin
 With or Without You|U2|1987||with-or-without-you
 Every Breath You Take|The Police|1983||every-breath-you-take
@@ -20,27 +28,27 @@ Chasing Cars|Snow Patrol|2006||chasing-cars
 Boulevard of Broken Dreams|Green Day|2004||boulevard-of-broken-dreams
 Apologize|OneRepublic|2007||apologize
 Numb|Linkin Park|2003||numb
-Hallelujah|Jeff Buckley|1994||hallelujah
+Hallelujah|Jeff Buckley|1994||hallelujah|64.7|https://www.songsterr.com/a/wsa/jeff-buckley-hallelujah-tab-s380120
 Someone Like You|Adele|2011||someone-like-you
-All of Me|John Legend|2013||all-of-me
+All of Me|John Legend|2013||all-of-me|60|https://www.songsterr.com/a/wsa/john-legend-all-of-me-tab-s390512
 Stay With Me|Sam Smith|2014||stay-with-me
 Riptide|Vance Joy|2013||riptide
 Ho Hey|The Lumineers|2012||ho-hey
 Perfect|Ed Sheeran|2017||perfect
 Someone You Loved|Lewis Capaldi|2018||someone-you-loved
 My Girl|The Temptations|1964||my-girl
-La Bamba|Ritchie Valens|1958|ritchie-valen/la-bamba|la-bamba
+La Bamba|Ritchie Valens|1958|ritchie-valen/la-bamba|la-bamba|150|https://www.songsterr.com/a/wsa/ritchie-valens-la-bamba-tab-s1571276
 Twist and Shout|The Beatles|1963||twist-and-shout
 Runaway|Del Shannon|1961||runaway
 Louie Louie|The Kingsmen|1963||louie-louie
-Unchained Melody|The Righteous Brothers|1965||unchained-melody
+Unchained Melody|The Righteous Brothers|1965||unchained-melody|69|https://www.songsterr.com/a/wsa/the-righteous-brothers-unchained-melody-tab-s16906
 Hit the Road Jack|Ray Charles|1961||hit-the-road-jack
 Brown Eyed Girl|Van Morrison|1967||brown-eyed-girl
 All Along the Watchtower|Jimi Hendrix|1968||all-along-the-watchtower
 Take Me Home, Country Roads|John Denver|1971||take-me-home-country-roads
 Imagine|John Lennon|1971||imagine
 Hotel California|Eagles|1977||hotel-california
-Wish You Were Here|Pink Floyd|1975||wish-you-were-here
+Wish You Were Here|Pink Floyd|1975||wish-you-were-here|122|https://www.songsterr.com/a/wsa/pink-floyd-wish-you-were-here-tab-s153
 Sweet Home Alabama|Lynyrd Skynyrd|1974||sweet-home-alabama
 Piano Man|Billy Joel|1973||piano-man
 Ain't No Sunshine|Bill Withers|1971||aint-no-sunshine
@@ -95,7 +103,7 @@ Blackbird|The Beatles|1968
 In My Life|The Beatles|1965
 Eleanor Rigby|The Beatles|1966
 Penny Lane|The Beatles|1967
-Strawberry Fields Forever|The Beatles|1967
+Strawberry Fields Forever|The Beatles|1967|||98|https://www.songsterr.com/a/wsa/the-beatles-strawberry-fields-forever-tab-s474133
 All You Need Is Love|The Beatles|1967
 Help!|The Beatles|1965
 A Hard Day's Night|The Beatles|1964
@@ -111,7 +119,7 @@ Hound Dog|Elvis Presley|1956
 Sweet Caroline|Neil Diamond|1969
 Respect|Aretha Franklin|1967
 (Sittin' On) The Dock of the Bay|Otis Redding|1968
-What a Wonderful World|Louis Armstrong|1967
+What a Wonderful World|Louis Armstrong|1967|||72|https://www.songsterr.com/a/wsa/louis-armstrong-what-a-wonderful-world-tab-s386895
 Fly Me to the Moon|Frank Sinatra|1964
 My Way|Frank Sinatra|1969
 I Got You (I Feel Good)|James Brown|1965
@@ -119,7 +127,7 @@ Ain't No Mountain High Enough|Marvin Gaye|1967|marvin-gaye-and-tammi-terrell/ain
 I Heard It Through the Grapevine|Marvin Gaye|1968
 Superstition|Stevie Wonder|1972
 Signed, Sealed, Delivered I'm Yours|Stevie Wonder|1970
-Good Vibrations|The Beach Boys|1966
+Good Vibrations|The Beach Boys|1966|||153|https://www.songsterr.com/a/wsa/the-beach-boys-good-vibrations-tab-s26376
 God Only Knows|The Beach Boys|1966
 California Dreamin'|The Mamas & the Papas|1965
 The Sound of Silence|Simon & Garfunkel|1964|simon-and-garfunkel/sound-of-silence
@@ -139,21 +147,21 @@ Proud Mary|Creedence Clearwater Revival|1969
 Bad Moon Rising|Creedence Clearwater Revival|1969
 Have You Ever Seen the Rain|Creedence Clearwater Revival|1970
 Fortunate Son|Creedence Clearwater Revival|1969
-Stairway to Heaven|Led Zeppelin|1971
+Stairway to Heaven|Led Zeppelin|1971|||77|https://www.songsterr.com/a/wsa/led-zeppelin-stairway-to-heaven-tab-s27
 Bohemian Rhapsody|Queen|1975
 Don't Stop Me Now|Queen|1978
-We Are the Champions|Queen|1977
+We Are the Champions|Queen|1977|||63|https://www.songsterr.com/a/wsa/queen-we-are-the-champions-tab-s35507
 Somebody to Love|Queen|1976
 Under Pressure|Queen|1981|queen-and-david-bowie/under-pressure
 Another One Bites the Dust|Queen|1980
 Killer Queen|Queen|1974
 Your Song|Elton John|1970
-Rocket Man|Elton John|1972
+Rocket Man|Elton John|1972|||68|https://www.songsterr.com/a/wsa/elton-john-rocket-man-tab-s6338802
 Tiny Dancer|Elton John|1971
 Bennie and the Jets|Elton John|1973
-Space Oddity|David Bowie|1969
-Heroes|David Bowie|1977
-Starman|David Bowie|1972
+Space Oddity|David Bowie|1969|||136|https://www.songsterr.com/a/wsa/david-bowie-space-oddity-tab-s365
+Heroes|David Bowie|1977|||113|https://www.songsterr.com/a/wsa/david-bowie-heroes-tab-s3291
+Starman|David Bowie|1972|||99|https://www.songsterr.com/a/wsa/david-bowie-starman-tab-s3112
 Life on Mars?|David Bowie|1971
 Go Your Own Way|Fleetwood Mac|1977
 Landslide|Fleetwood Mac|1975
@@ -174,7 +182,7 @@ Rocket 88|Jackie Brenston|1951
 Margaritaville|Jimmy Buffett|1977
 Born to Run|Bruce Springsteen|1975
 Dancing in the Dark|Bruce Springsteen|1984
-Born in the U.S.A.|Bruce Springsteen|1984
+Born in the U.S.A.|Bruce Springsteen|1984|||122|https://www.songsterr.com/a/wsa/bruce-springsteen-born-in-the-u-s-a-tab-s19238
 Jolene|Dolly Parton|1973
 9 to 5|Dolly Parton|1980
 Ring of Fire|Johnny Cash|1963
@@ -182,7 +190,7 @@ Hurt|Johnny Cash|2002
 Vincent|Don McLean|1971
 American Pie|Don McLean|1971
 Fire and Rain|James Taylor|1970
-Behind Blue Eyes|The Who|1971
+Behind Blue Eyes|The Who|1971|||129|https://www.songsterr.com/a/wsa/the-who-behind-blue-eyes-tab-s86358
 Baba O'Riley|The Who|1971
 More Than a Feeling|Boston|1976
 Dream On|Aerosmith|1973
@@ -211,7 +219,7 @@ Total Eclipse of the Heart|Bonnie Tyler|1983
 Eye of the Tiger|Survivor|1982
 Jump|Van Halen|1984
 Sweet Child O' Mine|Guns N' Roses|1987
-November Rain|Guns N' Roses|1991
+November Rain|Guns N' Roses|1991|||78|https://www.songsterr.com/a/wsa/guns-n-roses-november-rain-tab-s8452
 Paradise City|Guns N' Roses|1987
 Back in Black|AC/DC|1980
 Highway to Hell|AC/DC|1979
@@ -227,9 +235,9 @@ Take My Breath Away|Berlin|1986
 Don't Dream It's Over|Crowded House|1986
 I Still Haven't Found What I'm Looking For|U2|1987
 One|U2|1991
-Under the Bridge|Red Hot Chili Peppers|1991
+Under the Bridge|Red Hot Chili Peppers|1991|||80|https://www.songsterr.com/a/wsa/red-hot-chili-peppers-under-the-bridge-tab-s99
 Scar Tissue|Red Hot Chili Peppers|1999
-Otherside|Red Hot Chili Peppers|1999
+Otherside|Red Hot Chili Peppers|1999|||117|https://www.songsterr.com/a/wsa/red-hot-chili-peppers-otherside-tab-s23785
 Come As You Are|Nirvana|1991
 Heart-Shaped Box|Nirvana|1993
 Lithium|Nirvana|1991
@@ -253,7 +261,7 @@ Say It Ain't So|Weezer|1994
 Today|The Smashing Pumpkins|1993
 Karma Police|Radiohead|1997
 No Surprises|Radiohead|1997
-High and Dry|Radiohead|1995
+High and Dry|Radiohead|1995|||88|https://www.songsterr.com/a/wsa/radiohead-high-and-dry-tab-s84996
 Fake Plastic Trees|Radiohead|1995
 Champagne Supernova|Oasis|1995
 Don't Look Back in Anger|Oasis|1996
@@ -268,14 +276,14 @@ Adventure of a Lifetime|Coldplay|2015
 Mr. Brightside|The Killers|2004
 Somebody Told Me|The Killers|2004
 Seven Nation Army|The White Stripes|2003
-Take Me Out|Franz Ferdinand|2004
+Take Me Out|Franz Ferdinand|2004|||142|https://www.songsterr.com/a/wsa/franz-ferdinand-take-me-out-tab-s7648
 Use Somebody|Kings of Leon|2008
 Sex on Fire|Kings of Leon|2008
 Bring Me to Life|Evanescence|2003
 In the End|Linkin Park|2000
 Crawling|Linkin Park|2000
 What I've Done|Linkin Park|2007
-Chop Suey!|System of a Down|2001
+Chop Suey!|System of a Down|2001|||133|https://www.songsterr.com/a/wsa/system-of-a-down-chop-suey-tab-s3708
 Last Resort|Papa Roach|2000
 It's My Life|Bon Jovi|2000
 Bed of Roses|Bon Jovi|1993
@@ -286,7 +294,7 @@ Semi-Charmed Life|Third Eye Blind|1997
 Closing Time|Semisonic|1998
 Bitch|Meredith Brooks|1997
 You Oughta Know|Alanis Morissette|1995
-Ironic|Alanis Morissette|1995
+Ironic|Alanis Morissette|1995|||85|https://www.songsterr.com/a/wsa/alanis-morissette-ironic-tab-s88
 Hand in My Pocket|Alanis Morissette|1995
 Kiss Me|Sixpence None the Richer|1997
 Linger|The Cranberries|1993
@@ -418,7 +426,7 @@ Bad Guy|Billie Eilish|2019
 When the Party's Over|Billie Eilish|2018
 Ocean Eyes|Billie Eilish|2016
 Lovely|Billie Eilish|2018
-Happier Than Ever|Billie Eilish|2021
+Happier Than Ever|Billie Eilish|2021|||90|https://www.songsterr.com/a/wsa/billie-eilish-happier-than-ever-tab-s498927
 What Was I Made For?|Billie Eilish|2023
 Birds of a Feather|Billie Eilish|2024
 Drivers License|Olivia Rodrigo|2021
@@ -479,7 +487,7 @@ Friday I'm in Love|The Cure|1992
 Boys Don't Cry|The Cure|1979
 There Is a Light That Never Goes Out|The Smiths|1986
 This Charming Man|The Smiths|1983
-Love Will Tear Us Apart|Joy Division|1980
+Love Will Tear Us Apart|Joy Division|1980|||147|https://www.songsterr.com/a/wsa/joy-division-love-will-tear-us-apart-tab-s10209
 Blue Monday|New Order|1983
 Enjoy the Silence|Depeche Mode|1990
 Personal Jesus|Depeche Mode|1989
@@ -504,7 +512,7 @@ See You Again|Wiz Khalifa|2015
 The Lazy Song|Bruno Mars|2011
 Secrets|OneRepublic|2009
 Love Me Like You Do|Ellie Goulding|2015
-Chandelier|Sia|2014
+Chandelier|Sia|2014|||87|https://www.songsterr.com/a/wsa/sia-chandelier-tab-s4783988
 Cheap Thrills|Sia|2016
 Elastic Heart|Sia|2014
 Somewhere Only We Know|Keane|2004
@@ -522,12 +530,12 @@ Bad Day|Daniel Powter|2005
 The Middle|Jimmy Eat World|2001
 Fireflies|Owl City|2009
 Young Folks|Peter Bjorn and John|2006
-1985|Bowling for Soup|2004
+1985|Bowling for Soup|2004|||120|https://www.songsterr.com/a/wsa/bowling-for-soup-1985-tab-s3111
 Skinny Love|Bon Iver|2007
 Holocene|Bon Iver|2011
 Rivers and Roads|The Head and the Heart|2011
 Banana Pancakes|Jack Johnson|2005
-Better Together|Jack Johnson|2005
+Better Together|Jack Johnson|2005|||111|https://www.songsterr.com/a/wsa/jack-johnson-better-together-tab-s465
 Upside Down|Jack Johnson|2006
 Santeria|Sublime|1996
 What I Got|Sublime|1996
@@ -544,7 +552,7 @@ So What|Miles Davis|1959
 Blue Bossa|Kenny Dorham|1963
 Georgia on My Mind|Ray Charles|1960
 At Last|Etta James|1960
-Earth Angel|The Penguins|1954
+Earth Angel|The Penguins|1954|||75|https://www.songsterr.com/a/wsa/the-penguins-earth-angel-tab-s2043169
 Heart and Soul|Hoagy Carmichael|1938
 Pachelbel's Canon|Johann Pachelbel|1680
 Für Elise|Ludwig van Beethoven|1810
@@ -565,7 +573,7 @@ Remember Me|Kristen Anderson-Lopez|2017
 How Far I'll Go|Auli'i Cravalho|2016
 We Don't Talk About Bruno|Encanto Cast|2021
 A Whole New World|Aladdin|1992
-Can You Feel the Love Tonight|Elton John|1994
+Can You Feel the Love Tonight|Elton John|1994|||62|https://www.songsterr.com/a/wsa/elton-john-can-you-feel-the-love-tonight-tab-s10242
 Circle of Life|Elton John|1994
 Part of Your World|Jodi Benson|1989
 Under the Sea|Samuel E. Wright|1989

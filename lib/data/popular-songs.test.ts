@@ -34,10 +34,18 @@ describe('popular songs data', () => {
       expect(s.sourceUrl, s.id).toMatch(/^https:\/\/www\.hooktheory\.com\/theorytab\/view\/[\w-]+\/[\w-]+$/)
       expect(s.tempoCheckUrl, s.id).toMatch(/^https:\/\/songbpm\.com\/@[\w-]+\/[\w-]+$/)
       expect(['exact', 'relative', 'differs', 'unavailable'], s.id).toContain(s.keyCheck)
-      // The checked tempo agrees with ours, allowing half/double time (×3 in compound meter).
-      const ratios = [1, 0.5, 2, ...(s.timeSignature.endsWith('/8') ? [1 / 3, 3, 2 / 3, 1.5] : [])]
-      const ok = ratios.some(r => Math.abs(s.bpm - s.tempoCheckBpm * r) <= 0.04 * s.tempoCheckBpm * r)
-      expect(ok, `${s.id}: ${s.bpm} vs ${s.tempoCheckBpm}`).toBe(true)
+      // A checked tempo agrees with ours, allowing half/double time (×3 in compound meter):
+      // songbpm's, or where it disagreed, the Songsterr tab that settled it.
+      const compound = s.timeSignature.endsWith('/8') || ['6/4', '12/4'].includes(s.timeSignature)
+      // A tab may notate a triplet feel in a triple meter (12/8, 6/4) that TheoryTab writes in 4/4.
+      const ratios = [1, 0.5, 2, ...(compound || s.tempoSourceUrl ? [1 / 3, 3, 2 / 3, 1.5] : [])]
+      const agrees = (check: number) => ratios.some(r => Math.abs(s.bpm - check * r) <= 0.04 * check * r)
+      if (s.tempoSourceUrl) {
+        expect(s.tempoSourceUrl, s.id).toMatch(/^https:\/\/www\.songsterr\.com\/a\/wsa\/[\w-]+-tab-s\d+$/)
+        expect(s.tempoSourceBpm, s.id).toBeDefined()
+      }
+      const check = s.tempoSourceUrl ? s.tempoSourceBpm! : s.tempoCheckBpm
+      expect(agrees(check), `${s.id}: ${s.bpm} vs ${check}`).toBe(true)
     }
   })
 

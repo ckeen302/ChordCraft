@@ -22,14 +22,16 @@ const MODE_LABEL: Record<string, string> = {
   locrian: 'Locrian', harmonicMinor: 'Harmonic minor', phrygianDominant: 'Phrygian dominant',
 }
 
-/** How songbpm's reading relates to ours when it counts a different pulse. */
-function pulseNote(song: PopularSong): string {
-  const r = song.tempoCheckBpm / song.bpm
+/** How another source's tempo reading relates to ours when it counts a different pulse. */
+function pulseNote(song: PopularSong, check: number): string {
+  const r = check / song.bpm
   if (Math.abs(r - 1) <= 0.04) return ''
   if (Math.abs(r - 2) <= 0.08) return ', counted in double time'
   if (Math.abs(r - 0.5) <= 0.02) return ', counted in half time'
-  return ', counted in a different pulse'
+  return OTHER_PULSE
 }
+
+const OTHER_PULSE = ', counted in a different pulse'
 
 /** "D Mixolydian" for modal songs, otherwise the plain key. */
 function keyLabel(song: PopularSong): string {
@@ -51,6 +53,9 @@ export function PopularSongs() {
     : POPULAR_SONGS
 
   const selectedChords = selected ? songToParsedChords(selected) : []
+  const songbpmNote = selected ? pulseNote(selected, selected.tempoCheckBpm) : ''
+  // Only overridden songs can disagree with songbpm; the rest passed its check at ingest.
+  const songbpmDiffers = !!selected?.tempoSourceUrl && songbpmNote === OTHER_PULSE
   const isLoaded = (song: PopularSong) => source === `${song.title} — ${song.artist}`
 
   function loadSong(song: PopularSong) {
@@ -226,12 +231,24 @@ export function PopularSongs() {
                   Hooktheory TheoryTab analysis <ExternalLink size={10} />
                 </a>
               </p>
+              {selected.tempoSourceUrl && (
+                <p className="flex items-center gap-1.5">
+                  <CheckCircle2 size={12} className="text-accent flex-shrink-0" />
+                  Tempo settled by the
+                  <a href={selected.tempoSourceUrl} target="_blank" rel="noopener noreferrer"
+                     className="inline-flex items-center gap-1 text-accent hover:underline">
+                    Songsterr tab ({selected.tempoSourceBpm} BPM{pulseNote(selected, selected.tempoSourceBpm!)})
+                    <ExternalLink size={10} />
+                  </a>
+                </p>
+              )}
               <p className="flex items-center gap-1.5">
                 <CheckCircle2 size={12} className="text-accent flex-shrink-0" />
-                Tempo confirmed by
+                {songbpmDiffers ? 'Tempo differs from' : 'Tempo confirmed by'}
                 <a href={selected.tempoCheckUrl} target="_blank" rel="noopener noreferrer"
                    className="inline-flex items-center gap-1 text-accent hover:underline">
-                  songbpm.com ({selected.tempoCheckBpm} BPM{pulseNote(selected)}) <ExternalLink size={10} />
+                  songbpm.com ({selected.tempoCheckBpm} BPM{songbpmDiffers ? '' : songbpmNote})
+                  <ExternalLink size={10} />
                 </a>
                 {selected.keyCheck === 'exact' && <span>· same key</span>}
                 {selected.keyCheck === 'relative' && <span>· relative key</span>}

@@ -6,7 +6,9 @@
  * converted chord-for-chord from a Hooktheory TheoryTab analysis of the
  * recording, with its real key, tempo, meter and per-chord durations. The
  * tempo is cross-checked against songbpm.com, and the key too where songbpm
- * lists one. `sourceUrl` and `tempoCheckUrl` let anyone check an entry.
+ * lists one. Where TheoryTab and songbpm disagree on tempo, a Songsterr tab's
+ * tempo map settles it (`tempoSourceUrl`). `sourceUrl`, `tempoCheckUrl` and
+ * `tempoSourceUrl` let anyone check an entry.
  *
  * `beats` counts the meter's pulse: quarter notes in x/4, dotted quarters in
  * x/8. Playback and MIDI export follow those durations at `bpm`.
@@ -36,9 +38,19 @@ export interface PopularSong {
   /** The Hooktheory TheoryTab page the chords, rhythm, key and tempo come from. */
   sourceUrl: string
   youtubeId: string | null
-  /** songbpm.com page whose tempo agrees with `bpm` (allowing half/double time). */
+  /**
+   * songbpm.com page and tempo. It agrees with `bpm` (allowing half/double time)
+   * unless `tempoSourceUrl` is set.
+   */
   tempoCheckUrl: string
   tempoCheckBpm: number
+  /**
+   * Set when TheoryTab and songbpm disagreed: the Songsterr tab whose tempo map
+   * confirms `bpm`, and the tab's tempo there. `bpm` then agrees with this and
+   * with TheoryTab or songbpm.
+   */
+  tempoSourceUrl?: string
+  tempoSourceBpm?: number
   /**
    * songbpm.com's key (Spotify's automatic estimate, often a fifth off): the same
    * key, the relative major/minor, a different key, or not listed.
