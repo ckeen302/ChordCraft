@@ -15909,6 +15909,111 @@
     "ok": false,
     "error": "Unknown root note in chord: \"/G\""
    }
+  },
+  {
+   "symbol": "Cconstructor",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "Cconstructor",
+     "root": "C",
+     "quality": "maj",
+     "notes": [
+      60,
+      64,
+      67
+     ],
+     "displayQuality": ""
+    }
+   },
+   "strict": {
+    "ok": false,
+    "error": "Unrecognised chord quality \"constructor\" in chord: \"Cconstructor\""
+   }
+  },
+  {
+   "symbol": "CtoString",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "CtoString",
+     "root": "C",
+     "quality": "maj",
+     "notes": [
+      60,
+      64,
+      67
+     ],
+     "displayQuality": ""
+    }
+   },
+   "strict": {
+    "ok": false,
+    "error": "Unrecognised chord quality \"toString\" in chord: \"CtoString\""
+   }
+  },
+  {
+   "symbol": "C__proto__",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "C__proto__",
+     "root": "C",
+     "quality": "maj",
+     "notes": [
+      60,
+      64,
+      67
+     ],
+     "displayQuality": ""
+    }
+   },
+   "strict": {
+    "ok": false,
+    "error": "Unrecognised chord quality \"__proto__\" in chord: \"C__proto__\""
+   }
+  },
+  {
+   "symbol": "C/__proto__",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "C/__proto__",
+     "root": "C",
+     "quality": "maj",
+     "notes": [
+      60,
+      64,
+      67
+     ],
+     "displayQuality": ""
+    }
+   },
+   "strict": {
+    "ok": false,
+    "error": "Unknown bass note in chord: \"C/__proto__\""
+   }
+  },
+  {
+   "symbol": "C/constructor",
+   "lenient": {
+    "ok": true,
+    "chord": {
+     "symbol": "C/constructor",
+     "root": "C",
+     "quality": "maj",
+     "notes": [
+      60,
+      64,
+      67
+     ],
+     "displayQuality": ""
+    }
+   },
+   "strict": {
+    "ok": false,
+    "error": "Unknown bass note in chord: \"C/constructor\""
+   }
   }
  ],
  "detect": [

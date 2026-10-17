@@ -26,7 +26,7 @@ export function keyPrefersFlats(keyName: string): boolean {
  */
 export function transposeKeyName(keyName: string, semitones: number): string {
   const m = keyName.match(/^([A-G][#b]?) (Major|Minor)$/)
-  if (!m || !(m[1] in NOTE_MAP)) return keyName
+  if (!m || !Object.hasOwn(NOTE_MAP, m[1])) return keyName
   const pc = ((NOTE_MAP[m[1]] + semitones) % 12 + 12) % 12
   for (const name of Object.keys(KEYS)) {
     const mm = name.match(/^([A-G][#b]?) (Major|Minor)$/)
@@ -53,7 +53,7 @@ export function transposeProgression(
   }
 
   return chords.map(ch => {
-    if (!ch.notes.length || !(ch.root in NOTE_MAP)) return ch // rests stay put
+    if (!ch.notes.length || !Object.hasOwn(NOTE_MAP, ch.root)) return ch // rests stay put
 
     // Split "G#m7/D#" into body + optional slash bass; keep the quality suffix.
     const [body, bass] = ch.symbol.split('/')

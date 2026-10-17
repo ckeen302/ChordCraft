@@ -150,8 +150,8 @@ const PREFIX_FALLBACKS: [string, ChordQuality][] = [
 
 /** Resolve a suffix; `exact` is false when the quality was only approximated. */
 function normalizeQuality(suffix: string): { quality: ChordQuality; exact: boolean } {
-  if (suffix in ALIASES) return { quality: ALIASES[suffix], exact: true }
-  if (suffix in QUALITY_INTERVALS) return { quality: suffix as ChordQuality, exact: true }
+  if (Object.hasOwn(ALIASES, suffix)) return { quality: ALIASES[suffix], exact: true }
+  if (Object.hasOwn(QUALITY_INTERVALS, suffix)) return { quality: suffix as ChordQuality, exact: true }
   const hit = PREFIX_FALLBACKS.find(([prefix]) => suffix.startsWith(prefix))
   return { quality: hit ? hit[1] : 'maj', exact: false }
 }
@@ -180,7 +180,7 @@ export function parseChord(symbol: string, { strict = false }: { strict?: boolea
   if (slash > 0) {
     const bassName = s.slice(slash + 1).trim()
     const normalized = bassName[0]?.toUpperCase() + bassName.slice(1)
-    if (normalized in NOTE_MAP) {
+    if (Object.hasOwn(NOTE_MAP, normalized)) {
       bassMidi = NOTE_MAP[normalized] - 12   // one octave below the chord body
     } else if (strict) {
       throw new Error(`Unknown bass note in chord: "${symbol}"`)
@@ -197,7 +197,7 @@ export function parseChord(symbol: string, { strict = false }: { strict?: boolea
     idx++
   }
 
-  if (!(root in NOTE_MAP)) {
+  if (!Object.hasOwn(NOTE_MAP, root)) {
     throw new Error(`Unknown root note in chord: "${symbol}"`)
   }
 

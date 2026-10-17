@@ -40,6 +40,13 @@ describe('parseChord — basics', () => {
     expect(parseChord(sym).quality).toBe(quality)
   })
 
+  it('never resolves suffixes or bass notes through Object.prototype', () => {
+    expect(parseChord('Cconstructor').quality).toBe('maj')
+    expect(() => parseChordStrict('CtoString')).toThrow(/Unrecognised/)
+    expect(parseChord('C/__proto__').notes).toEqual([60, 64, 67])
+    expect(() => parseChordStrict('C/__proto__')).toThrow(/bass/)
+  })
+
   it('throws on an unknown root', () => {
     expect(() => parseChord('Hm')).toThrow(/Unknown root/)
     expect(() => parseChord('')).toThrow()

@@ -63,6 +63,8 @@ lib/
   audio/             Tone.js sample engine + metronome
   midi/              MIDI export (chord blocks or exact note events)
   data/              Popular-song progressions (87 songs), VST preset library
+backend/             FastAPI service + Python port of the theory engine (see backend/README.md)
+fixtures/theory.json Golden outputs pinning the TypeScript and Python engines together
 ```
 
 ## Roadmap — AI rebuild

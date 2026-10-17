@@ -25,6 +25,7 @@ const EDGE_SYMBOLS = [
   'G/B', 'C/E', 'D/F#', 'Am/G', 'F#m7/C#', 'C/H', 'Cmaj7/B', 'Bb/D',
   'am', 'c#m7', ' G7 ', 'E#', 'Cb', 'Fbmaj7', 'B#dim',
   'Hm', 'X', '', '/G',
+  'Cconstructor', 'CtoString', 'C__proto__', 'C/__proto__', 'C/constructor',
 ]
 
 type Outcome = { ok: true; chord: ParsedChord } | { ok: false; error: string }

@@ -56,7 +56,7 @@ export function analyzeProgression(
   patternName?: string,
 ): ProgressionAnalysis {
   const keyMatch = keyName.match(/^([A-G][#b]?) (Major|Minor)$/)
-  const playable = chords.filter(c => c.notes.length > 0 && c.root in NOTE_MAP)
+  const playable = chords.filter(c => c.notes.length > 0 && Object.hasOwn(NOTE_MAP, c.root))
   if (!keyMatch || playable.length < 2) {
     return { romans: [], summary: 'Add at least two chords to see an analysis.' }
   }
@@ -66,7 +66,7 @@ export function analyzeProgression(
   const off = (c: ParsedChord) => ((pcOf(c) - tonicPc) % 12 + 12) % 12
 
   const romans = chords.map(c =>
-    c.notes.length > 0 && c.root in NOTE_MAP ? romanFor(c, tonicPc, isMinor) : '—',
+    c.notes.length > 0 && Object.hasOwn(NOTE_MAP, c.root) ? romanFor(c, tonicPc, isMinor) : '—',
   )
 
   // Diatonic pool: pitch class + triad family for each chord of the key.
