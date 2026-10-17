@@ -14,6 +14,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --extra ml --no-install-project
 
 COPY chordcraft ./chordcraft
+COPY db ./db
 RUN uv sync --frozen --no-dev --extra ml
 
 # Spaces run the container as a non-root user: keep the Hub download cache somewhere writable.

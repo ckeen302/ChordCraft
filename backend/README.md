@@ -36,6 +36,42 @@ roman numerals), sampled best-of-4 with loop blocking.
 | POST   | `/v1/analyze`  | Roman numerals + cadence/colour analysis |
 | POST   | `/v1/validate` | Score generated chords: strict validity, romans, diatonic ratio |
 | POST   | `/v1/generate` | Mood-driven progression. `engine`: `auto` (model if loaded, else rules), `model`, or `rules`; `seed` makes it reproducible |
+| GET    | `/v1/presets`  | Preset Finder search: `q` (full-text, prefix match), `vst`, `source` (`Reddit`/`YouTube`/`Web`), `limit` ≤ 200, `offset` |
+| GET    | `/v1/presets/facets` | Every VST with its count, plus counts per source |
+| GET    | `/v1/presets/{id}` | One preset |
+
+## Preset Finder database
+
+The "what preset is that?" library is a SQLite database at `db/presets.sqlite`,
+served read-only by the API:
+
+- `presets` — published identifications, with an FTS5 index (kept in sync by
+  triggers) for search, and a `song_key` unique column that dedupes "same artist,
+  same song" across sources
+- `review_queue` — solved threads the parser couldn't read confidently
+- `meta` — the ingest watermark
+
+New entries come from r/findthepreset. Reddit blocks unauthenticated API access,
+so `chordcraft.presets.ingest` reads the [Arctic Shift](https://arctic-shift.photon-reddit.com)
+archive instead. It fetches posts newer than the watermark, parses threads
+flaired *PRESET FOUND* (`chordcraft/presets/parse.py`: title → artist/song,
+post → synth + preset; anything hedged or ambiguous is queued instead), and
+inserts the confident ones. On ~400 hand-labelled solved threads the parser
+agrees with the human label about 90% of the time. Every automated batch lands
+as a pull request for review.
+
+```bash
+uv run python -m chordcraft.presets stats
+uv run python -m chordcraft.presets ingest --dry-run      # what would be added
+uv run python -m chordcraft.presets ingest
+uv run python -m chordcraft.presets export ../public/data/presets.json
+```
+
+The deployed site has no backend, so it reads `public/data/presets.json`, a
+snapshot exported from the same database, and runs the same query in the
+browser. Set `NEXT_PUBLIC_API_URL` to have it query this API instead.
+`.github/workflows/presets-refresh.yml` runs the ingest + export every Monday
+and opens a PR with the new entries.
 
 ## Theory engine parity
 
