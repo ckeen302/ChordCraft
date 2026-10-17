@@ -39,7 +39,13 @@ device = "cuda"
 print("torch", torch.__version__, "|", torch.cuda.get_device_name(0))
 
 data_dir = os.path.dirname(glob.glob("/kaggle/input/**/train.jsonl", recursive=True)[0])
-load = lambda name: [json.loads(line) for line in open(os.path.join(data_dir, name))]  # noqa: E731
+
+
+def load(name):
+    with open(os.path.join(data_dir, name)) as f:
+        return [json.loads(line) for line in f]
+
+
 train_rows, val_rows = load("train.jsonl"), load("val.jsonl")
 
 tok = AutoTokenizer.from_pretrained(BASE, revision=REVISION)
@@ -139,7 +145,10 @@ print(json.dumps({"val_valid_json": valid / len(sample), "val_exact_call": exact
 merged = model.merge_and_unload()
 merged.save_pretrained("/kaggle/working/merged", safe_serialization=True)
 tok.save_pretrained("/kaggle/working/merged")
-json.dump({"base": BASE, "revision": REVISION, "epochs": EPOCHS, "lr": LR, "lora_r": 16, "train_examples": len(train_rows),
-           "val_valid_json": valid / len(sample), "val_exact_call": exact / len(sample)},
-          open("/kaggle/working/merged/training_summary.json", "w"), indent=1)
+summary = {
+    "base": BASE, "revision": REVISION, "epochs": EPOCHS, "lr": LR, "lora_r": 16, "train_examples": len(train_rows),
+    "val_valid_json": valid / len(sample), "val_exact_call": exact / len(sample),
+}
+with open("/kaggle/working/merged/training_summary.json", "w") as f:
+    json.dump(summary, f, indent=1)
 print("saved merged model")

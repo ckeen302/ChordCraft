@@ -42,7 +42,10 @@ for f in fp32.iterdir():
     if not f.name.startswith("model.onnx"):
         shutil.copy(f, out / f.name)
 
-quantize_dynamic(fp32 / "model.onnx", onnx_dir / "model_quantized.onnx", weight_type=QuantType.QUInt8, per_channel=True, reduce_range=True)
+quantize_dynamic(
+    fp32 / "model.onnx", onnx_dir / "model_quantized.onnx",
+    weight_type=QuantType.QUInt8, per_channel=True, reduce_range=True,
+)
 print("wrote", onnx_dir / "model_quantized.onnx")
 
 q4 = MatMulNBitsQuantizer(onnx.load(fp32 / "model.onnx"), block_size=32, is_symmetric=True)

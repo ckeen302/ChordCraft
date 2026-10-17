@@ -243,7 +243,7 @@ export function parseToolCall(text: string, { chordCount }: { chordCount: number
   let raw: unknown
   try { raw = JSON.parse(json) } catch (e) { return { ok: false, errors: [`invalid JSON: ${(e as Error).message}`] } }
   const { value, warnings } = normalizeToolCall(raw)
-  let errors = validateSchema(value, TOOL_CALL_SCHEMA as unknown as Schema)
+  const errors = validateSchema(value, TOOL_CALL_SCHEMA as unknown as Schema)
   // Salvage the call: drop optional fields that failed (a bad "instrument"
   // shouldn't sink a good "mood"), but never the tool or what it requires.
   if (errors.length && typeof value === 'object' && value !== null && !Array.isArray(value)) {
