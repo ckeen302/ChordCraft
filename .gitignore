@@ -47,3 +47,4 @@ __pycache__/
 backend/data/
 backend/runs/
 backend/models/*.pt
+backend/dist/

@@ -76,3 +76,43 @@ def test_loop_completions():
     assert (0, c) in loop_completions([[a, b, c, a, b]])       # A B C A B → block C (ABCABC)
     assert loop_completions([[a, b, c]]) == []
     assert loop_completions([[a, b]]) == []
+
+
+def test_loads_exported_hub_directory(tiny_checkpoint, tmp_path, with_engine):
+    from chordcraft.model.hub import export, load_exported
+    out = export(tiny_checkpoint, tmp_path / "hub")
+    assert (out / "model.safetensors").exists() and (out / "README.md").exists()
+    model, _ = load_exported(out)
+    assert model.head.weight.data_ptr() == model.embed.weight.data_ptr()
+    with_engine(out)
+    assert client.post("/v1/generate", json={"seed": 1, "engine": "model"}).json()["engine"] == "model"
+
+
+def test_hub_download_fallback(tiny_checkpoint, tmp_path, monkeypatch):
+    from chordcraft.model import hub
+    out = hub.export(tiny_checkpoint, tmp_path / "hub")
+    monkeypatch.setattr(hub, "download", lambda repo, revision=None: out)
+    eng = ModelEngine(tmp_path / "missing.pt", repo="someone/model")
+    assert eng.available and eng.path == out
+
+
+def test_failed_download_is_retried(tiny_checkpoint, tmp_path, monkeypatch):
+    from chordcraft.api import model_engine
+    from chordcraft.model import hub
+    out = hub.export(tiny_checkpoint, tmp_path / "hub")
+    calls = {"n": 0}
+
+    def flaky(repo, revision=None):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise OSError("network down")
+        return out
+
+    monkeypatch.setattr(hub, "download", flaky)
+    clock = {"t": 1000.0}
+    monkeypatch.setattr(model_engine.time, "monotonic", lambda: clock["t"])
+    eng = ModelEngine(tmp_path / "missing.pt", repo="someone/model")
+    assert not eng.available and "network down" in eng.status()["error"]
+    assert not eng.available and calls["n"] == 1      # within the retry window: no new attempt
+    clock["t"] += model_engine.DOWNLOAD_RETRY_S + 1
+    assert eng.available and calls["n"] == 2

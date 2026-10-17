@@ -16,6 +16,7 @@ RUN uv sync --frozen --no-dev --extra ml --no-install-project
 COPY chordcraft ./chordcraft
 RUN uv sync --frozen --no-dev --extra ml
 
-ENV PATH="/app/.venv/bin:$PATH" PORT=7860
+# Spaces run the container as a non-root user: keep the Hub download cache somewhere writable.
+ENV PATH="/app/.venv/bin:$PATH" PORT=7860 HF_HOME=/tmp/huggingface
 EXPOSE 7860
 CMD ["sh", "-c", "uvicorn chordcraft.api.main:app --host 0.0.0.0 --port ${PORT}"]

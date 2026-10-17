@@ -56,7 +56,11 @@ _origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
-    allow_origin_regex=r"^http://localhost:\d+$",
+    # Local dev on any port, plus an optional pattern for deployed frontends
+    # (e.g. every Vercel preview of the project).
+    allow_origin_regex=r"^http://localhost:\d+$" + (
+        f"|{os.environ['ALLOWED_ORIGIN_REGEX']}" if os.getenv("ALLOWED_ORIGIN_REGEX") else ""
+    ),
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

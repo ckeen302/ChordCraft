@@ -1,14 +1,19 @@
 /**
  * Client for the ChordCraft backend (FastAPI, `backend/`).
  *
- * The URL comes from NEXT_PUBLIC_API_URL (default http://localhost:8000 for
- * local development). Every call fails soft: the generator UI falls back to
- * the in-browser rule engine when the backend or its model is unavailable.
+ * The URL comes from NEXT_PUBLIC_API_URL; without it, production builds use
+ * the Hugging Face Space and development uses http://localhost:8000. Every call
+ * fails soft: the generator UI falls back to the in-browser rule engine when
+ * the backend or its model is unavailable.
  */
 import type { ChordQuality, InstrumentName, ParsedChord } from '@/types'
 import { QUALITY_INTERVALS } from '@/lib/theory/chords'
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000').replace(/\/+$/, '')
+const DEFAULT_API_URL = process.env.NODE_ENV === 'production'
+  ? 'https://ckeen302-chordcraft-api.hf.space'
+  : 'http://localhost:8000'
+
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL).replace(/\/+$/, '')
 
 const INSTRUMENTS: InstrumentName[] = [
   'Piano', 'Electric Piano', 'Pad', 'Synth Lead', 'Organ',

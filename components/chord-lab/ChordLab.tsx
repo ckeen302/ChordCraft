@@ -110,14 +110,24 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   const [saveName, setSaveName]       = useState('')
 
   useEffect(() => {
+    // The hosted backend sleeps when idle and takes ~30 s to wake (the first
+    // request starts it), so keep checking for a while before giving up.
+    const RETRY_DELAYS_MS = [0, 8000, 20000, 40000]
     let cancelled = false
-    checkBackend().then(({ online, model }) => {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const attempt = async (i: number) => {
+      const { online, model } = await checkBackend()
       if (cancelled) return
       const status = !online ? 'offline' : model ? 'ready' : 'no-model'
-      setAiStatus(status)
-      if (status === 'ready' && !modeTouchedRef.current) setMode('ai')
-    })
-    return () => { cancelled = true }
+      if (status === 'ready' || i === RETRY_DELAYS_MS.length - 1) {
+        setAiStatus(status)
+        if (status === 'ready' && !modeTouchedRef.current) setMode('ai')
+        return
+      }
+      timer = setTimeout(() => attempt(i + 1), RETRY_DELAYS_MS[i + 1])
+    }
+    attempt(0)
+    return () => { cancelled = true; clearTimeout(timer) }
   }, [])
 
   function chooseMode(next: string) {
