@@ -5,11 +5,14 @@
  *
  * A browsable collection of famous VST preset identifications — "what preset
  * is that sound?" — in the spirit of r/findthepreset. Pure data browser: no
- * generation, no playback. Search, filter by VST, grouped by artist.
+ * generation, no playback. Search, filter by VST and source, grouped by artist.
  */
-import { useMemo, useState } from 'react'
-import { Search, ExternalLink, SlidersHorizontal, BadgeCheck, Users } from 'lucide-react'
-import { PRESETS, PRESET_VSTS, type PresetEntry } from '@/lib/data/presets'
+import { useMemo, useState, type ReactNode } from 'react'
+import { Search, ExternalLink, SlidersHorizontal, BadgeCheck, Users, Link2 } from 'lucide-react'
+import {
+  PRESETS, PRESET_VSTS, PRESET_SOURCES, presetSource,
+  type PresetEntry, type PresetSource,
+} from '@/lib/data/presets'
 import { cn } from '@/lib/utils'
 
 function StatusChip({ status }: { status: PresetEntry['status'] }) {
@@ -32,14 +35,44 @@ function StatusChip({ status }: { status: PresetEntry['status'] }) {
   )
 }
 
+/** VST chips shown before "Show all" — the list is long once every synth gets one. */
+const VST_CHIPS_COLLAPSED = 14
+/** Artist groups rendered per "Show more" step — the full library is 1,000+ cards. */
+const ARTISTS_PER_PAGE = 40
+
+function FilterChip({ active, onClick, children }: {
+  active: boolean
+  onClick: () => void
+  children: ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors cursor-pointer',
+        active
+          ? 'bg-accent border-accent text-bg-deep'
+          : 'bg-bg-raised border-border text-text-muted hover:text-text',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
 export function PresetLibrary() {
   const [query, setQuery] = useState('')
   const [vstFilter, setVstFilter] = useState<string | null>(null)
+  const [sourceFilter, setSourceFilter] = useState<PresetSource | null>(null)
+  const [showAllVsts, setShowAllVsts] = useState(false)
+  // Paging resets whenever the filters change: a stored limit only applies to its own filter key.
+  const [page, setPage] = useState({ key: '', limit: ARTISTS_PER_PAGE })
 
   const q = query.trim().toLowerCase()
   const filtered = useMemo(
     () => PRESETS.filter(p => {
       if (vstFilter && p.vst !== vstFilter) return false
+      if (sourceFilter && presetSource(p) !== sourceFilter) return false
       if (!q) return true
       return (
         p.artist.toLowerCase().includes(q) ||
@@ -48,7 +81,7 @@ export function PresetLibrary() {
         p.preset.toLowerCase().includes(q)
       )
     }),
-    [q, vstFilter],
+    [q, vstFilter, sourceFilter],
   )
 
   // Group by artist, artists alphabetical.
@@ -62,6 +95,9 @@ export function PresetLibrary() {
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]))
   }, [filtered])
 
+  const filterKey = `${q}|${vstFilter}|${sourceFilter}`
+  const artistLimit = page.key === filterKey ? page.limit : ARTISTS_PER_PAGE
+
   return (
     <div className="flex h-full min-h-0">
 
@@ -72,6 +108,11 @@ export function PresetLibrary() {
           <p className="text-text-muted text-xs mt-0.5 leading-relaxed">
             The famous &ldquo;what preset is that?&rdquo; answers — the synths
             and patches behind well-known artist sounds.
+          </p>
+          <p className="text-text-dim text-[11px] mt-1.5">
+            {filtered.length === PRESETS.length
+              ? `${PRESETS.length} identifications`
+              : `${filtered.length} of ${PRESETS.length} identifications`}
           </p>
         </div>
 
@@ -96,30 +137,39 @@ export function PresetLibrary() {
             Filter by VST
           </span>
           <div className="flex flex-wrap gap-1.5">
-            <button
-              onClick={() => setVstFilter(null)}
-              className={cn(
-                'px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors cursor-pointer',
-                vstFilter === null
-                  ? 'bg-accent border-accent text-bg-deep'
-                  : 'bg-bg-raised border-border text-text-muted hover:text-text',
-              )}
-            >
-              All
-            </button>
-            {PRESET_VSTS.map(v => (
-              <button
-                key={v}
-                onClick={() => setVstFilter(f => (f === v ? null : v))}
-                className={cn(
-                  'px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors cursor-pointer',
-                  vstFilter === v
-                    ? 'bg-accent border-accent text-bg-deep'
-                    : 'bg-bg-raised border-border text-text-muted hover:text-text',
-                )}
-              >
+            <FilterChip active={vstFilter === null} onClick={() => setVstFilter(null)}>All</FilterChip>
+            {(showAllVsts ? PRESET_VSTS : PRESET_VSTS.slice(0, VST_CHIPS_COLLAPSED)).map(v => (
+              <FilterChip key={v} active={vstFilter === v} onClick={() => setVstFilter(f => (f === v ? null : v))}>
                 {v}
+              </FilterChip>
+            ))}
+            {/* Keep an active filter visible even when its chip is collapsed away. */}
+            {!showAllVsts && vstFilter && !PRESET_VSTS.slice(0, VST_CHIPS_COLLAPSED).includes(vstFilter) && (
+              <FilterChip active onClick={() => setVstFilter(null)}>{vstFilter}</FilterChip>
+            )}
+            {PRESET_VSTS.length > VST_CHIPS_COLLAPSED && (
+              <button
+                onClick={() => setShowAllVsts(s => !s)}
+                className="px-2 py-1 text-[11px] font-semibold text-accent hover:underline cursor-pointer"
+              >
+                {showAllVsts ? 'Show fewer' : `Show all ${PRESET_VSTS.length}`}
               </button>
+            )}
+          </div>
+        </div>
+
+        {/* Source filter chips */}
+        <div className="flex flex-col gap-2">
+          <span className="flex items-center gap-1.5 text-[10px] text-text-muted font-semibold uppercase tracking-[2px]">
+            <Link2 size={11} />
+            Source
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            <FilterChip active={sourceFilter === null} onClick={() => setSourceFilter(null)}>All</FilterChip>
+            {PRESET_SOURCES.map(src => (
+              <FilterChip key={src} active={sourceFilter === src} onClick={() => setSourceFilter(f => (f === src ? null : src))}>
+                {src}
+              </FilterChip>
             ))}
           </div>
         </div>
@@ -130,7 +180,7 @@ export function PresetLibrary() {
             About this data
           </span>
           <p className="text-[11px] text-text-dim leading-relaxed">
-            Curated in the spirit of{' '}
+            Mostly solved threads from{' '}
             <a
               href="https://www.reddit.com/r/findthepreset/"
               target="_blank"
@@ -139,10 +189,11 @@ export function PresetLibrary() {
             >
               r/findthepreset
             </a>
-            . <strong className="text-text-muted">Confirmed</strong> = official
-            documentation; <strong className="text-text-muted">Community ID</strong> ={' '}
-            the accepted identification from forums, remakes, and producer
-            streams — strong lore, not gospel. Every entry links its source.
+            {' '}(read via an archive, since Reddit blocks direct access) plus YouTube
+            preset showcases. <strong className="text-text-muted">Confirmed</strong> = official
+            or creator-stated; <strong className="text-text-muted">Community ID</strong> ={' '}
+            identified by producers on forums, in remakes or in videos. Treat it
+            as a strong lead, not gospel. Every entry links its source.
           </p>
         </div>
       </div>
@@ -153,11 +204,11 @@ export function PresetLibrary() {
           <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
             <Search size={24} className="text-text-dim" />
             <p className="text-text-muted text-sm">No presets match</p>
-            <p className="text-text-dim text-xs">Try a different search or clear the VST filter.</p>
+            <p className="text-text-dim text-xs">Try a different search or clear the filters.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-6 max-w-3xl">
-            {grouped.map(([artist, entries]) => (
+            {grouped.slice(0, artistLimit).map(([artist, entries]) => (
               <div key={artist}>
                 <h3 className="text-sm font-extrabold text-text uppercase tracking-widest mb-2.5">
                   {artist}
@@ -179,22 +230,28 @@ export function PresetLibrary() {
                         <span className="text-[12px] font-mono text-text-muted">{p.preset}</span>
                       </div>
                       <p className="text-xs text-text-dim leading-relaxed">{p.notes}</p>
-                      {p.sourceUrl && (
-                        <a
-                          href={p.sourceUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-1 self-start text-[11px] text-text-muted hover:text-accent transition-colors"
-                        >
-                          <ExternalLink size={10} />
-                          {p.sourceLabel ?? 'Source'}
-                        </a>
-                      )}
+                      <a
+                        href={p.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 self-start text-[11px] text-text-muted hover:text-accent transition-colors"
+                      >
+                        <ExternalLink size={10} />
+                        {p.sourceLabel}
+                      </a>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
+            {grouped.length > artistLimit && (
+              <button
+                onClick={() => setPage({ key: filterKey, limit: artistLimit + ARTISTS_PER_PAGE })}
+                className="self-center px-4 py-2 rounded-xl border border-border bg-bg-raised text-xs font-semibold text-text-muted hover:text-text hover:border-border-bright transition-colors cursor-pointer"
+              >
+                Show more artists ({grouped.length - artistLimit} left)
+              </button>
+            )}
           </div>
         )}
       </div>
