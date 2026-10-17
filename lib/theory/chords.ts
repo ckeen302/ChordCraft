@@ -44,7 +44,7 @@ export const QUALITY_INTERVALS: Record<ChordQuality, number[]> = {
   '13':    [0, 4, 7, 10, 14, 21],   // 11th omitted — it clashes with the 3rd
   '7b9':   [0, 4, 7, 10, 13],
   '7#9':   [0, 4, 7, 10, 15],
-  '5':     [0, 7],                  // power chord (no third)
+  '5':     [0, 7, 12],              // power chord: root, fifth, octave (no third)
 }
 
 // ─── Display labels rendered on chord cards ──────────────────────────────────

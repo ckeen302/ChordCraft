@@ -44,6 +44,8 @@ export interface GeneratedProgression {
   romans?: string[]
   patternName?: string
   rolledMood?: Mood | null
+  /** Key the progression was generated in, when the generator changed it (e.g. matched to the mood). */
+  key?: string
 }
 
 export function useProgressionEditor({ active }: { active: boolean }) {
@@ -175,15 +177,17 @@ export function useProgressionEditor({ active }: { active: boolean }) {
   // ── Generated progressions ─────────────────────────────────────────────────
 
   /** Load a freshly generated progression: undoable, logged, and sent to the transport. */
-  function loadGenerated({ chords, romans = [], patternName = '', rolledMood = null }: GeneratedProgression) {
+  function loadGenerated({ chords, romans = [], patternName = '', rolledMood = null, key }: GeneratedProgression) {
     pushUndo()
+    const k = key ?? selectedKey
+    setSelectedKey(k)
     setRomans(romans)
     setPatternName(patternName)
     setRolledMood(rolledMood)
     setLocalChords(chords)
     setLocalNotes(chordsToNotes(chords, useStore.getState().beatsPerChord))
-    loadProgression(chords, `Chord Lab · ${selectedKey}`)
-    pushHistory(chords, selectedKey)
+    loadProgression(chords, `Chord Lab · ${k}`)
+    pushHistory(chords, k)
   }
 
   // ── Saved progressions ─────────────────────────────────────────────────────

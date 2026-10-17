@@ -101,3 +101,31 @@ it('spellDegrees matches the Python port', () => {
   expect(spellDegrees('A Minor', [[0, 'm'], [8, 'maj'], [3, 'maj'], [10, 'maj']])).toEqual(['Am', 'F', 'C', 'G'])
   expect(spellDegrees('Eb Major', [[0, 'maj7'], [9, 'm7'], [2, 'm7'], [7, '7']])).toEqual(['Ebmaj7', 'Cm7', 'Fm7', 'Bb7'])
 })
+
+describe('mood quality', () => {
+  it('guidance runs both conditioned and unconditioned rows and changes the distribution', async () => {
+    const seen: number[] = []
+    const logits: LogitsFn = async rows => {
+      seen.push(rows.length)
+      return rows.map(row => Float32Array.from(tokens, (_, i) =>
+        // the conditioned rows (real mood token) prefer 9:m; unconditioned prefer 7:maj
+        i === vocab.id(row[3] === vocab.id('mood:any') ? '7:maj' : '9:m') ? 5 : 0))
+    }
+    const [guided] = await sampleProgressions(logits, vocab, { mode: 'major', length: 2, mood: 'melancholic', candidates: 2, guidance: 3, rng: seededRng(1) })
+    expect(seen[0]).toBe(4)
+    expect(guided.degrees[0]).toEqual([9, 'm'])
+    seen.length = 0
+    await sampleProgressions(logits, vocab, { mode: 'major', length: 2, mood: 'any', candidates: 2, guidance: 3, rng: seededRng(1) })
+    expect(seen[0]).toBe(2) // no mood → nothing to guide toward
+  })
+
+  it('colouring gives moods their signature chords', async () => {
+    const { colourDegrees } = await import('@/lib/theory/harmony')
+    const plain: [number, 'maj' | 'm'][] = [[2, 'm'], [7, 'maj'], [0, 'maj'], [9, 'm']]
+    const jazz = colourDegrees(plain, 'jazz', false, seededRng(2))
+    expect(jazz.filter(([, q]) => q !== 'maj' && q !== 'm').length).toBeGreaterThanOrEqual(3)
+    expect(colourDegrees(plain, 'aggressive', false).map(([, q]) => q)).toEqual(['5', '5', '5', '5'])
+    const recurring = colourDegrees([[0, 'maj'], [5, 'maj'], [0, 'maj'], [5, 'maj']], 'dreamy', false, seededRng(4))
+    expect(recurring[0]).toEqual(recurring[2]) // style-coherent: same chord, same colour
+  })
+})

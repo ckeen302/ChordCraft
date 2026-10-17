@@ -135,6 +135,14 @@ over a 300-chord vocabulary (artist-disjoint test split, 77k phrases).
 | **Chord transformer** | 100% | **82.4%** | 46.9% | **0.114** | 80.7% | **55.3%** |
 | Same model, no mood token | 100% | 10.9% | 34.8% | 0.073 | 87.4% | 56.2% |
 | Rule engine (baseline) | 100% | 63.2% | 81.0% | 0.090 | 81.2% | 51.2% |
+| **Chord transformer + guidance (w=2) + presence penalty** | 100% | **90.4%** | **51.1%** | **0.133** | 76.3% | 57.1% |
+
+The guided row ([report](results/chord-transformer-v1-cfg/eval.json)) is how the app decodes:
+classifier-free guidance compares each step with a `mood:any` prompt and pushes away from it,
+lifting the weakest moods (aggressive 64% → 96%, romantic 68% → 79%) without losing
+diversity. A re-run of the unguided model with sampling dropout correctly disabled
+([report](results/chord-transformer-v1-fixed/eval.json)) gives 83.0% mood control — the
+original Kaggle evaluation accidentally sampled with dropout on (fixed in `evaluate.py`).
 
 How to read it:
 - **Mood control** = share of outputs whose weak mood label matches the
