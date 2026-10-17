@@ -6,6 +6,7 @@ import {
   Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check, Brain,
 } from 'lucide-react'
 import { ChordStrip } from './ChordStrip'
+import { ChatPanel, type ChatMessage } from './ChatPanel'
 import { PianoRoll } from '@/components/piano/PianoRoll'
 import { useStore } from '@/store/useStore'
 import { useProgressionEditor } from '@/hooks/useProgressionEditor'
@@ -19,7 +20,9 @@ import {
 } from '@/lib/theory/progressions'
 import { KEY_NAMES } from '@/lib/theory/keys'
 import { MOOD_MODE } from '@/lib/theory/harmony'
-import { parallelKey } from '@/lib/theory/transpose'
+import { parallelKey, transposeKeyName } from '@/lib/theory/transpose'
+import { DEFAULT_SETTINGS, parseRequest, type ChatSettings } from '@/lib/chat/parse'
+import { describeProgression, HELP_TEXT, UNKNOWN_TEXT } from '@/lib/chat/reply'
 import { analyzeProgression } from '@/lib/theory/analysis'
 import { setChordRoll } from '@/lib/audio/engine'
 import { loadChordModel } from '@/lib/ai/model'
@@ -111,6 +114,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   const [error, setError]             = useState<string | null>(null)
   const [saveOpen, setSaveOpen]       = useState(false)
   const [saveName, setSaveName]       = useState('')
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [chatBusy, setChatBusy]         = useState(false)
+  const [chatSettings, setChatSettings] = useState<ChatSettings>(DEFAULT_SETTINGS)
 
   useEffect(() => {
     let cancelled = false
@@ -225,6 +231,78 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         : (e as Error).message)
     } finally {
       setGenerating(false)
+    }
+  }
+
+  // ── Chord Chat ─────────────────────────────────────────────────────────────
+
+  async function handleChat(text: string) {
+    setChatMessages(m => [...m, { role: 'user', text }])
+    const reply = (t: string) => setChatMessages(m => [...m, { role: 'assistant', text: t }])
+    setChatBusy(true)
+    try {
+      const prev: ChatSettings = {
+        ...chatSettings,
+        key: chatSettings.keyPinned ? chatSettings.key : selectedKey,
+        bpm: chatSettings.bpm ?? bpm,
+      }
+      const req = parseRequest(text, prev)
+      const s = req.settings
+      if (req.help) return reply(HELP_TEXT)
+      if (req.unknown) return reply(UNKNOWN_TEXT)
+
+      if (req.transpose) {
+        if (!localChords.length) return reply("There's nothing to transpose yet — describe a progression first.")
+        const newKey = transposeKeyName(selectedKey, req.transpose)
+        transpose(req.transpose)
+        setChatSettings({ ...s, key: newKey, keyPinned: true })
+        return reply(`Done — ${req.notes.join(', ')}. It's now in ${newKey}.`)
+      }
+
+      if (req.keepChords) {
+        const changes: string[] = []
+        if (s.bpm && s.bpm !== bpm) { setBpm(s.bpm); changes.push(`${s.bpm} BPM`) }
+        if (s.instrument && s.instrument !== instrument) {
+          useStore.getState().chooseInstrument(s.instrument)
+          changes.push(`playing on ${s.instrument.toLowerCase()}`)
+        }
+        setChatSettings(s)
+        return reply(changes.length
+          ? `Done — ${changes.join(', ')}. Same chords.`
+          : `That's already how it's set. Ask for a different mood, key, or "another one" for new chords.`)
+      }
+
+      setAiStatus(st => (st === 'ready' ? st : 'loading'))
+      const model = await loadChordModel()
+      setAiStatus('ready')
+      const key = s.keyPinned ? s.key : parallelKey(selectedKey, MOOD_MODE[s.mood])
+      const res = await generateWithModel(model, {
+        key, mood: s.mood, length: s.length, excludeDiminished: s.excludeDiminished, resolve: s.resolve,
+      })
+      const st = useStore.getState()
+      const playBpm = s.bpm ?? res.bpm
+      let playInstrument = st.instrumentTouched ? st.instrument : res.instrument
+      if (s.instrument) { st.chooseInstrument(s.instrument); playInstrument = s.instrument }
+      else if (!st.instrumentTouched) setInstrument(res.instrument)
+      setBpm(playBpm)
+      setChordRoll(res.rollMs)
+      // Keep the side-panel controls in step with what the chat asked for.
+      setMode('ai')
+      setMood(s.mood)
+      setLength(s.length)
+      setExcludeDim(s.excludeDiminished)
+      loadGenerated({ chords: res.chords, romans: res.romans, patternName: res.patternName, rolledMood: null, key })
+      setChatSettings({ ...s, key, bpm: playBpm })
+      reply(describeProgression({
+        chords: res.chords, romans: res.romans, key, mood: s.mood, bpm: playBpm, instrument: playInstrument,
+        summary: analyzeProgression(res.chords, key).summary,
+        keyFollowedMood: !s.keyPinned && key !== selectedKey, notes: req.notes,
+      }))
+    } catch (e) {
+      setAiStatus('error')
+      reply(`The AI model couldn't run (${(e as Error).message}). Check your connection and try again.`)
+    } finally {
+      setChatBusy(false)
     }
   }
 
@@ -554,6 +632,8 @@ export function ChordLab({ active = true }: { active?: boolean }) {
 
       {/* ── Right panel: Output ──────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 gap-6">
+
+        <ChatPanel messages={chatMessages} busy={chatBusy} onSend={handleChat} />
 
         {/* Progression strip — or empty hint */}
         {localChords.length > 0 ? (
