@@ -1,0 +1,67 @@
+name: Refresh Preset Finder
+
+# Weekly: pull newly solved r/findthepreset threads into backend/db/presets.sqlite,
+# re-export the site's snapshot, and open a PR so a human reviews every batch.
+on:
+  schedule:
+    - cron: '0 14 * * 1' # Mondays 14:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: presets-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: uv sync --frozen
+      - name: Ingest new solved threads
+        id: ingest
+        run: |
+          uv run python -m chordcraft.presets ingest | tee "$RUNNER_TEMP/ingest.log"
+          echo "summary=$(head -1 "$RUNNER_TEMP/ingest.log")" >> "$GITHUB_OUTPUT"
+          echo "added=$(grep -c '^  + ' "$RUNNER_TEMP/ingest.log" || true)" >> "$GITHUB_OUTPUT"
+      - name: Export the site snapshot
+        if: steps.ingest.outputs.added != '0'
+        run: uv run python -m chordcraft.presets export ../public/data/presets.json
+      - name: Test the refreshed data
+        if: steps.ingest.outputs.added != '0'
+        run: |
+          uv run pytest -q tests/test_presets.py
+          cd .. && npm ci && npx vitest run lib/data/presets.test.ts
+      - name: Open a pull request
+        if: steps.ingest.outputs.added != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUMMARY: ${{ steps.ingest.outputs.summary }}
+        run: |
+          branch="presets/refresh-$(date -u +%Y-%m-%d)-${{ github.run_number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add db/presets.sqlite ../public/data/presets.json
+          git commit -m "Refresh Preset Finder from r/findthepreset" -m "$SUMMARY"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Preset Finder refresh $(date -u +%Y-%m-%d)" \
+            --body "Automated weekly ingest from r/findthepreset (via the Arctic Shift archive).
+
+          $SUMMARY
+
+          Review the new entries in public/data/presets.json before merging. Threads the parser couldn't read confidently are in the review_queue table."

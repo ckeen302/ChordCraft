@@ -8,11 +8,14 @@ from __future__ import annotations
 
 import os
 import random
+import sqlite3
 from dataclasses import replace
+from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from chordcraft.presets import db as presets_db
 from chordcraft.theory import (
     KEY_NAMES,
     KEYS,
@@ -38,9 +41,13 @@ from .schemas import (
     ParseRequest,
     ParseResponse,
     ParseResult,
+    PresetFacets,
+    PresetOut,
+    PresetPage,
     ValidatedChord,
     ValidateRequest,
     ValidateResponse,
+    VstCount,
 )
 
 engine = ModelEngine()
@@ -173,6 +180,57 @@ def _generate_with_model(req: GenerateRequest, mood: str, rng: random.Random) ->
         instrument=rng.choice(profile.instruments),
         rollMs=profile.roll_ms,
     )
+
+
+# ── Preset Finder ────────────────────────────────────────────────────────────
+
+
+def _presets_conn():
+    try:
+        return presets_db.connect_readonly()
+    except sqlite3.Error as e:
+        raise HTTPException(503, f"Preset database unavailable: {e}") from e
+
+
+@app.get("/v1/presets", response_model=PresetPage)
+def list_presets(
+    q: str = Query("", max_length=100, description="Full-text search over artist, song, synth and preset"),
+    vst: str | None = Query(None, max_length=100),
+    source: Literal["Reddit", "YouTube", "Web"] | None = None,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+) -> PresetPage:
+    conn = _presets_conn()
+    try:
+        page = presets_db.query(conn, q=q, vst=vst, source=source, limit=limit, offset=offset)
+    finally:
+        conn.close()
+    return PresetPage(total=page.total, offset=offset, limit=limit,
+                      items=[PresetOut(**p.to_json()) for p in page.items])
+
+
+@app.get("/v1/presets/facets", response_model=PresetFacets)
+def preset_facets() -> PresetFacets:
+    conn = _presets_conn()
+    try:
+        vsts = presets_db.vst_counts(conn)
+        sources = dict(conn.execute("SELECT source_kind, count(*) FROM presets GROUP BY 1").fetchall())
+    finally:
+        conn.close()
+    return PresetFacets(total=sum(n for _, n in vsts), vsts=[VstCount(vst=v, count=n) for v, n in vsts],
+                        sources=sources)
+
+
+@app.get("/v1/presets/{preset_id}", response_model=PresetOut)
+def get_preset(preset_id: str) -> PresetOut:
+    conn = _presets_conn()
+    try:
+        preset = presets_db.get(conn, preset_id)
+    finally:
+        conn.close()
+    if not preset:
+        raise HTTPException(404, f"No preset with id {preset_id!r}")
+    return PresetOut(**preset.to_json())
 
 
 def _parses(symbol: str) -> bool:

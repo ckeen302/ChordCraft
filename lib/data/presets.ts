@@ -1,20 +1,20 @@
 /**
- * Famous VST preset identifications — the "what preset is that?" library.
+ * Preset Finder data access — the "what preset is that?" library.
  *
- * Curated in the spirit of r/findthepreset (https://www.reddit.com/r/findthepreset/):
- * which synths and patches are behind well-known artist sounds. Direct import
- * from the subreddit isn't possible from this machine (Reddit blocks all
- * unauthenticated programmatic access), so this seed set is curated from
- * widely-documented community knowledge, each entry carrying its status:
+ * The library lives in SQLite (backend/db/presets.sqlite), fed by the
+ * r/findthepreset ingest job (backend/chordcraft/presets). The site reads it
+ * one of two ways, with the same query semantics:
  *
- *  - 'confirmed'  — factual/official documentation (e.g. factory-bank authorship)
- *  - 'community'  — the accepted community identification (forum consensus,
- *                   remake tutorials, producer streams) — treat as strong lore,
- *                   not gospel.
+ *  - API mode — when NEXT_PUBLIC_API_URL points at the FastAPI backend, every
+ *    search/filter/page is a GET /v1/presets request (SQLite FTS5 search).
+ *  - Snapshot mode — otherwise (the default deploy, which has no backend), the
+ *    site fetches public/data/presets.json, a snapshot exported from the same
+ *    database, once, and runs the query in the browser.
  *
- * To grow the library, append entries here — the tab renders whatever's in
- * this array, grouped by artist. Keep `sourceUrl` pointing at something a
- * reader can actually check.
+ * Status:
+ *  - 'confirmed'  — official/creator-stated (e.g. factory-bank authorship)
+ *  - 'community'  — an identification by producers on forums, in remakes or
+ *                   in showcase videos. Treat it as a strong lead, not gospel.
  */
 
 export interface PresetEntry {
@@ -24,144 +24,111 @@ export interface PresetEntry {
   context: string
   /** The synth/VST. */
   vst: string
-  /** Preset or patch name — or 'Custom patch' when it isn't a factory sound. */
+  /** Preset or patch name. */
   preset: string
   notes: string
   status: 'confirmed' | 'community'
-  sourceUrl?: string
-  sourceLabel?: string
+  sourceUrl: string
+  sourceLabel: string
 }
 
-export const PRESETS: PresetEntry[] = [
-  {
-    id: 'avicii-levels',
-    artist: 'Avicii',
-    context: '"Levels" — main lead',
-    vst: 'Sylenth1',
-    preset: 'Layered factory-style LD leads',
-    notes: 'The most requested preset ID of the 2010s. Community remakes converge on layered Sylenth1 leads; Syntorial published a note-for-note recipe.',
-    status: 'community',
-    sourceUrl: 'https://www.syntorial.com/preset-recipe/avicii-levels-lead/',
-    sourceLabel: 'Syntorial preset recipe',
-  },
-  {
-    id: 'avicii-broken-circuit',
-    artist: 'Avicii',
-    context: 'Early leads ("Stay With You", "You\'re Gonna Love Again")',
-    vst: 'Sylenth1',
-    preset: 'LD Broken Circuit',
-    notes: 'Identified on KVR\'s sound-design forum as the factory patch behind several early Avicii leads.',
-    status: 'community',
-    sourceUrl: 'https://www.kvraudio.com/forum/viewtopic.php?t=389170',
-    sourceLabel: 'KVR Audio thread',
-  },
-  {
-    id: 'alan-walker-faded',
-    artist: 'Alan Walker',
-    context: '"Faded" / "Fade" — signature pluck',
-    vst: 'Sylenth1 · Serum · Sytrus',
-    preset: 'Community-recreated pluck',
-    notes: 'One of the most remade sounds ever — free community banks recreate it in Sylenth1, Serum, and even FL\'s stock Sytrus.',
-    status: 'community',
-    sourceUrl: 'https://stickz.co/faded/',
-    sourceLabel: 'Stickz FADED soundbank',
-  },
-  {
-    id: 'skrillex-massive',
-    artist: 'Skrillex',
-    context: '"Scary Monsters and Nice Sprites"-era growls',
-    vst: 'NI Massive',
-    preset: 'Custom patches',
-    notes: 'The early-dubstep growl vocabulary was built on Massive\'s wavetables with macro-modulated formants — the documented staple of that whole era.',
-    status: 'community',
-    sourceUrl: 'https://www.native-instruments.com/en/products/komplete/synths/massive/',
-    sourceLabel: 'NI Massive',
-  },
-  {
-    id: 'martin-garrix-animals',
-    artist: 'Martin Garrix',
-    context: '"Animals" — big-room lead',
-    vst: 'Sylenth1',
-    preset: 'Custom patch',
-    notes: 'Not a factory preset — a custom Sylenth1 patch from Garrix\'s documented FL Studio setup, recreated in hundreds of tutorials.',
-    status: 'community',
-  },
-  {
-    id: 'virtual-riot-serum',
-    artist: 'Virtual Riot',
-    context: 'Xfer Serum factory library',
-    vst: 'Xfer Serum',
-    preset: 'Factory presets (authored)',
-    notes: 'Several of Serum\'s stock presets were designed by Virtual Riot — browsing the factory bank is literally playing his patches.',
-    status: 'confirmed',
-    sourceUrl: 'https://xferrecords.com/products/serum',
-    sourceLabel: 'Xfer Serum',
-  },
-  {
-    id: 'hardwell-spire',
-    artist: 'Hardwell',
-    context: 'Big-room leads (2013–2016)',
-    vst: 'Reveal Sound Spire',
-    preset: 'Signature supersaw leads',
-    notes: 'A documented Spire user — the mid-2010s big-room lead sound tracks Spire\'s supersaw character.',
-    status: 'community',
-    sourceUrl: 'https://www.reveal-sound.com/',
-    sourceLabel: 'Reveal Sound',
-  },
-  {
-    id: 'zaytoven-nexus',
-    artist: 'Zaytoven',
-    context: 'Gospel-trap keys & guitars (Gucci Mane / Migos era)',
-    vst: 'reFX Nexus',
-    preset: 'Factory keys & guitar presets',
-    notes: 'Zaytoven\'s rapid-fire trap keys famously ride Nexus factory sounds nearly untouched.',
-    status: 'community',
-    sourceUrl: 'https://refx.com/nexus/',
-    sourceLabel: 'reFX Nexus',
-  },
-  {
-    id: 'southside-electrax',
-    artist: 'Southside (808 Mafia)',
-    context: 'Trap leads, bells & brass',
-    vst: 'Tone2 ElectraX',
-    preset: 'Custom + shared banks',
-    notes: 'ElectraX is the documented core of the 808 Mafia palette — half of 2010s trap lead sounds trace back to it.',
-    status: 'community',
-    sourceUrl: 'https://www.tone2.com/electrax.html',
-    sourceLabel: 'Tone2 ElectraX',
-  },
-  {
-    id: 'hans-zimmer-omnisphere',
-    artist: 'Hans Zimmer',
-    context: 'Hybrid-score pads & textures',
-    vst: 'Spectrasonics Omnisphere',
-    preset: 'Factory soundsources + custom',
-    notes: 'Omnisphere is a documented staple of modern hybrid film-scoring templates, Zimmer\'s circle included.',
-    status: 'community',
-    sourceUrl: 'https://www.spectrasonics.net/products/omnisphere/',
-    sourceLabel: 'Spectrasonics',
-  },
-  {
-    id: 'nick-mira-omnisphere',
-    artist: 'Nick Mira',
-    context: 'Juice WRLD-era melodies (Internet Money)',
-    vst: 'Omnisphere · Analog Lab',
-    preset: 'Factory + kit presets',
-    notes: 'Mira\'s live beat-making streams document his go-to Omnisphere and Analog Lab patches behind the melodic-trap era.',
-    status: 'community',
-    sourceUrl: 'https://www.spectrasonics.net/products/omnisphere/',
-    sourceLabel: 'Spectrasonics',
-  },
-  {
-    id: 'pierre-bourne-purity',
-    artist: "Pi'erre Bourne",
-    context: 'Playboi Carti-era melodies ("Magnolia" period)',
-    vst: 'LUXONIX Purity',
-    preset: 'Factory rompler banks',
-    notes: 'In-studio videos show Purity\'s rompler banks behind the bouncy, video-game-bright Carti-era palette.',
-    status: 'community',
-  },
-]
+export type PresetSource = 'Reddit' | 'YouTube' | 'Web'
+export const PRESET_SOURCES: PresetSource[] = ['Reddit', 'YouTube', 'Web']
 
-/** Unique VST names for filter chips, alphabetical. */
-export const PRESET_VSTS: string[] = [...new Set(PRESETS.map(p => p.vst))].sort()
+/** Where an entry's identification comes from, derived from its source URL. */
+export function presetSource(p: Pick<PresetEntry, 'sourceUrl'>): PresetSource {
+  const host = new URL(p.sourceUrl).hostname
+  if (host.endsWith('reddit.com')) return 'Reddit'
+  if (host.endsWith('youtube.com') || host === 'youtu.be') return 'YouTube'
+  return 'Web'
+}
+
+export interface PresetQuery {
+  q?: string
+  vst?: string | null
+  source?: PresetSource | null
+  offset?: number
+  limit?: number
+}
+
+export interface PresetPage {
+  total: number
+  items: PresetEntry[]
+}
+
+export interface PresetFacets {
+  total: number
+  /** Every VST with its entry count, most-used first. */
+  vsts: { vst: string; count: number }[]
+}
+
+/** The JSON written by `python -m chordcraft.presets export`. */
+export interface PresetSnapshot {
+  generatedAt: string
+  count: number
+  vsts: { vst: string; count: number }[]
+  presets: PresetEntry[]
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '')
+const SNAPSHOT_URL = '/data/presets.json'
+
+const words = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').match(/\w+/g) ?? []
+
+/**
+ * Run a query against the snapshot. Mirrors the API: every search word must
+ * prefix-match a word in artist/context/vst/preset (like the FTS5 index),
+ * results ordered by artist then id.
+ */
+export function queryPresets(presets: PresetEntry[], query: PresetQuery): PresetPage {
+  const terms = words(query.q ?? '')
+  const matches = presets.filter(p => {
+    if (query.vst && p.vst !== query.vst) return false
+    if (query.source && presetSource(p) !== query.source) return false
+    if (!terms.length) return true
+    const haystack = words(`${p.artist} ${p.context} ${p.vst} ${p.preset}`)
+    return terms.every(t => haystack.some(w => w.startsWith(t)))
+  })
+  matches.sort((a, b) =>
+    a.artist.localeCompare(b.artist, 'en', { sensitivity: 'base' }) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+  const offset = query.offset ?? 0
+  return { total: matches.length, items: matches.slice(offset, offset + (query.limit ?? 50)) }
+}
+
+let snapshot: Promise<PresetSnapshot> | null = null
+
+function loadSnapshot(): Promise<PresetSnapshot> {
+  snapshot ??= fetch(SNAPSHOT_URL).then(r => {
+    if (!r.ok) throw new Error(`Preset snapshot failed to load (${r.status})`)
+    return r.json() as Promise<PresetSnapshot>
+  })
+  // A failed load shouldn't be cached forever — let the next call retry.
+  snapshot.catch(() => { snapshot = null })
+  return snapshot
+}
+
+async function api<T>(path: string): Promise<T> {
+  const r = await fetch(`${API_URL}${path}`)
+  if (!r.ok) throw new Error(`Preset API error ${r.status}`)
+  return r.json() as Promise<T>
+}
+
+export async function fetchPresets(query: PresetQuery): Promise<PresetPage> {
+  if (!API_URL) return queryPresets((await loadSnapshot()).presets, query)
+  const params = new URLSearchParams({ offset: String(query.offset ?? 0), limit: String(query.limit ?? 50) })
+  if (query.q?.trim()) params.set('q', query.q.trim())
+  if (query.vst) params.set('vst', query.vst)
+  if (query.source) params.set('source', query.source)
+  return api<PresetPage>(`/v1/presets?${params}`)
+}
+
+export async function fetchPresetFacets(): Promise<PresetFacets> {
+  if (!API_URL) {
+    const s = await loadSnapshot()
+    return { total: s.count, vsts: s.vsts }
+  }
+  return api<PresetFacets>('/v1/presets/facets')
+}
+
+/** 'api' or 'snapshot' — shown in the tab's provenance note. */
+export const PRESET_BACKEND: 'api' | 'snapshot' = API_URL ? 'api' : 'snapshot'
