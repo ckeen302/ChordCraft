@@ -99,7 +99,8 @@ def rule_engine_sampler(rng: random.Random) -> Callable[[str, str, int], list[De
     return gen
 
 
-def run(ckpt: Path, data: Path, per_mood: int, lengths: list[int], seed: int) -> dict:
+def run(ckpt: Path, data: Path, per_mood: int, lengths: list[int], seed: int, guidance: float = 1.0,
+        presence_penalty: float = 0.0) -> dict:
     device = pick_device()
     model, tok = load_model(ckpt, device)
     rng = random.Random(seed)
@@ -107,6 +108,7 @@ def run(ckpt: Path, data: Path, per_mood: int, lengths: list[int], seed: int) ->
 
     test = PhraseDataset(split_file(data, "test"), tok)
     test_loss = eval_loss(model, DataLoader(test, batch_size=1024, collate_fn=Collator(tok)), device, None, 10**9)
+    model.eval()  # eval_loss restores train mode; sampling must not run with dropout
 
     train_set = load_train_phrases(split_file(data, "train"))
     rule = rule_engine_sampler(rng)
@@ -124,11 +126,13 @@ def run(ckpt: Path, data: Path, per_mood: int, lengths: list[int], seed: int) ->
                     continue
                 for label, cond in (("model", mood), ("model_unconditioned", "any")):
                     for s in sample(model, tok, mode=mode, length=length, mood=cond, num_samples=k,
+                                    guidance=guidance, presence_penalty=presence_penalty,
                                     generator=gen if device.type == "cpu" else None):
                         results[label].append((mood, mode, s.degrees))
 
     report = {
         "checkpoint": str(ckpt),
+        "decoding": {"guidance": guidance, "presence_penalty": presence_penalty},
         "test_loss": round(test_loss, 4),
         "test_perplexity": round(math.exp(test_loss), 3),
         "generators": {name: phrase_metrics(s, train_set) for name, s in results.items()},
@@ -152,9 +156,11 @@ def main() -> None:
     ap.add_argument("--per-mood", type=int, default=200)
     ap.add_argument("--lengths", type=int, nargs="+", default=[4, 8])
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--guidance", type=float, default=1.0)
+    ap.add_argument("--presence-penalty", type=float, default=0.0)
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
-    report = run(args.ckpt, args.data, args.per_mood, args.lengths, args.seed)
+    report = run(args.ckpt, args.data, args.per_mood, args.lengths, args.seed, args.guidance, args.presence_penalty)
     text = json.dumps(report, indent=1, ensure_ascii=False)
     (args.out or args.ckpt.parent / "eval.json").write_text(text)
     print(text)

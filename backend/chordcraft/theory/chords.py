@@ -48,7 +48,7 @@ QUALITY_INTERVALS: dict[str, list[int]] = {
     "13": [0, 4, 7, 10, 14, 21],
     "7b9": [0, 4, 7, 10, 13],
     "7#9": [0, 4, 7, 10, 15],
-    "5": [0, 7],  # power chord (no third)
+    "5": [0, 7, 12],  # power chord: root, fifth, octave (no third)
 }
 
 QUALITY_DISPLAY: dict[str, str] = {

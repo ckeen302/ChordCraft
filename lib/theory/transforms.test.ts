@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseChord, parseChords } from './chords'
-import { keyPrefersFlats, transposeKeyName, transposeProgression } from './transpose'
+import { keyPrefersFlats, parallelKey, transposeKeyName, transposeProgression } from './transpose'
 import { voiceLeadProgression } from './voicing'
 import { analyzeProgression } from './analysis'
 import { KEY_NAMES } from './keys'
@@ -19,6 +19,15 @@ describe('transpose', () => {
     for (const k of KEY_NAMES) {
       for (const st of [-11, -1, 1, 5, 11]) expect(KEY_NAMES).toContain(transposeKeyName(k, st))
     }
+  })
+
+  it('finds parallel keys for every tonic', () => {
+    expect(parallelKey('C Major', 'minor')).toBe('C Minor')
+    expect(parallelKey('A Minor', 'major')).toBe('A Major')
+    expect(parallelKey('Db Major', 'minor')).toBe('C# Minor')
+    expect(parallelKey('Eb Major', 'major')).toBe('Eb Major')
+    for (const k of KEY_NAMES) for (const mode of ['major', 'minor'] as const)
+      expect(parallelKey(k, mode).endsWith(mode === 'major' ? 'Major' : 'Minor')).toBe(true)
   })
 
   it('knows which keys spell with flats', () => {

@@ -8,6 +8,9 @@ Decoding is masked so every output is valid by construction:
 - no block may immediately repeat (ABAB, ABCABC…): a chord that would
   complete such a loop is masked, while returns like I–IV–I stay legal
 - optional presence penalty nudging toward chords not used yet
+- optional classifier-free guidance: logits = uncond + w·(cond − uncond),
+  where "uncond" swaps the mood token for ``mood:any`` (the model was trained
+  with conditioning dropout, so it knows both); w > 1 sharpens the mood
 - optional: no diminished-family chords; diatonic-only
 
 The result is key-relative degrees; ``spell_degrees`` renders them in a key.
@@ -97,6 +100,7 @@ def sample(
     diatonic_only: bool = False,
     block_loops: bool = True,
     presence_penalty: float = 0.0,
+    guidance: float = 1.0,
     generator: torch.Generator | None = None,
 ) -> list[Sample]:
     device = next(model.parameters()).device
@@ -106,8 +110,18 @@ def sample(
     chord_ok = _allowed_mask(tok, mode, exclude_diminished, diatonic_only, device)
     total_lp = torch.zeros(num_samples, device=device)
 
+    guided = guidance != 1.0 and mood != "any"
+    any_mood = tok.stoi["mood:any"]
+
     for step in range(length + 1):
-        logits = model(ids)[:, -1, :].float()
+        if guided:
+            uncond = ids.clone()
+            uncond[:, 3] = any_mood
+            both = model(torch.cat([ids, uncond]))[:, -1, :].float()
+            cond_l, uncond_l = both[:num_samples], both[num_samples:]
+            logits = uncond_l + guidance * (cond_l - uncond_l)
+        else:
+            logits = model(ids)[:, -1, :].float()
         allowed = torch.zeros_like(logits, dtype=torch.bool)
         if step == length:
             allowed[:, tok.eos_id] = True
