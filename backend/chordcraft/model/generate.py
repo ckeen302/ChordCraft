@@ -5,6 +5,9 @@ Decoding is masked so every output is valid by construction:
 - only chord tokens (or EOS) can be sampled after the control prefix
 - EOS is blocked until the requested length, then forced
 - no chord may immediately repeat (the training data merges repeats)
+- no block may immediately repeat (ABAB, ABCABC…): a chord that would
+  complete such a loop is masked, while returns like I–IV–I stay legal
+- optional presence penalty nudging toward chords not used yet
 - optional: no diminished-family chords; diatonic-only
 
 The result is key-relative degrees; ``spell_degrees`` renders them in a key.
@@ -63,6 +66,21 @@ def _allowed_mask(tok: ChordTokenizer, mode: str, exclude_dim: bool, diatonic_on
     return mask
 
 
+def loop_completions(rows: list[list[int]]) -> list[tuple[int, int]]:
+    """(row, token) pairs where emitting ``token`` would end the row in a repeated block.
+
+    For block size k the sequence + token ends with X X (|X| = k) exactly when
+    the last k-1 chords already echo the k-1 chords before the previous block,
+    and the token equals the chord k back.
+    """
+    out = []
+    for r, g in enumerate(rows):
+        for k in range(2, (len(g) + 1) // 2 + 1):
+            if g[len(g) - (k - 1):] == g[len(g) - (2 * k - 1): len(g) - k]:
+                out.append((r, g[-k]))
+    return out
+
+
 @torch.no_grad()
 def sample(
     model: ChordTransformer,
@@ -77,6 +95,8 @@ def sample(
     top_p: float = 0.95,
     exclude_diminished: bool = False,
     diatonic_only: bool = False,
+    block_loops: bool = True,
+    presence_penalty: float = 0.0,
     generator: torch.Generator | None = None,
 ) -> list[Sample]:
     device = next(model.parameters()).device
@@ -95,6 +115,12 @@ def sample(
             allowed[:] = chord_ok
             if step > 0:
                 allowed.scatter_(1, ids[:, -1:], False)  # no immediate repeat
+            if block_loops and step >= 3:
+                for row, token in loop_completions(ids[:, len(prefix):].tolist()):
+                    allowed[row, token] = False
+            if presence_penalty and step > 0:
+                used = torch.zeros_like(allowed).scatter_(1, ids[:, len(prefix):], True)
+                logits = logits - presence_penalty * used.float()
         logits = logits.masked_fill(~allowed, float("-inf"))
         logp = torch.log_softmax(logits, dim=-1)
         probs = torch.softmax(logits / max(temperature, 1e-5), dim=-1)

@@ -19,6 +19,13 @@ docker build -t chordcraft-api . && docker run -p 7860:7860 chordcraft-api
 Set `ALLOWED_ORIGINS` (comma-separated) to allow deployed frontends; any
 `http://localhost:<port>` origin is always allowed for development.
 
+The chord transformer loads from `CHORD_MODEL_PATH` (default
+`models/chord-transformer-v1.pt`, not committed) and needs the `ml` extra
+(`uv sync --extra ml`). Without either, `/health` reports `"model": false` and
+generation uses the rule engine. Model output goes through the same theory
+pipeline as the rule engine (spelling, mood harmonic rhythm, voice leading,
+roman numerals), sampled best-of-4 with loop blocking.
+
 ## Endpoints
 
 | Method | Path           | Purpose |
@@ -28,7 +35,7 @@ Set `ALLOWED_ORIGINS` (comma-separated) to allow deployed frontends; any
 | POST   | `/v1/parse`    | Parse symbols (strict by default) |
 | POST   | `/v1/analyze`  | Roman numerals + cadence/colour analysis |
 | POST   | `/v1/validate` | Score generated chords: strict validity, romans, diatonic ratio |
-| POST   | `/v1/generate` | Mood-driven progression (`engine: "rules"` until the chord model ships); `seed` makes it reproducible |
+| POST   | `/v1/generate` | Mood-driven progression. `engine`: `auto` (model if loaded, else rules), `model`, or `rules`; `seed` makes it reproducible |
 
 ## Theory engine parity
 
@@ -102,9 +109,10 @@ How to read it:
   model writes new progressions about half the time; the rule engine's curated
   patterns with substitutions are mostly unseen in real songs, which also means
   they are less typical of them.
-- **Known issue:** at length 8 the model sometimes oscillates between two
-  chords (e.g. ii7–iii7–ii7–iii7). A decode-time repetition penalty is the
-  planned fix.
+- **Oscillation fix:** raw sampling at length 8 produced an immediately
+  repeated block (e.g. ii7–iii7–ii7–iii7) in 53.6% of outputs. Decode-time loop
+  blocking plus a 0.3 presence penalty brings that to 0% and raises distinct
+  chords per 8-chord phrase from 4.26 to 4.88 (360 samples, 9 moods × 2 modes).
 
 ## Checks
 

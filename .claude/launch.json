@@ -7,6 +7,19 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "dev-ai",
+      "runtimeExecutable": "/usr/bin/env",
+      "runtimeArgs": ["NEXT_PUBLIC_API_URL=http://localhost:8001", "npm", "run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "api",
+      "runtimeExecutable": "/Users/ckeen302/.local/bin/uv",
+      "runtimeArgs": ["run", "--directory", "backend", "--extra", "ml", "uvicorn", "chordcraft.api.main:app", "--port", "8000"],
+      "port": 8000
     }
   ]
 }

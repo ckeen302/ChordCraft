@@ -4,6 +4,7 @@ A chord-progression generator with pro-quality sampled playback, a real-time MID
 
 ## Features
 
+- **AI · Chord Transformer** — progressions written by a 14M-parameter transformer trained from scratch in PyTorch on 1.4M real-song progressions, steered by mood and length, served by the FastAPI backend. Every chord is spelled, voice-led, and analysed by the theory engine; when the backend is offline the generator falls back to the rule-based engine below. Model, data, and evaluation: [backend/README.md](backend/README.md).
 - **Smart Generate** — a mood-driven harmony engine. Defaults to **Random**, rolling a fresh mood on every generate (shown as a badge, e.g. "🎲 Nostalgic"); pin one of the 9 moods (Uplifting, Melancholic, Dreamy, Romantic, Nostalgic, Tense, Jazz, Epic, Aggressive) to repeat it instead. Each blends signature progressions from real repertoire (doo-wop changes, ii–V–I turnarounds, the minor axis, sad-pop loops) with a weighted Markov chain over functional harmony, plus mood-specific cadences and chord extensions.
 - **Fully Random & Classic Templates** — pure-chance diatonic progressions, or fixed patterns like I–V–vi–IV and ii–V–I.
 - **Real sampled instruments** — 11 voices played from recorded multisamples via Tone.js (grand piano, acoustic guitar, organ, layered string/brass ensembles, harp, bass, bells) with an FM electric piano, pad, and lead. Root-octave doubling and humanized note onsets.
@@ -29,6 +30,13 @@ npm run dev      # http://localhost:3000
 ```
 
 No configuration or API keys required. Samples stream from a CDN on first play.
+
+To enable the AI mode locally, run the backend too (see [backend/README.md](backend/README.md)) —
+the app looks for it at `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`; copy `.env.example`):
+
+```bash
+cd backend && uv sync --extra ml && uv run uvicorn chordcraft.api.main:app --port 8000
+```
 
 ## Scripts
 

@@ -8,8 +8,9 @@ from __future__ import annotations
 
 import os
 import random
+from dataclasses import replace
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from chordcraft.theory import (
@@ -23,8 +24,10 @@ from chordcraft.theory import (
     parse_chord_strict,
 )
 from chordcraft.theory.analysis import FAMILY
-from chordcraft.theory.harmony import MOOD_LABELS, MOODS, generate_smart
+from chordcraft.theory.harmony import MOOD_LABELS, MOODS, PROFILES, generate_smart, spell_degrees
+from chordcraft.theory.voicing import voice_lead_progression
 
+from .model_engine import ModelEngine
 from .schemas import (
     AnalyzeRequest,
     AnalyzeResponse,
@@ -39,6 +42,8 @@ from .schemas import (
     ValidateRequest,
     ValidateResponse,
 )
+
+engine = ModelEngine()
 
 app = FastAPI(
     title="ChordCraft API",
@@ -59,12 +64,14 @@ app.add_middleware(
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok"}
+    return {"status": "ok", "model": engine.available}
 
 
 @app.get("/v1/meta", response_model=MetaResponse)
 def meta() -> MetaResponse:
-    return MetaResponse(keys=KEY_NAMES, moods=MOOD_LABELS, qualities=list(QUALITY_INTERVALS))
+    status = engine.status()
+    return MetaResponse(keys=KEY_NAMES, moods=MOOD_LABELS, qualities=list(QUALITY_INTERVALS),
+                        model={"available": status["available"], "error": status["error"]})
 
 
 @app.post("/v1/parse", response_model=ParseResponse)
@@ -120,6 +127,12 @@ def validate(req: ValidateRequest) -> ValidateResponse:
 def generate(req: GenerateRequest) -> GenerateResponse:
     rng = random.Random(req.seed)
     mood = rng.choice(MOODS) if req.mood == "random" else req.mood
+    use_model = req.engine == "model" or (req.engine == "auto" and engine.available)
+    if use_model:
+        if not engine.available:
+            raise HTTPException(503, f"Chord model unavailable: {engine.status()['error']}")
+        return _generate_with_model(req, mood, rng)
+
     r = generate_smart(req.key, mood, req.length, req.excludeDiminished, req.chromaticColor, rng)
     return GenerateResponse(
         engine="rules",
@@ -131,6 +144,30 @@ def generate(req: GenerateRequest) -> GenerateResponse:
         bpm=r.bpm,
         instrument=r.instrument,
         rollMs=r.roll_ms,
+    )
+
+
+def _generate_with_model(req: GenerateRequest, mood: str, rng: random.Random) -> GenerateResponse:
+    """Sample degrees from the transformer, then reuse the theory pipeline: spell, time, voice-lead."""
+    mode = "minor" if req.key.endswith("Minor") else "major"
+    result = engine.generate(mode=mode, length=req.length, mood=mood,
+                             exclude_diminished=req.excludeDiminished, seed=req.seed)
+    profile = PROFILES[mood]
+    symbols = spell_degrees(req.key, result.degrees)
+    rhythm = profile.rhythm
+    chords = [replace(parse_chord(s), beats=rhythm[i % len(rhythm)]) for i, s in enumerate(symbols)]
+    chords = voice_lead_progression(chords)
+    lo, hi = profile.bpm
+    return GenerateResponse(
+        engine="model",
+        key=req.key,
+        mood=mood,
+        chords=[Chord(**c.to_dict()) for c in chords],
+        romans=analyze_progression(chords, req.key).romans,
+        patternName="AI · chord transformer",
+        bpm=round(lo + rng.random() * (hi - lo)),
+        instrument=rng.choice(profile.instruments),
+        rollMs=profile.roll_ms,
     )
 
 

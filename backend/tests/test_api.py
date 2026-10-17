@@ -7,7 +7,7 @@ client = TestClient(app)
 
 
 def test_health():
-    assert client.get("/health").json() == {"status": "ok"}
+    assert client.get("/health").json()["status"] == "ok"
 
 
 def test_meta_lists_keys_moods_qualities():
@@ -53,7 +53,7 @@ def test_validate_scores_model_output():
 
 
 def test_generate_is_seeded_and_valid():
-    req = {"key": "A Minor", "mood": "melancholic", "length": 8, "seed": 123}
+    req = {"key": "A Minor", "mood": "melancholic", "length": 8, "seed": 123, "engine": "rules"}
     a = client.post("/v1/generate", json=req).json()
     b = client.post("/v1/generate", json=req).json()
     assert a == b
@@ -65,7 +65,7 @@ def test_generate_is_seeded_and_valid():
 
 
 def test_generate_random_mood_and_bounds():
-    body = client.post("/v1/generate", json={"seed": 9}).json()
+    body = client.post("/v1/generate", json={"seed": 9, "engine": "rules"}).json()
     assert body["mood"] in client.get("/v1/meta").json()["moods"]
     assert client.post("/v1/generate", json={"length": 1}).status_code == 422
     assert client.post("/v1/generate", json={"mood": "polka"}).status_code == 422

@@ -1,9 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Shuffle, ChevronDown, Download, Copy, ArrowRight, Music, Sparkles, Dices,
-  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check,
+  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check, Brain,
 } from 'lucide-react'
 import { ChordStrip } from './ChordStrip'
 import { PianoRoll } from '@/components/piano/PianoRoll'
@@ -20,6 +20,7 @@ import {
 import { KEY_NAMES } from '@/lib/theory/keys'
 import { analyzeProgression } from '@/lib/theory/analysis'
 import { setChordRoll } from '@/lib/audio/engine'
+import { asInstrument, checkBackend, generateProgression, toParsedChords } from '@/lib/api/client'
 import { downloadMidiFromNotes, GM_PROGRAM } from '@/lib/midi/export'
 import { copyToClipboard, progressionToString } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -90,7 +91,11 @@ export function ChordLab({ active = true }: { active?: boolean }) {
     handleRollChange, deleteChord, appendChordSlot, transpose,
   } = useProgressionEditor({ active })
 
-  const [mode, setMode]               = useState<'smart' | 'random' | string>('smart')
+  const [mode, setMode]               = useState<'ai' | 'smart' | 'random' | string>('smart')
+  // The AI mode needs the FastAPI backend with the trained model loaded; the
+  // lab checks once on mount and switches to it unless the user already chose.
+  const [aiStatus, setAiStatus]       = useState<'checking' | 'ready' | 'no-model' | 'offline'>('checking')
+  const modeTouchedRef = useRef(false)
   // Default is 'random' — a fresh mood is rolled on every generate; picking
   // a specific mood pins it (like the old behaviour) until Random is chosen again.
   const [mood, setMood]               = useState<Mood | 'random'>('random')
@@ -103,6 +108,22 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   const [error, setError]             = useState<string | null>(null)
   const [saveOpen, setSaveOpen]       = useState(false)
   const [saveName, setSaveName]       = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    checkBackend().then(({ online, model }) => {
+      if (cancelled) return
+      const status = !online ? 'offline' : model ? 'ready' : 'no-model'
+      setAiStatus(status)
+      if (status === 'ready' && !modeTouchedRef.current) setMode('ai')
+    })
+    return () => { cancelled = true }
+  }, [])
+
+  function chooseMode(next: string) {
+    modeTouchedRef.current = true
+    setMode(next)
+  }
 
   function handleSaveConfirm() {
     saveCurrent(saveName)
@@ -121,8 +142,10 @@ export function ChordLab({ active = true }: { active?: boolean }) {
 
   // ── Generate / export ──────────────────────────────────────────────────────
 
+  const isAI     = mode === 'ai'
   const isSmart  = mode === 'smart'
   const isRandom = mode === 'random'
+  const usesMood = isAI || isSmart
 
   const isLoaded =
     localChords.length > 0 &&
@@ -130,7 +153,21 @@ export function ChordLab({ active = true }: { active?: boolean }) {
     storeProgression.length === localChords.length &&
     storeProgression[0]?.symbol === localChords[0]?.symbol
 
-  function handleGenerate() {
+  /** Mood tempo/timbre/articulation, or strip the harmonic rhythm when auto-vibe is off. */
+  function applyVibe(chords: ParsedChord[], vibe: { bpm: number; rollMs: number; instrument: InstrumentName | null }) {
+    if (!autoVibe) {
+      setChordRoll(12)
+      return chords.map(c => ({ ...c, beats: undefined }))
+    }
+    setBpm(vibe.bpm)
+    setChordRoll(vibe.rollMs)
+    // The mood's timbre applies only until the user picks an instrument
+    // themselves — an explicit choice always wins.
+    if (vibe.instrument && !useStore.getState().instrumentTouched) setInstrument(vibe.instrument)
+    return chords
+  }
+
+  async function handleGenerate() {
     setError(null)
     setGenerating(true)
     try {
@@ -138,7 +175,17 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       let romans: string[] = []
       let patternName = ''
       let rolledMood: Mood | null = null
-      if (isSmart) {
+      if (isAI) {
+        const res = await generateProgression({
+          key: selectedKey, mood, length, excludeDiminished: excludeDim, engine: 'model',
+        })
+        romans = res.romans
+        patternName = res.patternName
+        if (mood === 'random' && Object.hasOwn(MOOD_LABELS, res.mood)) rolledMood = res.mood as Mood
+        chords = applyVibe(toParsedChords(res.chords), {
+          bpm: res.bpm, rollMs: res.rollMs, instrument: asInstrument(res.instrument),
+        })
+      } else if (isSmart) {
         // 'random' rolls a fresh mood every generate; a pinned mood repeats it.
         const effectiveMood: Mood = mood === 'random'
           ? MOODS[Math.floor(Math.random() * MOODS.length)][0]
@@ -150,22 +197,10 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           excludeDiminished: excludeDim,
           chromaticColor: chromatic,
         })
-        chords = result.chords
         romans = result.romans
         patternName = result.patternName
-        // Mood = harmony + rhythm + tempo + timbre + articulation. With
-        // auto-vibe off, strip the harmonic rhythm so the transport's global
-        // beats-per-chord stays in control.
-        if (autoVibe) {
-          setBpm(result.bpm)
-          setChordRoll(result.rollMs)
-          // The mood's timbre applies only until the user picks an instrument
-          // themselves — an explicit choice always wins.
-          if (!useStore.getState().instrumentTouched) setInstrument(result.instrument)
-        } else {
-          chords = chords.map(c => ({ ...c, beats: undefined }))
-          setChordRoll(12)
-        }
+        // Mood = harmony + rhythm + tempo + timbre + articulation.
+        chords = applyVibe(result.chords, { bpm: result.bpm, rollMs: result.rollMs, instrument: result.instrument })
       } else {
         chords = isRandom
           ? generateRandom(selectedKey, length, excludeDim)
@@ -178,7 +213,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       }
       loadGenerated({ chords, romans, patternName, rolledMood })
     } catch (e) {
-      setError((e as Error).message)
+      setError(isAI
+        ? `${(e as Error).message} Use Smart Generate, or start the backend (see backend/README.md).`
+        : (e as Error).message)
     } finally {
       setGenerating(false)
     }
@@ -224,8 +261,13 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           {KEY_NAMES.map(k => <option key={k} value={k}>{k}</option>)}
         </SelectField>
 
-        <SelectField label="Mode" value={mode} onChange={setMode}>
-          <option value="smart">✦ Smart Generate</option>
+        <SelectField label="Mode" value={mode} onChange={chooseMode}>
+          <option value="ai" disabled={aiStatus === 'offline' || aiStatus === 'no-model'}>
+            {'✦ AI · Chord Transformer' + ({
+              checking: ' (connecting…)', ready: '', 'no-model': ' (model not loaded)', offline: ' (backend offline)',
+            } as const)[aiStatus]}
+          </option>
+          <option value="smart">◆ Smart Generate (rules)</option>
           <option value="random">🎲 Fully Random</option>
           <optgroup label="Classic Templates">
             {TEMPLATE_NAMES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -241,15 +283,21 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           {INSTRUMENTS.map(i => <option key={i} value={i}>{i}</option>)}
         </SelectField>
 
-        {/* Smart-mode panel */}
-        {isSmart && (
+        {/* Mood panel — shared by the AI model and the rule-based harmony engine */}
+        {usesMood && (
           <div className="flex flex-col gap-4 p-3.5 rounded-xl border border-accent/20 bg-accent/5">
             <div className="flex items-center gap-2">
-              <Sparkles size={12} className="text-accent" />
+              {isAI ? <Brain size={12} className="text-accent" /> : <Sparkles size={12} className="text-accent" />}
               <span className="text-[10px] font-bold text-accent uppercase tracking-[2px]">
-                Harmony Engine
+                {isAI ? 'Chord Transformer' : 'Harmony Engine'}
               </span>
             </div>
+            {isAI && (
+              <p className="text-[11px] text-text-dim leading-relaxed -mt-2">
+                A 14M-parameter transformer trained on 1.4M progressions from real songs. Mood steers it;
+                every chord is spelled and checked by the theory engine.
+              </p>
+            )}
 
             {/* Mood — Random by default; pin a specific mood if you want it. */}
             <div className="flex flex-col gap-2">
@@ -311,7 +359,8 @@ export function ChordLab({ active = true }: { active?: boolean }) {
               {autoVibe ? '✓ Auto tempo & sound' : 'Auto tempo & sound'}
             </button>
 
-            {/* Chromatic colour (secondary dominants) */}
+            {/* Chromatic colour (secondary dominants) — rule engine only */}
+            {isSmart && (
             <button
               onClick={() => setChromatic(v => !v)}
               title="Swap one chord for the secondary dominant (V7) of the chord after it — adds a colour chord from outside the key."
@@ -324,6 +373,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
             >
               {chromatic ? '✓ Chromatic colour (V7/x)' : 'Chromatic colour (V7/x)'}
             </button>
+            )}
           </div>
         )}
 
@@ -344,8 +394,8 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {/* Length + Avoid dim (Smart and Random only) */}
-        {(isSmart || isRandom) && (
+        {/* Length + Avoid dim (AI, Smart, and Random) */}
+        {(usesMood || isRandom) && (
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
               <span className="text-[10px] text-text-muted font-semibold uppercase tracking-[2px]">Length</span>
@@ -469,7 +519,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
           >
             {generating
               ? <Loader2 size={14} className="animate-spin" />
-              : isSmart
+              : isAI
+                ? <Brain size={14} />
+                : isSmart
                 ? <Sparkles size={14} />
                 : isRandom
                   ? <Dices size={14} />

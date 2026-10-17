@@ -77,11 +77,13 @@ class GenerateRequest(BaseModel):
     excludeDiminished: bool = False  # noqa: N815
     chromaticColor: bool = False  # noqa: N815
     seed: int | None = None
+    engine: Literal["auto", "model", "rules"] = "auto"
+    """auto = the trained chord transformer when loaded, else the rule engine."""
 
 
 class GenerateResponse(BaseModel):
-    engine: Literal["rules"]
-    """Which generator produced this: the rule engine now; the trained chord model later."""
+    engine: Literal["rules", "model"]
+    """Which generator produced this progression."""
     key: str
     mood: str
     chords: list[Chord]
@@ -96,3 +98,4 @@ class MetaResponse(BaseModel):
     keys: list[str]
     moods: dict[str, str]
     qualities: list[str]
+    model: dict
