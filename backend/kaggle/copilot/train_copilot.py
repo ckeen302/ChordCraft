@@ -20,6 +20,8 @@ import sys
 import time
 
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-U", "peft"])
+# Kaggle ships an old torchao that current peft rejects; plain LoRA does not need it.
+subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "-q", "-y", "torchao"])
 
 import torch  # noqa: E402
 from peft import LoraConfig, get_peft_model  # noqa: E402
