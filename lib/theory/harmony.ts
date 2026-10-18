@@ -567,9 +567,14 @@ export function colourDegrees(
   const profile = PROFILES[mood]
   const choose = <T,>(arr: T[]) => arr[Math.floor(rng() * arr.length)]
   const decided = new Map<string, ChordQuality>()
+  // Never colour a triad into a chord that's already in the progression: merging
+  // two distinct chords can undo the sampler's no-repeat and loop guarantees.
+  const present = new Set(degrees.map(([o, q]) => `${o}:${q}`))
+  const keep = (off: number, q: ChordQuality, next: ChordQuality) =>
+    (next !== q && present.has(`${off}:${next}`) ? q : next)
   return degrees.map(([off, q]) => {
     if (q !== 'maj' && q !== 'm' && q !== 'dim') return [off, q]
-    if (mood === 'aggressive') return [off, q === 'dim' ? q : '5']
+    if (mood === 'aggressive') return [off, q === 'dim' ? q : keep(off, q, '5')]
     const k = `${off}:${q}`
     if (!decided.has(k)) {
       let next: ChordQuality = q
@@ -584,7 +589,7 @@ export function colourDegrees(
         else if (q === 'm' && ext.min?.length) next = choose(ext.min)
         else if (q === 'dim' && (mood === 'jazz' || mood === 'tense')) next = 'dim7'
       }
-      decided.set(k, next)
+      decided.set(k, keep(off, q, next))
     }
     return [off, decided.get(k)!]
   })

@@ -77,3 +77,17 @@ def test_cors_allows_local_dev_origin():
         headers={"Origin": "http://localhost:3001", "Access-Control-Request-Method": "POST"},
     )
     assert r.headers.get("access-control-allow-origin") == "http://localhost:3001"
+
+
+def test_generate_rejects_out_of_range_seeds():
+    for seed in (2**64, -1):
+        assert client.post("/v1/generate", json={"engine": "rules", "seed": seed}).status_code == 422
+
+
+def test_chromatic_colour_romans_match_the_chords():
+    from chordcraft.theory import analyze_progression, parse_chord
+    for seed in range(40):
+        body = client.post("/v1/generate", json={"engine": "rules", "key": "C Major", "mood": "uplifting",
+                                                 "length": 6, "chromaticColor": True, "seed": seed}).json()
+        chords = [parse_chord(c["symbol"]) for c in body["chords"]]
+        assert body["romans"] == analyze_progression(chords, "C Major").romans, (seed, body["romans"])
