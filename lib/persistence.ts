@@ -22,10 +22,23 @@ export function readHistory(): HistoryEntry[] {
   try {
     const raw = localStorage.getItem(HISTORY_KEY)
     const list = raw ? JSON.parse(raw) : []
-    return Array.isArray(list) ? list : []
+    if (!Array.isArray(list)) return []
+    return list.filter((e: HistoryEntry) =>
+      e && typeof e.key === 'string' && Array.isArray(e.symbols) &&
+      e.symbols.length > 0 && e.symbols.every(s => typeof s === 'string'),
+    )
   } catch {
     return []
   }
+}
+
+const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n)
+
+/** Saved note timelines must be fully numeric, or the transport's length becomes NaN. */
+function validNotes(notes: unknown): notes is NoteEvent[] {
+  return Array.isArray(notes) && notes.every(n =>
+    n && typeof n.id === 'string' && finite(n.midi) && finite(n.start) && n.start >= 0 &&
+    finite(n.duration) && n.duration > 0 && finite(n.velocity))
 }
 
 export function persistHistory(list: HistoryEntry[]) {
@@ -57,12 +70,14 @@ export function readSaved(): SavedProg[] {
     const raw = localStorage.getItem(SAVED_KEY)
     const list = raw ? JSON.parse(raw) : []
     if (!Array.isArray(list)) return []
-    return list.filter((s: SavedProg) =>
-      s && typeof s.id === 'string' && typeof s.name === 'string' &&
-      Array.isArray(s.chords) &&
-      s.chords.every(c => c && typeof c.symbol === 'string' &&
-        Array.isArray(c.notes) && c.notes.every(n => typeof n === 'number')),
-    )
+    return list
+      .filter((s: SavedProg) =>
+        s && typeof s.id === 'string' && typeof s.name === 'string' && typeof s.key === 'string' &&
+        Array.isArray(s.chords) &&
+        s.chords.every(c => c && typeof c.symbol === 'string' &&
+          Array.isArray(c.notes) && c.notes.every(finite)),
+      )
+      .map((s: SavedProg) => (s.notes === undefined || validNotes(s.notes) ? s : { ...s, notes: undefined }))
   } catch {
     return []
   }

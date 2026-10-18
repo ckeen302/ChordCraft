@@ -9,7 +9,7 @@
  * chords to `loadGenerated`; the hook owns undo, history, and keeping the
  * transport in sync, so every source behaves identically.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from '@/store/useStore'
 import { KEY_NAMES } from '@/lib/theory/keys'
 import { parseChords, detectChord } from '@/lib/theory/chords'
@@ -19,6 +19,7 @@ import {
   chordsToNotes, chordWindows, detectWindowChords, deleteWindowNotes,
   newNoteId, totalBeatsOf, ROLL_HI_MIDI, ROLL_LO_MIDI, type ChordWindow,
 } from '@/lib/roll/notes'
+import { arpeggiate, DEFAULT_ARP, sanitizeArp, type ArpSettings } from '@/lib/roll/arp'
 import {
   readHistory, persistHistory, clearStoredHistory, HISTORY_MAX,
   readSaved, persistSaved, SAVED_MAX,
@@ -48,9 +49,26 @@ export interface GeneratedProgression {
   key?: string
 }
 
-export function useProgressionEditor({ active }: { active: boolean }) {
-  const loadProgression = useStore(s => s.loadProgression)
+const ARP_KEY = 'chordcraft-arp'
 
+interface ArpState { on: boolean; opts: ArpSettings }
+
+function readArp(): ArpState {
+  try {
+    const raw = JSON.parse(localStorage.getItem(ARP_KEY) ?? 'null')
+    return { on: raw?.on === true, opts: sanitizeArp(raw?.opts) }
+  } catch {
+    return { on: false, opts: DEFAULT_ARP }
+  }
+}
+
+/** What actually plays: the block notes, or their arpeggio when the arp is on. */
+function playable(chords: ParsedChord[], notes: NoteEvent[], arp: ArpState): NoteEvent[] {
+  if (!arp.on) return notes
+  return arpeggiate(notes, chordWindows(chords, useStore.getState().beatsPerChord), arp.opts)
+}
+
+export function useProgressionEditor({ active }: { active: boolean }) {
   // Keyboard shortcuts must not fire while another tab is shown.
   const activeRef = useRef(active)
   activeRef.current = active
@@ -65,24 +83,54 @@ export function useProgressionEditor({ active }: { active: boolean }) {
   const [saved, setSaved]             = useState<SavedProg[]>([])
   const [past, setPast]               = useState<Snapshot[]>([])
   const [future, setFuture]           = useState<Snapshot[]>([])
+  // The arp is a playback switch, not an edit: block notes stay the source of
+  // truth, and every new progression comes out arpeggiated while it's on.
+  const [arp, setArpState]            = useState<ArpState>({ on: false, opts: DEFAULT_ARP })
+  const arpRef = useRef(arp)
+  arpRef.current = arp
 
   // localStorage is browser-only — hydrate after mount.
   useEffect(() => {
     setHistory(readHistory())
     setSaved(readSaved())
+    setArpState(readArp())
   }, [])
 
   // ── Transport sync ─────────────────────────────────────────────────────────
   // Live-update the transport only when it's playing this lab's progression;
   // otherwise (re)load, which also stops playback of e.g. a Popular Song.
-  function syncTransport(chords: ParsedChord[], key: string, notes: NoteEvent[]) {
+  function syncTransport(chords: ParsedChord[], key: string, notes: NoteEvent[], a: ArpState = arpRef.current) {
     const st = useStore.getState()
+    const play = playable(chords, notes, a)
     if (st.progression.length && st.source.startsWith('Chord Lab')) {
-      st.updateProgressionAndNotes(chords, notes, `Chord Lab · ${key}`)
+      st.updateProgressionAndNotes(chords, play, `Chord Lab · ${key}`)
     } else {
-      st.loadProgressionWithNotes(chords, notes, `Chord Lab · ${key}`)
+      st.loadProgressionWithNotes(chords, play, `Chord Lab · ${key}`)
     }
   }
+
+  /** Fresh load (stops whatever was playing), with the arp applied. */
+  function loadFresh(chords: ParsedChord[], notes: NoteEvent[], key: string) {
+    const st = useStore.getState()
+    st.loadProgressionWithNotes(chords, playable(chords, notes, arpRef.current), `Chord Lab · ${key}`)
+    st.setBeatsPerBar(4)
+  }
+
+  // ── Arpeggiator ────────────────────────────────────────────────────────────
+
+  function setArp(next: ArpState, sync = true) {
+    setArpState(next)
+    arpRef.current = next
+    try { localStorage.setItem(ARP_KEY, JSON.stringify(next)) } catch { /* storage full */ }
+    // Apply live if the transport has this lab's progression; never hijack a Popular Song.
+    const { chords, notes, key } = latestRef.current
+    if (sync && chords.length && useStore.getState().source.startsWith('Chord Lab')) {
+      syncTransport(chords, key, notes, next)
+    }
+  }
+  const setArpOn = (on: boolean) => setArp({ ...arpRef.current, on })
+  const setArpOpts = (opts: Partial<ArpSettings>) =>
+    setArp({ ...arpRef.current, opts: { ...arpRef.current.opts, ...opts } })
 
   // ── Undo / redo ────────────────────────────────────────────────────────────
 
@@ -180,7 +228,7 @@ export function useProgressionEditor({ active }: { active: boolean }) {
     setRomans([])
     setPatternName('')
     setRolledMood(null)
-    loadProgression(chords, `Chord Lab · ${entry.key}`)
+    loadFresh(chords, notes, entry.key)
   }
 
   function clearHistory() {
@@ -199,9 +247,10 @@ export function useProgressionEditor({ active }: { active: boolean }) {
     setRomans(romans)
     setPatternName(patternName)
     setRolledMood(rolledMood)
+    const notes = chordsToNotes(chords, useStore.getState().beatsPerChord)
     setLocalChords(chords)
-    setLocalNotes(chordsToNotes(chords, useStore.getState().beatsPerChord))
-    loadProgression(chords, `Chord Lab · ${k}`)
+    setLocalNotes(notes)
+    loadFresh(chords, notes, k)
     pushHistory(chords, k)
   }
 
@@ -246,7 +295,7 @@ export function useProgressionEditor({ active }: { active: boolean }) {
     setRomans([])
     setPatternName('')
     setRolledMood(null)
-    useStore.getState().loadProgressionWithNotes(chords, notes, `Chord Lab · ${s.key}`)
+    loadFresh(chords, notes, s.key)
   }
 
   // ── Editing ────────────────────────────────────────────────────────────────
@@ -263,6 +312,9 @@ export function useProgressionEditor({ active }: { active: boolean }) {
     setRomans([])          // hand-edited — analysis labels no longer apply
     setPatternName('')
     setRolledMood(null)
+    // Editing the arpeggio by hand bakes it into real notes; the switch turns
+    // off so they aren't arpeggiated a second time. Undo brings the blocks back.
+    if (arpRef.current.on) setArp({ ...arpRef.current, on: false }, false)
     syncTransport(detected, selectedKey, notes)
   }
 
@@ -322,9 +374,15 @@ export function useProgressionEditor({ active }: { active: boolean }) {
     return true
   }
 
+  const playNotes = useMemo(
+    () => playable(localChords, localNotes, arp),
+    [localChords, localNotes, arp],
+  )
+
   return {
     selectedKey, setSelectedKey,
-    localChords, localNotes, romans, patternName, rolledMood,
+    localChords, localNotes, playNotes, romans, patternName, rolledMood,
+    arpOn: arp.on, arpOpts: arp.opts, setArpOn, setArpOpts,
     history, saved,
     canUndo: past.length > 0,
     canRedo: future.length > 0,

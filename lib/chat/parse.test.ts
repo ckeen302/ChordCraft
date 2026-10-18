@@ -115,3 +115,38 @@ describe('review fixes', () => {
     expect(parseRequest('trap beat')).toMatchObject({ tempoSet: true, instrumentSet: true })
   })
 })
+
+describe('arp requests', () => {
+  it('turns the arp on without new chords', () => {
+    for (const t of ['arpeggiate it', 'make it an arp', 'arpeggiate the chords', 'can you arp this']) {
+      const r = parseRequest(t)
+      expect(r.arp?.on, t).toBe(true)
+      expect(r.keepChords, t).toBe(true)
+      expect(r.unknown, t).toBe(false)
+    }
+  })
+
+  it('reads pattern, rate, octaves and hold-bass', () => {
+    const r = parseRequest('16th note arp down, two octaves, hold the bass')
+    expect(r.arp).toEqual({ on: true, opts: { pattern: 'down', rate: '1/16', octaves: 2, holdBass: true } })
+    expect(r.instrumentSet).toBe(false)
+    expect(r.transpose).toBeUndefined()
+  })
+
+  it('turns it off', () => {
+    for (const t of ['block chords', 'no arp', 'turn off the arp', 'stop arpeggiating']) {
+      expect(parseRequest(t).arp, t).toEqual({ on: false, opts: {} })
+    }
+  })
+
+  it('combines with a new progression', () => {
+    const r = parseRequest('sad lofi chords, arpeggiated')
+    expect(r.arp?.on).toBe(true)
+    expect(r.keepChords).toBe(false)
+    expect(r.settings.mood).toBe('dreamy')
+  })
+
+  it('pattern words away from "arp" are ignored', () => {
+    expect(parseRequest('slow it down and arpeggiate').arp?.opts.pattern).toBeUndefined()
+  })
+})

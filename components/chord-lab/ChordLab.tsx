@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   Shuffle, ChevronDown, Download, Copy, ArrowRight, Music, Sparkles, Dices,
-  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check, Brain,
+  Loader2, History, Trash2, Undo2, Redo2, Bookmark, BookmarkPlus, X, Check, Brain, AudioLines,
 } from 'lucide-react'
 import { ChordStrip } from './ChordStrip'
 import { ChatPanel, type ChatMessage } from './ChatPanel'
@@ -29,6 +29,7 @@ import { setChordRoll } from '@/lib/audio/engine'
 import { loadChordModel } from '@/lib/ai/model'
 import { generateWithModel } from '@/lib/ai/generate'
 import { downloadMidiFromNotes, GM_PROGRAM } from '@/lib/midi/export'
+import { ARP_PATTERNS, ARP_RATES, type ArpSettings } from '@/lib/roll/arp'
 import { copyToClipboard, progressionToString } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import type { InstrumentName, ParsedChord } from '@/types'
@@ -86,12 +87,97 @@ function SelectField({
   )
 }
 
+function Seg<T extends string | number>({
+  options, value, onChange, disabled,
+}: {
+  options: { value: T; label: string }[]
+  value: T
+  onChange: (v: T) => void
+  disabled: boolean
+}) {
+  return (
+    <div className={cn('flex rounded-lg border border-border overflow-hidden', disabled && 'opacity-40')}>
+      {options.map(o => (
+        <button
+          key={String(o.value)}
+          disabled={disabled}
+          onClick={e => { onChange(o.value); e.currentTarget.blur() }}
+          className={cn(
+            'px-2 py-1 text-[11px] font-medium transition-colors',
+            disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+            o.value === value ? 'bg-accent/15 text-accent' : 'text-text-muted hover:text-text',
+          )}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/** The arp switch: flip it on and every progression plays (and exports) as an arpeggio. */
+function ArpBar({
+  on, opts, onToggle, onChange,
+}: {
+  on: boolean
+  opts: ArpSettings
+  onToggle: (on: boolean) => void
+  onChange: (opts: Partial<ArpSettings>) => void
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 mb-3 px-3 py-2 rounded-xl bg-bg-raised border border-border">
+      <button
+        role="switch"
+        aria-checked={on}
+        aria-label="Arpeggiate"
+        onClick={e => { onToggle(!on); e.currentTarget.blur() }}
+        title="Play the chords as an arpeggio instead of blocks (exports to MIDI too)"
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <span className={cn('relative w-8 h-[18px] rounded-full transition-colors', on ? 'bg-accent' : 'bg-border')}>
+          <span className={cn(
+            'absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white transition-all',
+            on ? 'left-[16px]' : 'left-[2px]',
+          )} />
+        </span>
+        <AudioLines size={13} className={on ? 'text-accent' : 'text-text-muted'} />
+        <span className={cn('text-xs font-semibold', on ? 'text-accent' : 'text-text-muted')}>Arp</span>
+      </button>
+      <Seg options={ARP_PATTERNS} value={opts.pattern} onChange={pattern => onChange({ pattern })} disabled={!on} />
+      <Seg options={ARP_RATES} value={opts.rate} onChange={rate => onChange({ rate })} disabled={!on} />
+      <Seg
+        options={[{ value: 1, label: '1 oct' }, { value: 2, label: '2 oct' }]}
+        value={opts.octaves}
+        onChange={octaves => onChange({ octaves: octaves as 1 | 2 })}
+        disabled={!on}
+      />
+      <Seg
+        options={[{ value: 'legato', label: 'Legato' }, { value: 'pluck', label: 'Pluck' }]}
+        value={opts.gate < 0.75 ? 'pluck' : 'legato'}
+        onChange={g => onChange({ gate: g === 'pluck' ? 0.5 : 0.95 })}
+        disabled={!on}
+      />
+      <label className={cn('flex items-center gap-1.5 text-[11px] text-text-muted', on ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed')}>
+        <input
+          type="checkbox"
+          checked={opts.holdBass}
+          disabled={!on}
+          onChange={e => { onChange({ holdBass: e.target.checked }); e.target.blur() }}
+          className="accent-accent"
+        />
+        Hold bass
+      </label>
+    </div>
+  )
+}
+
 export function ChordLab({ active = true }: { active?: boolean }) {
   const { progression: storeProgression, source, bpm, setBpm, instrument, setInstrument } = useStore()
 
   const {
     selectedKey, setSelectedKey,
-    localChords, localNotes, romans, patternName, rolledMood,
+    localChords, playNotes, romans, patternName, rolledMood,
+    arpOn, arpOpts, setArpOn, setArpOpts,
     history, saved, canUndo, canRedo, undo, redo,
     loadGenerated, recallHistory, clearHistory,
     saveCurrent, deleteSaved, loadSaved,
@@ -263,6 +349,14 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       if (req.help) return reply(HELP_TEXT)
       if (req.unknown) return reply(UNKNOWN_TEXT)
 
+      // Arp changes apply before anything loads, so a new progression comes out arpeggiated.
+      if (req.arp) {
+        if (Object.keys(req.arp.opts).length) setArpOpts(req.arp.opts)
+        setArpOn(req.arp.on)
+      }
+      // "Arpeggiate it" with nothing loaded yet: write a progression to arpeggiate.
+      const keepChords = req.keepChords && !(req.arp?.on && !localChords.length && req.transpose === undefined)
+
       if (req.transpose) {
         if (!localChords.length) return reply("There's nothing to transpose yet — describe a progression first.")
         const newKey = transposeKeyName(selectedKey, req.transpose)
@@ -273,8 +367,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         return reply(`Done — ${req.notes.join(', ')}. It's now in ${newKey}.`)
       }
 
-      if (req.keepChords) {
+      if (keepChords) {
         const changes: string[] = []
+        if (req.arp) changes.push(req.arp.on ? 'arpeggiated' : 'back to block chords')
         if (req.tempoSet && s.bpm && s.bpm !== live.bpm) { setBpm(s.bpm); changes.push(`${s.bpm} BPM`) }
         if (req.instrumentSet && s.instrument && s.instrument !== live.instrument) {
           useStore.getState().chooseInstrument(s.instrument)
@@ -282,7 +377,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         }
         setChatSettings(s)
         return reply(changes.length
-          ? `Done — ${changes.join(', ')}. Same chords.`
+          ? `Done — ${changes.join(', ')}. Same chords.${req.arp?.on ? ' Tweak the pattern with the Arp controls above the piano roll.' : ''}`
           : `That's already how it's set. Ask for a different mood, key, or "another one" for new chords.`)
       }
 
@@ -331,9 +426,9 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   }
 
   async function handleExport() {
-    if (!localNotes.length) return
+    if (!playNotes.length) return
     await downloadMidiFromNotes(
-      localNotes,
+      playNotes,
       bpm,
       `chordcraft-${selectedKey.replace(/\s+/g, '-').toLowerCase()}`,
       GM_PROGRAM[instrument],
@@ -341,14 +436,14 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   }
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex flex-col md:flex-row h-full min-h-0 overflow-y-auto md:overflow-hidden">
 
       {/* ── Left panel: Controls ─────────────────────────────────────────── */}
       {/* Generate is the app's core action, so it's pinned in its own footer
           below — never scrolled out of view, no matter how tall the mood
           picker / saved / recent lists get. Everything else scrolls above it. */}
-      <div className="w-72 flex-shrink-0 flex flex-col min-h-0 border-r border-border bg-bg-panel">
-      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-5 p-6">
+      <div className="w-full md:w-72 flex-shrink-0 flex flex-col md:min-h-0 border-b md:border-b-0 md:border-r border-border bg-bg-panel">
+      <div className="md:flex-1 md:min-h-0 md:overflow-y-auto flex flex-col gap-5 p-4 md:p-6">
 
         <div>
           <h2 className="text-lg font-extrabold text-text">Chord Lab</h2>
@@ -646,7 +741,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       </div>
 
       {/* ── Right panel: Output ──────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 gap-6">
+      <div className="md:flex-1 flex flex-col min-w-0 md:overflow-y-auto p-4 md:p-6 gap-6">
 
         <ChatPanel messages={chatMessages} busy={chatBusy || generating} onSend={handleChat} />
 
@@ -735,9 +830,16 @@ export function ChordLab({ active = true }: { active?: boolean }) {
               </button>
             </div>
           </div>
+          <ArpBar
+            on={arpOn}
+            opts={arpOpts}
+            onToggle={setArpOn}
+            onChange={setArpOpts}
+          />
           <PianoRoll
             chords={localChords}
-            notes={localNotes}
+            notes={playNotes}
+            live={source.startsWith('Chord Lab')}
             onNotesChange={handleRollChange}
             onDeleteWindow={deleteChord}
             onAppendWindow={appendChordSlot}
@@ -781,7 +883,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {!isLoaded ? (
                 <button
-                  onClick={() => useStore.getState().loadProgressionWithNotes(localChords, localNotes, `Chord Lab · ${selectedKey}`)}
+                  onClick={() => useStore.getState().loadProgressionWithNotes(localChords, playNotes, `Chord Lab · ${selectedKey}`)}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-bg-deep font-semibold text-sm hover:bg-accent-hover cursor-pointer transition-colors"
                 >
                   <ArrowRight size={13} />

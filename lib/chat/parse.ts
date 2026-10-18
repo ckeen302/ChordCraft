@@ -10,6 +10,7 @@ import type { InstrumentName } from '@/types'
 import type { Mood } from '@/lib/theory/harmony'
 import { KEY_NAMES } from '@/lib/theory/keys'
 import { parallelKey, transposeKeyName } from '@/lib/theory/transpose'
+import type { ArpSettings } from '@/lib/roll/arp'
 
 export interface ChatSettings {
   key: string
@@ -35,6 +36,8 @@ export interface ParsedRequest {
   /** The message itself set a tempo / an instrument (otherwise the generator picks). */
   tempoSet: boolean
   instrumentSet: boolean
+  /** Turn the arpeggiator on/off or change its pattern ("arpeggiate it", "16th note arp", "block chords"). */
+  arp?: { on: boolean; opts: Partial<ArpSettings> }
   /** Nothing recognisable: ask the user to rephrase. */
   unknown: boolean
   help: boolean
@@ -128,6 +131,30 @@ function detectMood(text: string): Mood | null {
   return best?.mood ?? null
 }
 
+function detectArp(text: string): ParsedRequest['arp'] {
+  if (/\b(no|stop|turn off|disable|without|remove|kill)\s+(the\s+|an?\s+)?arp\w*|\bun-?arp\w*|\bblock chords?\b|\bstop arpeggiat\w*/.test(text)) {
+    return { on: false, opts: {} }
+  }
+  if (!/\barp(s|eggi\w*)?\b/.test(text)) return undefined
+  const opts: Partial<ArpSettings> = {}
+  // Pattern words only count next to "arp", so "slow it down, arpeggiated" stays Up.
+  const near = (w: string) => new RegExp(`\\b(${w})\\w*\\s+arp|\\barp\\w*\\s+(${w})`).test(text)
+  if (near('up[- ]?(?:and[- ]?)?down|updown|bounc')) opts.pattern = 'updown'
+  else if (near('random')) opts.pattern = 'random'
+  else if (near('down|descend')) opts.pattern = 'down'
+  else if (near('up|ascend')) opts.pattern = 'up'
+  if (/\b(16th|sixteenth)s?\b/.test(text)) opts.rate = '1/16'
+  else if (/\btriplets?\b/.test(text)) opts.rate = '1/8t'
+  else if (/\b(8th|eighth)s?\b/.test(text)) opts.rate = '1/8'
+  else if (/\b(quarter|4th)s?\b/.test(text)) opts.rate = '1/4'
+  if (/\b(2|two)[- ]octaves?\b|\bwide\b/.test(text)) opts.octaves = 2
+  else if (/\b(1|one)[- ]octave\b/.test(text)) opts.octaves = 1
+  if (/\b(hold|keep|with)\w*\s+(the\s+|a\s+)?bass\b/.test(text)) opts.holdBass = true
+  if (/\b(pluck\w*|staccato|short)\b/.test(text)) opts.gate = 0.5
+  else if (/\blegato\b/.test(text)) opts.gate = 0.95
+  return { on: true, opts }
+}
+
 export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTINGS): ParsedRequest {
   const text = input.toLowerCase().replace(/[’']/g, "'")
   const s: ChatSettings = { ...prev }
@@ -213,11 +240,18 @@ export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTING
     else if (/\b(fast|quick|energetic)\b/.test(text)) { s.bpm = 150; tempoSet = true; recognised = true }
   }
 
+  // "hold the bass" is an arp option, not a request for the bass instrument.
+  const instText = text.replace(/\b(hold|keep|with)\w*\s+(the\s+|a\s+)?bass\b/g, ' ')
   for (const [name, re] of INSTRUMENTS) {
-    if (re.test(text)) { s.instrument = name; instrumentSet = true; recognised = true; break }
+    if (re.test(instText)) { s.instrument = name; instrumentSet = true; recognised = true; break }
   }
 
-  if (/\b(progression|chords?|loop|something|make|write|give|generate|create|song|beat|vibe)\b/.test(text)) {
+  const arp = detectArp(text)
+  if (arp) { recognised = true; notes.push(arp.on ? 'arpeggiated' : 'block chords') }
+
+  // Generic "make me some chords" words ask for a new progression — unless the
+  // message is about the arp ("arpeggiate the chords", "make it an arp").
+  if (!arp && /\b(progression|chords?|loop|something|make|write|give|generate|create|song|beat|vibe)\b/.test(text)) {
     chordsTouched = recognised = true
   }
 
@@ -228,6 +262,7 @@ export function parseRequest(input: string, prev: ChatSettings = DEFAULT_SETTING
     keepChords: transpose !== undefined || (recognised && !chordsTouched),
     tempoSet,
     instrumentSet,
+    arp,
     unknown: !recognised,
     help: false,
   }

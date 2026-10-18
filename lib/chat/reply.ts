@@ -9,7 +9,8 @@ export const HELP_TEXT =
   'Describe the progression you want and I\'ll write it into the piano roll. Try a mood or style ' +
   '("sad lo-fi", "epic trailer", "smooth jazz", "trap", "punk"), a key ("in F# minor"), a length ' +
   '("8 chords"), a tempo ("90 bpm", "slow") or an instrument ("on strings"). Then refine it: ' +
-  '"darker", "jazzier", "longer", "faster", "up a step", "make it resolve", or "another one".'
+  '"darker", "jazzier", "longer", "faster", "up a step", "make it resolve", or "another one". ' +
+  'Say "arpeggiate it" (or "16th note arp", "arp down", "hold the bass") to break the chords up, and "block chords" to undo it.'
 
 export const UNKNOWN_TEXT =
   'I didn\'t catch a mood, style, key, or edit in that. Try "dreamy chords in Eb major" or ' +

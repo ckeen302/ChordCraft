@@ -100,7 +100,7 @@ export function TransportBar() {
   return (
     <footer className="flex-shrink-0 bg-bg-panel border-t border-border">
       {/* BPM slider — full width strip with live value centred above it */}
-      <div className="px-6 pt-2 pb-0">
+      <div className="hidden sm:block px-6 pt-2 pb-0">
         <div className="flex items-center gap-3">
           <span className="text-[10px] text-text-dim font-mono w-6 text-right">40</span>
           <div className="relative flex-1">
@@ -131,7 +131,7 @@ export function TransportBar() {
       </div>
 
       {/* Main transport row — wraps on narrow windows instead of clipping */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 min-h-[76px]">
+      <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-2 px-3 sm:px-4 py-2 sm:min-h-[76px]">
 
         {/* ── Playback controls ─────────────────────────────────────────── */}
         <div className="flex items-center gap-2">
@@ -274,7 +274,8 @@ export function TransportBar() {
         </div>
 
         {/* ── Volume ────────────────────────────────────────────────────── */}
-        <div className="flex items-center gap-1.5">
+        {/* Phones use the hardware volume; the slider row and this stay desktop-only. */}
+        <div className="hidden sm:flex items-center gap-1.5">
           <span className="text-xs text-text-muted">Vol</span>
           <input
             type="range"

@@ -30,9 +30,9 @@ export default function ChordCraftApp() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-bg-deep text-text">
       {/* Slim brand header with tab nav */}
-      <header className="flex items-center justify-between px-6 py-2.5 border-b border-border bg-bg-panel flex-shrink-0">
+      <header className="flex items-center justify-between gap-2 px-3 sm:px-6 py-2.5 border-b border-border bg-bg-panel flex-shrink-0">
         <div className="flex items-baseline gap-3">
-          <h1 className="text-lg font-extrabold tracking-widest text-text uppercase leading-none">
+          <h1 className="text-base sm:text-lg font-extrabold tracking-widest text-text uppercase leading-none">
             Chord<span className="text-accent">Craft</span>
           </h1>
           <p className="text-[9px] tracking-[3px] uppercase text-text-muted hidden sm:block">
@@ -46,6 +46,8 @@ export default function ChordCraftApp() {
             <button
               key={id}
               onClick={() => setTab(id)}
+              aria-label={label}
+              title={label}
               className={cn(
                 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer',
                 tab === id
@@ -54,7 +56,7 @@ export default function ChordCraftApp() {
               )}
             >
               <Icon size={13} />
-              {label}
+              <span className="hidden sm:inline">{label}</span>
             </button>
           ))}
         </nav>

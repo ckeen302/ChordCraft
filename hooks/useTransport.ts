@@ -77,14 +77,20 @@ export function useTransport() {
   const isPlayingRef  = useRef(isPlaying)
 
   const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null)
-  const posBeatsRef   = useRef(0)      // absolute beats since play start (unwrapped)
+  const posBeatsRef   = useRef(0)      // beats into the progression (wraps when looping)
+  const schedUntilRef = useRef(0)      // notes starting before this beat are already scheduled
   const lastNowRef    = useRef(0)      // performance.now() of the last tick
   const idxRef        = useRef(0)      // pointer into notesRef for scheduling
   const occBaseRef    = useRef(0)      // beat offset of the current loop pass
   const curWinRef     = useRef(-1)
   const startingRef   = useRef(false)
 
-  useEffect(() => { loopRef.current = loopEnabled },          [loopEnabled])
+  useEffect(() => {
+    loopRef.current = loopEnabled
+    // Re-aim so turning Loop off mid-play finishes this pass instead of queuing the next.
+    if (timerRef.current !== null) _rebuildPointer()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loopEnabled])
   useEffect(() => { metronomeRef.current = metronomeEnabled },[metronomeEnabled])
   useEffect(() => { isPlayingRef.current = isPlaying },       [isPlaying])
 
@@ -136,12 +142,14 @@ export function useTransport() {
 
   function _rebuildPointer() {
     const total = totalRef.current
-    const pos = posBeatsRef.current
-    occBaseRef.current = loopRef.current && total > 0 ? Math.floor(pos / total) * total : 0
-    const posInPass = pos - occBaseRef.current
+    // Resume after what the lookahead already queued, so notes just ahead of
+    // the playhead aren't played a second time after a mid-play edit.
+    const from = Math.max(posBeatsRef.current, schedUntilRef.current)
+    const base = loopRef.current && total > 0 ? Math.floor(from / total) * total : 0
     const notes = notesRef.current
     let i = 0
-    while (i < notes.length && notes[i].start < posInPass - 1e-6) i++
+    while (i < notes.length && base + notes[i].start < from - 1e-6) i++
+    occBaseRef.current = base
     idxRef.current = i
   }
 
@@ -197,9 +205,24 @@ export function useTransport() {
 
     posBeatsRef.current += ((now - lastNowRef.current) / 1000) * (bpmNow / 60)
     lastNowRef.current = now
-    const pos = posBeatsRef.current
 
     if (total <= 0) { _finish(); return }
+
+    // Wrap the clock at the loop point so pause/resume and switching Loop off
+    // work from where playback actually is, not from an ever-growing count.
+    if (loop && posBeatsRef.current >= total) {
+      const passes = Math.floor(posBeatsRef.current / total) * total
+      posBeatsRef.current -= passes
+      occBaseRef.current -= passes
+      schedUntilRef.current -= passes
+      // The click counts beats from the start, so re-sync it when the loop
+      // isn't a whole number of bars.
+      const bpb = useStore.getState().beatsPerBar
+      if (metronomeRef.current && Math.abs(total / bpb - Math.round(total / bpb)) > 1e-6) {
+        startMetronome(bpmNow, bpb, posBeatsRef.current)
+      }
+    }
+    const pos = posBeatsRef.current
 
     // End of a non-looping run (small tail so the last chord isn't clipped).
     if (!loop && pos >= total + TAIL_BEATS) { _finish(); return }
@@ -222,6 +245,7 @@ export function useTransport() {
       _playGroup(notes.slice(i, j), whenSec)
       idxRef.current = j
     }
+    schedUntilRef.current = horizon
 
     // Publish the playhead + derive the highlighted chord window.
     const posLoop = loop ? pos % total : Math.min(pos, total)
@@ -263,6 +287,7 @@ export function useTransport() {
       if (!isPaused || posBeatsRef.current >= totalRef.current) {
         posBeatsRef.current = 0
       }
+      schedUntilRef.current = posBeatsRef.current
       lastNowRef.current = performance.now()
       _rebuildPointer()
 
