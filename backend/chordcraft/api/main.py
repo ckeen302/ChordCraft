@@ -16,6 +16,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from chordcraft.presets import db as presets_db
+from chordcraft.songs import db as songs_db
 from chordcraft.theory import (
     KEY_NAMES,
     KEYS,
@@ -44,6 +45,8 @@ from .schemas import (
     PresetFacets,
     PresetOut,
     PresetPage,
+    SongOut,
+    SongPage,
     ValidatedChord,
     ValidateRequest,
     ValidateResponse,
@@ -231,6 +234,42 @@ def get_preset(preset_id: str) -> PresetOut:
     if not preset:
         raise HTTPException(404, f"No preset with id {preset_id!r}")
     return PresetOut(**preset.to_json())
+
+
+# ── Popular Songs ────────────────────────────────────────────────────────────
+
+
+def _songs_conn():
+    try:
+        return songs_db.connect_readonly()
+    except sqlite3.Error as e:
+        raise HTTPException(503, f"Songs database unavailable: {e}") from e
+
+
+@app.get("/v1/songs", response_model=SongPage)
+def list_songs(
+    q: str = Query("", max_length=100, description="Full-text search over title and artist"),
+    limit: int = Query(50, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+) -> SongPage:
+    conn = _songs_conn()
+    try:
+        total, songs = songs_db.query(conn, q=q, limit=limit, offset=offset)
+    finally:
+        conn.close()
+    return SongPage(total=total, offset=offset, limit=limit, items=[SongOut(**s.to_json()) for s in songs])
+
+
+@app.get("/v1/songs/{song_id}", response_model=SongOut)
+def get_song(song_id: str) -> SongOut:
+    conn = _songs_conn()
+    try:
+        song = songs_db.get(conn, song_id)
+    finally:
+        conn.close()
+    if not song:
+        raise HTTPException(404, f"No song with id {song_id!r}")
+    return SongOut(**song.to_json())
 
 
 def _parses(symbol: str) -> bool:

@@ -3,22 +3,38 @@
 /**
  * PopularSongs
  *
- * Research-verified chord progressions from famous songs. Loading a song sets
- * the transport to the song's real BPM and per-chord harmonic rhythm, so it
- * plays exactly like the record — and the MIDI download matches beat-for-beat.
+ * Chord progressions from famous songs, converted from Hooktheory TheoryTab
+ * analyses (tempo cross-checked on songbpm.com). Loading a song sets the
+ * transport to the song's real BPM and per-chord harmonic rhythm, so it plays
+ * like the record, and the MIDI download matches beat-for-beat.
  */
 import { useState } from 'react'
-import { Search, Download, Play, Clock, KeyRound, CheckCircle2, Disc3 } from 'lucide-react'
+import { Search, Download, Play, Clock, KeyRound, CheckCircle2, Disc3, ExternalLink } from 'lucide-react'
 import { PianoRoll } from '@/components/piano/PianoRoll'
 import { useStore } from '@/store/useStore'
-import { POPULAR_SONGS, songToParsedChords, type PopularSong } from '@/lib/data/popular-songs'
+import { POPULAR_SONGS, pulsesPerBar, songToParsedChords, type PopularSong } from '@/lib/data/popular-songs'
 import { downloadMidi, GM_PROGRAM } from '@/lib/midi/export'
 import { setChordRoll } from '@/lib/audio/engine'
 import { cn } from '@/lib/utils'
 
-/** Metronome accent grouping per notated meter (pulse counts, not eighths). */
-const BEATS_PER_BAR: Record<string, number> = {
-  '4/4': 4, '3/4': 3, '6/8': 2, '12/8': 4,
+const MODE_LABEL: Record<string, string> = {
+  dorian: 'Dorian', phrygian: 'Phrygian', lydian: 'Lydian', mixolydian: 'Mixolydian',
+  locrian: 'Locrian', harmonicMinor: 'Harmonic minor', phrygianDominant: 'Phrygian dominant',
+}
+
+/** How songbpm's reading relates to ours when it counts a different pulse. */
+function pulseNote(song: PopularSong): string {
+  const r = song.tempoCheckBpm / song.bpm
+  if (Math.abs(r - 1) <= 0.04) return ''
+  if (Math.abs(r - 2) <= 0.08) return ', counted in double time'
+  if (Math.abs(r - 0.5) <= 0.02) return ', counted in half time'
+  return ', counted in a different pulse'
+}
+
+/** "D Mixolydian" for modal songs, otherwise the plain key. */
+function keyLabel(song: PopularSong): string {
+  const mode = MODE_LABEL[song.mode]
+  return mode ? `${song.key.split(' ')[0]} ${mode}` : song.key
 }
 
 export function PopularSongs() {
@@ -43,7 +59,7 @@ export function PopularSongs() {
     if (!chords.length) return
     loadProgression(chords, `${song.title} — ${song.artist}`)
     setBpm(song.bpm)   // play at the record's tempo
-    setBeatsPerBar(BEATS_PER_BAR[song.timeSignature] ?? 4)   // metronome accents follow the meter
+    setBeatsPerBar(pulsesPerBar(song.timeSignature))   // metronome accents follow the meter
     setChordRoll(20)   // natural light strum for song playback
   }
 
@@ -56,6 +72,7 @@ export function PopularSongs() {
       `${song.title} - ${song.artist}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       4,
       GM_PROGRAM[instrument],
+      song.timeSignature,
     )
   }
 
@@ -67,7 +84,7 @@ export function PopularSongs() {
         <div className="p-5 pb-3">
           <h2 className="text-lg font-extrabold text-text">Popular Songs</h2>
           <p className="text-text-muted text-xs mt-0.5 leading-relaxed">
-            Verified progressions — real key, tempo, and rhythm.
+            {POPULAR_SONGS.length} progressions from Hooktheory TheoryTab, with real key, tempo and rhythm.
           </p>
           <div className="relative mt-3">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim pointer-events-none" />
@@ -107,7 +124,7 @@ export function PopularSongs() {
                 <div className="flex items-center gap-2 text-[11px] text-text-muted">
                   <span className="truncate">{song.artist}</span>
                   <span className="ml-auto flex items-center gap-1 flex-shrink-0 font-mono text-[10px]">
-                    <KeyRound size={9} className="text-text-dim" />{song.key}
+                    <KeyRound size={9} className="text-text-dim" />{keyLabel(song)}
                   </span>
                   <span className="flex items-center gap-1 flex-shrink-0 font-mono text-[10px]">
                     <Clock size={9} className="text-text-dim" />{song.bpm}
@@ -137,7 +154,7 @@ export function PopularSongs() {
                 </p>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <span className="px-2 py-0.5 rounded-full bg-bg-raised border border-border text-[11px] font-mono text-text-muted">
-                    {selected.key}
+                    {keyLabel(selected)}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-bg-raised border border-border text-[11px] font-mono text-text-muted">
                     {selected.bpm} BPM
@@ -200,10 +217,26 @@ export function PopularSongs() {
               </div>
             </div>
 
-            <p className="flex items-center gap-1.5 text-[11px] text-text-dim">
-              <CheckCircle2 size={12} className="text-accent" />
-              Verified against multiple independent sources (chord analyses, top-rated tabs, tempo databases).
-            </p>
+            <div className="flex flex-col gap-1.5 text-[11px] text-text-dim">
+              <p className="flex items-center gap-1.5">
+                <CheckCircle2 size={12} className="text-accent flex-shrink-0" />
+                Chords, rhythm, key and tempo from the
+                <a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer"
+                   className="inline-flex items-center gap-1 text-accent hover:underline">
+                  Hooktheory TheoryTab analysis <ExternalLink size={10} />
+                </a>
+              </p>
+              <p className="flex items-center gap-1.5">
+                <CheckCircle2 size={12} className="text-accent flex-shrink-0" />
+                Tempo confirmed by
+                <a href={selected.tempoCheckUrl} target="_blank" rel="noopener noreferrer"
+                   className="inline-flex items-center gap-1 text-accent hover:underline">
+                  songbpm.com ({selected.tempoCheckBpm} BPM{pulseNote(selected)}) <ExternalLink size={10} />
+                </a>
+                {selected.keyCheck === 'exact' && <span>· same key</span>}
+                {selected.keyCheck === 'relative' && <span>· relative key</span>}
+              </p>
+            </div>
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center">

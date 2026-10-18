@@ -4,7 +4,9 @@ Krumhansl–Kessler key profiles correlated against a pitch-class histogram of
 the chord tones, plus a tonic prior: songs overwhelmingly start or end on the
 tonic chord and spend the most time there, which resolves the classic
 relative-major/minor confusion that profiles alone leave open. Accuracy is
-measured against the 87 verified songs in fixtures/popular-songs.json.
+measured against the TheoryTab-sourced songs in fixtures/popular-songs.json
+(63% on 389 songs; each is one real section, which often doesn't start on the
+tonic, and modal songs count against their nearest major/minor key).
 """
 
 from __future__ import annotations

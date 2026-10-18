@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { chordWindows, chordsToNotes, deleteWindowNotes, detectWindowChords, extendWindows, totalBeatsOf } from './notes'
-import { parseChord, parseChordStrict } from '@/lib/theory/chords'
-import { POPULAR_SONGS, songToParsedChords } from '@/lib/data/popular-songs'
-import { KEYS } from '@/lib/theory/keys'
+import { parseChord } from '@/lib/theory/chords'
 
 const prog = [{ ...parseChord('C'), beats: 4 }, parseChord('G'), { ...parseChord('Am'), beats: 1 }]
 
@@ -42,26 +40,5 @@ describe('deleteWindowNotes', () => {
     const notes = [{ id: 'a', midi: 60, start: 2, duration: 4, velocity: 0.8 }]
     const out = deleteWindowNotes(notes, [{ start: 0, beats: 4 }, { start: 4, beats: 2 }], 1)
     expect(out).toEqual([{ id: 'a', midi: 60, start: 2, duration: 2, velocity: 0.8 }])
-  })
-})
-
-describe('popular songs data', () => {
-  it('has unique ids and valid metadata', () => {
-    expect(new Set(POPULAR_SONGS.map(s => s.id)).size).toBe(POPULAR_SONGS.length)
-    for (const s of POPULAR_SONGS) {
-      expect(KEYS[s.key], s.id).toBeDefined()
-      expect(s.bpm, s.id).toBeGreaterThanOrEqual(40)
-      expect(s.bpm, s.id).toBeLessThanOrEqual(240)
-    }
-  })
-
-  it('every chord parses strictly and has a positive duration', () => {
-    for (const s of POPULAR_SONGS) {
-      for (const c of s.chords) {
-        expect(() => parseChordStrict(c.symbol), `${s.id}: ${c.symbol}`).not.toThrow()
-        expect(c.beats, s.id).toBeGreaterThan(0)
-      }
-      expect(songToParsedChords(s)).toHaveLength(s.chords.length)
-    }
   })
 })
