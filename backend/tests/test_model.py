@@ -109,3 +109,15 @@ def test_tiny_training_run_learns(tmp_path):
     assert (tmp_path / "run" / "best.pt").exists()
     ds = PhraseDataset(data / "train.jsonl.gz", TOK)
     assert len(ds) == 400 and ds.mood_counts()["epic"] == 200
+
+
+def test_sampling_never_returns_a_single_root():
+    model = tiny_model()
+    tonic = {i for i in TOK.chord_ids if TOK.itos[i].startswith("0:")}
+    with torch.no_grad():
+        for i in TOK.chord_ids:  # bias the output layer hard toward tonic chords
+            model.head.weight[i] += 5.0 if i in tonic else 0.0
+    g = torch.Generator().manual_seed(4)
+    for length in (2, 3, 4):
+        for s in sample(model, TOK, mode="major", length=length, num_samples=8, generator=g):
+            assert len({off for off, _ in s.degrees}) > 1

@@ -33,6 +33,7 @@ jobs:
       - run: uv sync --frozen
       - name: Ingest new solved threads
         id: ingest
+        shell: bash  # -eo pipefail: a failed ingest must fail the job, not vanish behind tee
         run: |
           uv run python -m chordcraft.presets ingest | tee "$RUNNER_TEMP/ingest.log"
           echo "summary=$(head -1 "$RUNNER_TEMP/ingest.log")" >> "$GITHUB_OUTPUT"

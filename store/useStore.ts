@@ -34,7 +34,7 @@ interface AppState {
    * Replace chords + notes in place — playback state is untouched, so
    * piano-roll edits apply live while the transport keeps running.
    */
-  updateProgressionAndNotes: (chords: ParsedChord[], notes: NoteEvent[]) => void
+  updateProgressionAndNotes: (chords: ParsedChord[], notes: NoteEvent[], source?: string) => void
 
   // ── Playback ─────────────────────────────────────────────────────────────
   isPlaying: boolean
@@ -102,8 +102,10 @@ export const useStore = create<AppState>((set, get) => ({
       isPlaying: false,
       isPaused: false,
     }),
-  updateProgressionAndNotes: (chords, notes) =>
-    set({ progression: chords, noteEvents: notes, notesCustom: true }),
+  updateProgressionAndNotes: (chords, notes, source) =>
+    set(source === undefined
+      ? { progression: chords, noteEvents: notes, notesCustom: true }
+      : { progression: chords, noteEvents: notes, notesCustom: true, source }),
 
   // Playback
   isPlaying: false,

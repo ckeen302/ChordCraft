@@ -9,6 +9,7 @@ import {
   type MoodGenerationResult,
   MOOD_LABELS,
 } from './harmony'
+import { analyzeProgression } from './analysis'
 import type { InstrumentName, ParsedChord } from '@/types'
 
 // ─── Progression templates (as scale-degree indices) ─────────────────────────
@@ -26,6 +27,11 @@ export const TEMPLATES: Record<string, number[]> = {
 }
 
 export const TEMPLATE_NAMES = Object.keys(TEMPLATES)
+
+/** Minor templates are written from a lowercase tonic ("i – VII – VI – VII"). */
+export function templateMode(name: string): 'major' | 'minor' {
+  return /^i\s/.test(name) ? 'minor' : 'major'
+}
 export { MOOD_LABELS }
 export type { Mood }
 
@@ -67,10 +73,12 @@ export function generateSmartRich(
   // Parse, attach the mood's harmonic rhythm, then voice-lead so the chords
   // connect like played hands instead of parallel root-position jumps.
   const parsed = parseChords(symbols).map((c, i) => ({ ...c, beats: result.beats[i] }))
+  // A secondary dominant replaced a chord, so the pattern's numerals no longer fit.
+  const romans = symbols === result.symbols ? result.romans : analyzeProgression(parsed, key).romans
 
   return {
     chords: voiceLeadProgression(parsed),
-    romans: result.romans,
+    romans,
     patternName: result.patternName,
     bpm: result.bpm,
     instrument: result.instrument,

@@ -15,6 +15,7 @@ import {
   generateRandom,
   generateFromTemplate,
   TEMPLATE_NAMES,
+  templateMode,
   MOOD_LABELS,
   type Mood,
 } from '@/lib/theory/progressions'
@@ -172,6 +173,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   }
 
   async function handleGenerate() {
+    if (generating || chatBusy) return
     setError(null)
     setGenerating(true)
     try {
@@ -214,9 +216,14 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         // Mood = harmony + rhythm + tempo + timbre + articulation.
         chords = applyVibe(result.chords, { bpm: result.bpm, rollMs: result.rollMs, instrument: result.instrument })
       } else {
-        chords = isRandom
-          ? generateRandom(selectedKey, length, excludeDim)
-          : generateFromTemplate(selectedKey, mode)
+        if (isRandom) {
+          chords = generateRandom(selectedKey, length, excludeDim)
+        } else {
+          // A minor template in a major key (or vice versa) keeps the tonic and
+          // switches mode, so "i – VII – VI – VII" in C plays in C minor.
+          genKey = parallelKey(selectedKey, templateMode(mode))
+          chords = generateFromTemplate(genKey, mode)
+        }
       }
 
       if (!chords.length) {
@@ -237,14 +244,19 @@ export function ChordLab({ active = true }: { active?: boolean }) {
   // ── Chord Chat ─────────────────────────────────────────────────────────────
 
   async function handleChat(text: string) {
+    if (generating || chatBusy) return
     setChatMessages(m => [...m, { role: 'user', text }])
     const reply = (t: string) => setChatMessages(m => [...m, { role: 'assistant', text: t }])
     setChatBusy(true)
     try {
+      // Tempo and instrument come from the live transport, so slider and dropdown
+      // changes made between messages are respected ("faster" scales what's playing).
+      const live = useStore.getState()
       const prev: ChatSettings = {
         ...chatSettings,
         key: chatSettings.keyPinned ? chatSettings.key : selectedKey,
-        bpm: chatSettings.bpm ?? bpm,
+        bpm: live.bpm,
+        instrument: live.instrument,
       }
       const req = parseRequest(text, prev)
       const s = req.settings
@@ -254,15 +266,17 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       if (req.transpose) {
         if (!localChords.length) return reply("There's nothing to transpose yet — describe a progression first.")
         const newKey = transposeKeyName(selectedKey, req.transpose)
-        transpose(req.transpose)
+        if (!transpose(req.transpose)) {
+          return reply("I can't move it that far — some notes would go off the end of the piano roll.")
+        }
         setChatSettings({ ...s, key: newKey, keyPinned: true })
         return reply(`Done — ${req.notes.join(', ')}. It's now in ${newKey}.`)
       }
 
       if (req.keepChords) {
         const changes: string[] = []
-        if (s.bpm && s.bpm !== bpm) { setBpm(s.bpm); changes.push(`${s.bpm} BPM`) }
-        if (s.instrument && s.instrument !== instrument) {
+        if (req.tempoSet && s.bpm && s.bpm !== live.bpm) { setBpm(s.bpm); changes.push(`${s.bpm} BPM`) }
+        if (req.instrumentSet && s.instrument && s.instrument !== live.instrument) {
           useStore.getState().chooseInstrument(s.instrument)
           changes.push(`playing on ${s.instrument.toLowerCase()}`)
         }
@@ -280,9 +294,10 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         key, mood: s.mood, length: s.length, excludeDiminished: s.excludeDiminished, resolve: s.resolve,
       })
       const st = useStore.getState()
-      const playBpm = s.bpm ?? res.bpm
+      // Only what the message asked for overrides the mood's own tempo and sound.
+      const playBpm = req.tempoSet && s.bpm ? s.bpm : res.bpm
       let playInstrument = st.instrumentTouched ? st.instrument : res.instrument
-      if (s.instrument) { st.chooseInstrument(s.instrument); playInstrument = s.instrument }
+      if (req.instrumentSet && s.instrument) { st.chooseInstrument(s.instrument); playInstrument = s.instrument }
       else if (!st.instrumentTouched) setInstrument(res.instrument)
       setBpm(playBpm)
       setChordRoll(res.rollMs)
@@ -609,7 +624,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
         <div className="flex-shrink-0 p-4 border-t border-border bg-bg-panel">
           <button
             onClick={handleGenerate}
-            disabled={generating}
+            disabled={generating || chatBusy}
             className={cn(
               'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl',
               'bg-accent hover:bg-accent-hover text-bg-deep font-bold text-sm',
@@ -633,7 +648,7 @@ export function ChordLab({ active = true }: { active?: boolean }) {
       {/* ── Right panel: Output ──────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 gap-6">
 
-        <ChatPanel messages={chatMessages} busy={chatBusy} onSend={handleChat} />
+        <ChatPanel messages={chatMessages} busy={chatBusy || generating} onSend={handleChat} />
 
         {/* Progression strip — or empty hint */}
         {localChords.length > 0 ? (

@@ -21,6 +21,10 @@ export interface ChordWindow {
 
 const EPS = 1e-6
 
+/** Pitch range the piano roll shows and keeps (C1–B7). */
+export const ROLL_LO_MIDI = 24
+export const ROLL_HI_MIDI = 107
+
 let _idCounter = 0
 export function newNoteId(): string {
   _idCounter += 1

@@ -132,6 +132,15 @@ def sample(
             if block_loops and step >= 3:
                 for row, token in loop_completions(ids[:, len(prefix):].tolist()):
                     allowed[row, token] = False
+            if step == length - 1 and step > 0:
+                # A progression needs at least two roots: "Eb - Ebmaj7" is one chord recoloured.
+                for row, gen_ids in enumerate(ids[:, len(prefix):].tolist()):
+                    roots = {tok.itos[i].split(":", 1)[0] for i in gen_ids}
+                    if len(roots) == 1:
+                        root = next(iter(roots))
+                        for i in tok.chord_ids:
+                            if tok.itos[i].split(":", 1)[0] == root:
+                                allowed[row, i] = False
             if presence_penalty and step > 0:
                 used = torch.zeros_like(allowed).scatter_(1, ids[:, len(prefix):], True)
                 logits = logits - presence_penalty * used.float()

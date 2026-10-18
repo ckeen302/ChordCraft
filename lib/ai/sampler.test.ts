@@ -129,3 +129,25 @@ describe('mood quality', () => {
     expect(recurring[0]).toEqual(recurring[2]) // style-coherent: same chord, same colour
   })
 })
+
+describe('review fixes', () => {
+  it('never returns a progression on a single root', async () => {
+    // A model that always prefers the tonic in some colour.
+    const tonic = ['0:maj', '0:maj7', '0:add9', '0:6'].map(t => vocab.id(t))
+    const logits: LogitsFn = async rows => rows.map(() => Float32Array.from(tokens, (_, i) => (tonic.includes(i) ? 10 : 0)))
+    for (const length of [2, 3, 4]) {
+      const out = await sampleProgressions(logits, vocab, { mode: 'major', length, candidates: 4, rng: seededRng(length) })
+      for (const c of out) expect(new Set(c.degrees.map(([off]) => off)).size).toBeGreaterThan(1)
+    }
+  })
+
+  it('colouring never merges two different chords', async () => {
+    const { colourDegrees } = await import('@/lib/theory/harmony')
+    for (let seed = 0; seed < 200; seed++) {
+      const input: [number, 'm' | 'm7' | 'maj' | '7'][] = [[0, 'm'], [8, 'maj'], [0, 'm7'], [7, '7'], [7, 'maj']]
+      const out = colourDegrees(input, 'jazz', true, seededRng(seed))
+      expect(new Set(out.map(d => d.join(':'))).size).toBe(new Set(input.map(d => d.join(':'))).size)
+    }
+    expect(colourDegrees([[0, 'm'], [0, '5']], 'aggressive', true).map(d => d[1])).toEqual(['m', '5'])
+  })
+})
