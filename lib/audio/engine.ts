@@ -170,12 +170,14 @@ function ensureMaster(): void {
 // ─── Instrument construction ──────────────────────────────────────────────────
 
 function makeSampler(spec: SamplerSpec): Promise<Tone.Sampler> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const s = new T!.Sampler({
       urls:    spec.urls,
       baseUrl: `${BASE}${spec.dir}/`,
       release: spec.release ?? 1,
       onload:  () => resolve(s),
+      // Without this a single 404 leaves the promise pending forever.
+      onerror: (e) => { s.dispose(); reject(e) },
     })
     if (spec.volume !== undefined) s.volume.value = spec.volume
   })
@@ -245,16 +247,19 @@ async function buildInstrument(name: InstrumentName): Promise<void> {
   const specs = SAMPLE_SPECS[name]
   if (!specs) { _players.set(name, buildSynth('Pad')); return }
 
-  try {
-    const samplers = await Promise.race([
-      Promise.all(specs.map(makeSampler)),
-      timeout(12_000),
-    ])
+  const all = Promise.all(specs.map(makeSampler))
+  const install = (samplers: Tone.Sampler[]) => {
+    if (_players.has(name)) { samplers.forEach(s => s.dispose()); return }
     for (const s of samplers) s.connect(_reverb!)
     _players.set(name, { sources: samplers, extras: [] })
+  }
+  try {
+    install(await Promise.race([all, timeout(12_000)]))
   } catch {
-    // Network failure → graceful synth fallback so playback still works.
-    _players.set(name, buildSynth('Pad'))
+    // Slow or failed download: nothing is cached, so the fallback voice covers
+    // for now, a slow download still installs when it lands, and a failed one
+    // is retried on the next Play or instrument switch.
+    all.then(install, () => {})
   }
 }
 
@@ -329,7 +334,7 @@ export function playNote(
   const name = T.Frequency(midi, 'midi').toNote()
   const vel = Math.max(0.05, Math.min(1, velocity))
   for (const src of loaded.sources) {
-    try { src.triggerAttackRelease(name, Math.max(0.05, durationSec), t, vel) } catch { /* voice busy */ }
+    try { trigger(src, name, Math.max(0.05, durationSec), t, vel) } catch { /* voice busy */ }
   }
 }
 
@@ -357,9 +362,28 @@ export function playChord(notes: number[], durationSec: number): void {
 
   for (const src of loaded.sources) {
     noteNames.forEach((nn, i) => {
-      try { src.triggerAttackRelease(nn, dur, start + i * (_rollMs / 1000)) } catch { /* voice busy */ }
+      try { trigger(src, nn, dur, start + i * (_rollMs / 1000)) } catch { /* voice busy */ }
     })
   }
+}
+
+/**
+ * Start a note and schedule its end. Sampler.triggerAttackRelease forgets the
+ * note as soon as it's scheduled, so releaseAll (Stop/Pause) couldn't cut it
+ * off — sampled chords rang out for their whole length after Stop. Attacking
+ * and scheduling the stop on the source ourselves keeps it releasable.
+ */
+function trigger(src: Voice, note: string, dur: number, t: number, vel?: number): void {
+  if (T && src instanceof T.Sampler) {
+    src.triggerAttack(note, t, vel)
+    const active = (src as unknown as { _activeSources?: Map<number, { stop(time: number): void }[]> })._activeSources
+    const list = active?.get(Math.round(T.Frequency(note).toMidi()))
+    const source = list?.[list.length - 1]
+    if (source) source.stop(t + dur)
+    else src.triggerRelease(note, t + dur)
+    return
+  }
+  src.triggerAttackRelease(note, dur, t, vel)
 }
 
 export function stopAllNotes(): void {

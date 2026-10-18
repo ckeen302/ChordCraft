@@ -86,16 +86,19 @@ interface PianoRollProps {
   onDeleteWindow?: (index: number) => void
   /** Right-side + strip — append a chord slot. */
   onAppendWindow?: () => void
+  /** Whether the transport is playing this roll's progression (tabs stay mounted). */
+  live?: boolean
   className?: string
 }
 
 export function PianoRoll({
-  chords, notes, onNotesChange, onDeleteWindow, onAppendWindow, className,
+  chords, notes, onNotesChange, onDeleteWindow, onAppendWindow, live = true, className,
 }: PianoRollProps) {
   const beatsPerChord     = useStore(s => s.beatsPerChord)
-  const currentChordIndex = useStore(s => s.currentChordIndex)
-  const isPlaying         = useStore(s => s.isPlaying)
-  const isPaused          = useStore(s => s.isPaused)
+  // Another tab's progression playing must not move this roll's playhead or highlights.
+  const currentChordIndex = useStore(s => (live ? s.currentChordIndex : -1))
+  const isPlaying         = useStore(s => live && s.isPlaying)
+  const isPaused          = useStore(s => live && s.isPaused)
   const editable = !!onNotesChange
 
   // ── Timeline ──────────────────────────────────────────────────────────────
@@ -283,21 +286,20 @@ export function PianoRoll({
     }
 
     if (d.mode === 'move') {
-      const dBeat = snapRound(beat - d.startBeat)
-      const dMidi = midi - d.startMidi
       const sel = selectionRef.current
-      updateDraft(d.orig.map(n => {
-        if (!sel.has(n.id)) return n
-        return {
-          ...n,
-          start: Math.max(0, n.start + dBeat),
-          midi: Math.max(LO_MIDI, Math.min(HI_MIDI, n.midi + dMidi)),
-        }
-      }))
+      // Clamp the whole selection as one block, so hitting an edge doesn't
+      // squash a chord's notes onto each other.
+      const moving = d.orig.filter(n => sel.has(n.id))
+      const minStart = Math.min(...moving.map(n => n.start))
+      const minMidi = Math.min(...moving.map(n => n.midi))
+      const maxMidi = Math.max(...moving.map(n => n.midi))
+      const dBeat = Math.max(-minStart, snapRound(beat - d.startBeat))
+      const dMidi = Math.max(LO_MIDI - minMidi, Math.min(HI_MIDI - maxMidi, midi - d.startMidi))
+      updateDraft(d.orig.map(n => (sel.has(n.id) ? { ...n, start: n.start + dBeat, midi: n.midi + dMidi } : n)))
       if (dMidi !== d.lastPreviewMidi) {
         d.lastPreviewMidi = dMidi
         const anchor = d.orig.find(n => n.id === d.anchorId)
-        if (anchor) previewPitch(Math.max(LO_MIDI, Math.min(HI_MIDI, anchor.midi + dMidi)))
+        if (anchor) previewPitch(anchor.midi + dMidi)
       }
       return
     }
@@ -566,7 +568,7 @@ export function PianoRoll({
     }
     const step = () => {
       draw()
-      if (useStore.getState().isPlaying) raf = requestAnimationFrame(step)
+      if (isPlaying && useStore.getState().isPlaying) raf = requestAnimationFrame(step)
     }
     step()
     // rAF is suspended in hidden/backgrounded tabs — a coarse interval keeps

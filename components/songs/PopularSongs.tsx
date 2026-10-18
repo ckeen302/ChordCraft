@@ -82,10 +82,10 @@ export function PopularSongs() {
   }
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex flex-col md:flex-row h-full min-h-0 overflow-y-auto md:overflow-hidden">
 
       {/* ── Left: song list ─────────────────────────────────────────────── */}
-      <div className="w-96 flex-shrink-0 flex flex-col border-r border-border bg-bg-panel">
+      <div className="w-full md:w-96 h-[55vh] md:h-auto flex-shrink-0 flex flex-col border-b md:border-b-0 md:border-r border-border bg-bg-panel">
         <div className="p-5 pb-3">
           <h2 className="text-lg font-extrabold text-text">Popular Songs</h2>
           <p className="text-text-muted text-xs mt-0.5 leading-relaxed">
@@ -148,7 +148,7 @@ export function PopularSongs() {
       </div>
 
       {/* ── Right: selected song detail ─────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 gap-6">
+      <div className="md:flex-1 flex flex-col min-w-0 md:overflow-y-auto p-4 md:p-6 gap-6">
         {selected ? (
           <>
             <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -203,7 +203,7 @@ export function PopularSongs() {
               <p className="text-[10px] uppercase tracking-[2px] text-text-muted font-semibold mb-3">
                 {selected.section} — one cycle, column width = chord duration
               </p>
-              <PianoRoll chords={selectedChords} />
+              <PianoRoll chords={selectedChords} live={!!selected && isLoaded(selected)} />
             </div>
 
             {/* Chord/rhythm table */}

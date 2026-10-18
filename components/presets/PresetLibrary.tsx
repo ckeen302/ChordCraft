@@ -89,13 +89,22 @@ export function PresetLibrary() {
   const [results, setResults] = useState<Results | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [facetsFailed, setFacetsFailed] = useState(false)
+  // Bumped by the Retry buttons to re-run the fetches.
+  const [attempt, setAttempt] = useState(0)
 
   const q = useDebounced(query.trim(), SEARCH_DEBOUNCE_MS)
   const filterKey = JSON.stringify([q, vstFilter, sourceFilter])
 
   useEffect(() => {
-    fetchPresetFacets().then(setFacets, (e: Error) => setError(e.message))
-  }, [])
+    let cancelled = false
+    setFacetsFailed(false)
+    fetchPresetFacets().then(
+      f => { if (!cancelled) setFacets(f) },
+      () => { if (!cancelled) setFacetsFailed(true) },
+    )
+    return () => { cancelled = true }
+  }, [attempt])
 
   useEffect(() => {
     let cancelled = false
@@ -108,10 +117,13 @@ export function PresetLibrary() {
       (e: Error) => { if (!cancelled) setError(e.message) },
     )
     return () => { cancelled = true }
-  }, [q, vstFilter, sourceFilter, filterKey])
+  }, [q, vstFilter, sourceFilter, filterKey, attempt])
+
+  const retry = () => { setError(null); setAttempt(a => a + 1) }
 
   const loadMore = () => {
-    if (!results || loadingMore) return
+    // Not while page 1 of a new filter is in flight — it would append to the old list.
+    if (!results || loadingMore || results.key !== filterKey) return
     const key = results.key
     setLoadingMore(true)
     fetchPresets({ q, vst: vstFilter, source: sourceFilter, offset: results.items.length, limit: PAGE_SIZE })
@@ -138,10 +150,10 @@ export function PresetLibrary() {
   const loading = !results || results.key !== filterKey
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex flex-col md:flex-row h-full min-h-0 overflow-y-auto md:overflow-hidden">
 
       {/* ── Left: intro + search + filters ─────────────────────────────── */}
-      <div className="w-72 flex-shrink-0 flex flex-col gap-5 p-6 border-r border-border bg-bg-panel overflow-y-auto">
+      <div className="w-full md:w-72 flex-shrink-0 flex flex-col gap-5 p-4 md:p-6 border-b md:border-b-0 md:border-r border-border bg-bg-panel md:overflow-y-auto">
         <div>
           <h2 className="text-lg font-extrabold text-text">Preset Finder</h2>
           <p className="text-text-muted text-xs mt-0.5 leading-relaxed">
@@ -197,6 +209,12 @@ export function PresetLibrary() {
               </button>
             )}
           </div>
+          {facetsFailed && (
+            <p className="text-[11px] text-text-dim">
+              Couldn&rsquo;t load the VST list.{' '}
+              <button onClick={retry} className="text-accent hover:underline cursor-pointer">Retry</button>
+            </p>
+          )}
         </div>
 
         {/* Source filter chips */}
@@ -242,11 +260,17 @@ export function PresetLibrary() {
       </div>
 
       {/* ── Right: artist-grouped entries ──────────────────────────────── */}
-      <div className="flex-1 min-w-0 overflow-y-auto p-6">
+      <div className="md:flex-1 min-w-0 md:overflow-y-auto p-4 md:p-6">
         {error ? (
           <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
             <p className="text-text-muted text-sm">Couldn&rsquo;t load presets</p>
             <p className="text-text-dim text-xs">{error}</p>
+            <button
+              onClick={retry}
+              className="mt-2 px-4 py-2 rounded-xl border border-border bg-bg-raised text-xs font-semibold text-text-muted hover:text-text hover:border-border-bright transition-colors cursor-pointer"
+            >
+              Try again
+            </button>
           </div>
         ) : !results ? (
           <p className="py-16 text-center text-text-dim text-sm">Loading presets…</p>
@@ -297,7 +321,7 @@ export function PresetLibrary() {
             {results.items.length < results.total && (
               <button
                 onClick={loadMore}
-                disabled={loadingMore}
+                disabled={loadingMore || loading}
                 className="self-center px-4 py-2 rounded-xl border border-border bg-bg-raised text-xs font-semibold text-text-muted hover:text-text hover:border-border-bright transition-colors cursor-pointer"
               >
                 {loadingMore ? 'Loading…' : `Show more (${results.total - results.items.length} left)`}

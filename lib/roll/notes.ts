@@ -121,8 +121,8 @@ export function deleteWindowNotes(
       continue
     }
     if (n.start < w.start && nEnd > w.start + EPS) {
-      // Spans into the window from before: trim at the window edge.
-      out.push({ ...n, duration: w.start - n.start })
+      // Spans into the window from before: lose the deleted stretch, keep any tail past it.
+      out.push({ ...n, duration: nEnd > end + EPS ? n.duration - w.beats : w.start - n.start })
       continue
     }
     if (n.start >= end - EPS) {

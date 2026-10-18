@@ -42,3 +42,11 @@ describe('deleteWindowNotes', () => {
     expect(out).toEqual([{ id: 'a', midi: 60, start: 2, duration: 2, velocity: 0.8 }])
   })
 })
+
+describe('deleteWindowNotes with a spanning note', () => {
+  it('keeps the tail of a note held across the deleted column', () => {
+    const windows = [{ start: 0, beats: 2 }, { start: 2, beats: 2 }, { start: 4, beats: 2 }]
+    const held = { id: 'a', midi: 48, start: 0, duration: 6, velocity: 0.8 }
+    expect(deleteWindowNotes([held], windows, 1)).toEqual([{ ...held, duration: 4 }])
+  })
+})
