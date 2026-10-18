@@ -22,10 +22,26 @@ describe('popular songs data', () => {
       expect(s.bpm, s.id).toBeGreaterThanOrEqual(40)
       expect(s.bpm, s.id).toBeLessThanOrEqual(240)
       expect(s.timeSignature, s.id).toMatch(/^\d+\/(4|8)$/)
-      expect(s.year, s.id).toBeGreaterThanOrEqual(1600)
-      expect(s.year, s.id).toBeLessThanOrEqual(new Date().getFullYear())
+      if (s.year !== null) {
+        expect(s.year, s.id).toBeGreaterThanOrEqual(1600)
+        expect(s.year, s.id).toBeLessThanOrEqual(new Date().getFullYear())
+      } else {
+        expect(s.yearSourceUrl, s.id).toBeUndefined()
+      }
       expect(s.title.trim(), s.id).not.toBe('')
       expect(s.artist.trim(), s.id).not.toBe('')
+    }
+  })
+
+  it('confirms every song\'s chords against a Songsterr transcription', () => {
+    for (const s of POPULAR_SONGS) {
+      expect(s.chordCheckUrl, s.id).toMatch(/^https:\/\/www\.songsterr\.com\/a\/wsa\/[\w-]+-tab-s\d+$/)
+      expect(['same', 'transposed'], s.id).toContain(s.chordCheckKey)
+      // A tab in another key confirms the progression's shape; the key then needs songbpm.
+      if (s.chordCheckKey === 'transposed') expect(['exact', 'relative'], s.id).toContain(s.keyCheck)
+      if (s.yearSourceUrl) {
+        expect(s.yearSourceUrl, s.id).toMatch(/^https:\/\/(musicbrainz\.org\/recording|www\.wikidata\.org\/entity)\/[\w-]+$/)
+      }
     }
   })
 
@@ -76,7 +92,8 @@ describe('popular songs MIDI export', () => {
       const [num, den] = s.timeSignature.split('/').map(Number)
       expect(midi.header.timeSignatures[0].timeSignature, s.id).toEqual([num, den])
       const quarterBpm = den === 8 ? s.bpm * 1.5 : s.bpm
-      expect(midi.header.tempos[0].bpm, s.id).toBeCloseTo(quarterBpm, 3)
+      // MIDI stores tempo as whole microseconds per quarter note: compare in that unit, ±1 µs.
+      expect(Math.abs(60e6 / midi.header.tempos[0].bpm - 60e6 / quarterBpm), s.id).toBeLessThanOrEqual(1)
 
       // Each chord's notes start where the previous chords' beats add up to.
       const secondsPerBeat = 60 / s.bpm
@@ -91,6 +108,38 @@ describe('popular songs MIDI export', () => {
         const notes = midi.tracks[0].notes.filter(n => Math.abs(n.time - expected[i]) < 0.005).map(n => n.midi)
         expect(notes.sort(), `${s.id} chord ${i + 1}`).toEqual([...c.notes].sort())
       })
+    }
+  })
+
+  it('round-trips chord count, total beats and tempo exactly, on the DAW grid', async () => {
+    for (const s of POPULAR_SONGS) {
+      const midi = new Midi(await buildMidiBytes(songToParsedChords(s), s.bpm, 4, 0, s.timeSignature))
+      const [num, den] = s.timeSignature.split('/').map(Number)
+      const quartersPerBeat = den === 8 && num % 3 === 0 ? 1.5 : 1
+      const ppq = midi.header.ppq
+      const notes = midi.tracks[0].notes
+
+      // Chord count: one onset per stored chord.
+      const onsets = [...new Set(notes.map(n => n.ticks))].sort((a, b) => a - b)
+      expect(onsets.length, s.id).toBe(s.chords.length)
+
+      // Each chord starts on the tick its stored beats put it on (±1 tick of rounding).
+      let beats = 0
+      s.chords.forEach((c, i) => {
+        expect(Math.abs(onsets[i] - beats * quartersPerBeat * ppq), `${s.id} chord ${i + 1}`).toBeLessThanOrEqual(1)
+        beats += c.beats
+      })
+
+      // Total length: the last chord ends at the stored total (notes are held 92% of each chord).
+      const last = s.chords[s.chords.length - 1].beats
+      const end = Math.max(...notes.map(n => n.ticks + n.durationTicks))
+      const expectedEnd = (beats - last * 0.08) * quartersPerBeat * ppq
+      expect(Math.abs(end - expectedEnd), `${s.id} total beats`).toBeLessThanOrEqual(2)
+
+      // Tempo: the file plays at the stored BPM (quarter-note BPM in compound meter).
+      expect(midi.header.tempos.length, s.id).toBe(1)
+      expect(Math.abs(60e6 / midi.header.tempos[0].bpm - 60e6 / (s.bpm * quartersPerBeat)), s.id).toBeLessThanOrEqual(1)
+      expect(midi.duration, s.id).toBeCloseTo((beats - last * 0.08) * 60 / s.bpm, 2)
     }
   })
 })

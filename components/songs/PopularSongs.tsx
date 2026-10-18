@@ -89,7 +89,7 @@ export function PopularSongs() {
         <div className="p-5 pb-3">
           <h2 className="text-lg font-extrabold text-text">Popular Songs</h2>
           <p className="text-text-muted text-xs mt-0.5 leading-relaxed">
-            {POPULAR_SONGS.length} progressions from Hooktheory TheoryTab, with real key, tempo and rhythm.
+            {POPULAR_SONGS.length} progressions from Hooktheory TheoryTab, each confirmed against a Songsterr transcription.
           </p>
           <div className="relative mt-3">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim pointer-events-none" />
@@ -124,7 +124,7 @@ export function PopularSongs() {
                   <span className={cn('text-sm font-bold truncate', active ? 'text-accent' : 'text-text')}>
                     {song.title}
                   </span>
-                  <span className="text-[10px] text-text-dim font-mono flex-shrink-0">{song.year}</span>
+                  <span className="text-[10px] text-text-dim font-mono flex-shrink-0">{song.year ?? ''}</span>
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-text-muted">
                   <span className="truncate">{song.artist}</span>
@@ -155,7 +155,7 @@ export function PopularSongs() {
               <div>
                 <h3 className="text-2xl font-extrabold text-text leading-tight">{selected.title}</h3>
                 <p className="text-text-muted text-sm mt-0.5">
-                  {selected.artist} · {selected.year}
+                  {selected.artist}{selected.year !== null && ` · ${selected.year}`}
                 </p>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <span className="px-2 py-0.5 rounded-full bg-bg-raised border border-border text-[11px] font-mono text-text-muted">
@@ -230,6 +230,15 @@ export function PopularSongs() {
                    className="inline-flex items-center gap-1 text-accent hover:underline">
                   Hooktheory TheoryTab analysis <ExternalLink size={10} />
                 </a>
+              </p>
+              <p className="flex items-center gap-1.5">
+                <CheckCircle2 size={12} className="text-accent flex-shrink-0" />
+                Chords and rhythm confirmed against the notes of the
+                <a href={selected.chordCheckUrl} target="_blank" rel="noopener noreferrer"
+                   className="inline-flex items-center gap-1 text-accent hover:underline">
+                  Songsterr transcription <ExternalLink size={10} />
+                </a>
+                {selected.chordCheckKey === 'transposed' && <span>(transcribed in another key)</span>}
               </p>
               {selected.tempoSourceUrl && (
                 <p className="flex items-center gap-1.5">

@@ -55,6 +55,7 @@ STACK = {5: 3, 7: 4, 9: 5, 11: 6, 13: 7}
 ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII"]
 SECTION_ORDER = ["chorus", "verse", "pre-chorus", "intro", "bridge", "instrumental", "outro", "solo"]
 MAX_BEATS = 96
+MAX_GAP = 1.0  # beats of unmarked silence between two chords that still count as one held chord
 
 
 class Unusable(Exception):
@@ -297,14 +298,20 @@ def convert(meta: dict, data: dict) -> Section:
         chords.pop()
     out: list[tuple[str, float]] = []
     numerals: list[str] = []
-    for c in chords:
+    for i, c in enumerate(chords):
         if c.get("isRest"):
             raise Unusable("rest inside the progression")
         if c.get("pedal") or c.get("alternate") or c.get("substitutions"):
             raise Unusable("pedal / alternate / substitution chord")
         symbol, numeral = spell(c, PC[tonic], home, key in FLAT_KEYS)
         numerals.append(numeral)
-        beats = c["duration"] / unit
+        # A chord lasts until the next one starts: analyses sometimes leave a gap between
+        # chords without marking a rest. Up to a beat is articulation (stabs, staccato) and
+        # the chord is held through it; more is silence, which a progression can't express.
+        length = chords[i + 1]["beat"] - c["beat"] if i + 1 < len(chords) else c["duration"]
+        if (length - c["duration"]) / unit > MAX_GAP + 1e-9:
+            raise Unusable(f"{(length - c['duration']) / unit:g} beats of silence inside the progression")
+        beats = length / unit
         if out and out[-1][0] == symbol:  # one held chord split across two cells
             out[-1] = (symbol, out[-1][1] + beats)
         else:
@@ -327,6 +334,17 @@ def _rank(name: str) -> int:
     if n in ("chorus", "verse"):
         return 0 if n == "chorus" else 1
     return next((2 + i for i, p in enumerate(SECTION_ORDER) if p in n), 20)
+
+
+def sections(tab: TheoryTab) -> tuple[list[Section], list[str]]:
+    """Every section that converts exactly, most recognisable first, and why the others didn't."""
+    found, reasons = [], []
+    for meta in sorted(tab.sections, key=lambda s: _rank(s["name"])):
+        try:
+            found.append(convert(meta, section_json(meta["hash"])))
+        except Unusable as e:
+            reasons.append(f"{meta['name']}: {e}")
+    return found, reasons
 
 
 def best_section(tab: TheoryTab) -> tuple[Section, list[str]]:

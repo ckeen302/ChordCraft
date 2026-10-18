@@ -11,8 +11,8 @@
  *    working, and the harmonic identity is untouched.
  *  - Upper voices are placed in the octave nearest the previous chord's
  *    voices (classic keyboard-style comping: steady left hand, smooth right).
- *  - Dense extensions (9ths) drop the 5th from the upper structure — the
- *    standard jazz voicing trade.
+ *  - Every chord tone is kept, extensions included, so a voiced chord (and the
+ *    MIDI exported from it) plays exactly the chord its symbol names.
  */
 import type { ParsedChord } from '@/types'
 
@@ -42,14 +42,7 @@ export function voiceLeadProgression(chords: ParsedChord[]): ParsedChord[] {
 
     const bass = ch.notes[0]
     const bassPc = bass % 12
-    let pcs = [...new Set(ch.notes.slice(1).map(n => n % 12))]
-
-    // 9th-chord upper structures: drop the 5th (root+7), keep 3-7-9 colour.
-    if (pcs.length > 3) {
-      const fifth = (bassPc + 7) % 12
-      const trimmed = pcs.filter(pc => pc !== fifth)
-      if (trimmed.length >= 3) pcs = trimmed
-    }
+    const pcs = [...new Set(ch.notes.slice(1).map(n => n % 12))]
 
     let upper: number[]
     if (!prevUpper) {

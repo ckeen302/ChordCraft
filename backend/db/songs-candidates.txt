@@ -583,3 +583,1606 @@ Sparkle|RADWIMPS|2016
 Lemon|Kenshi Yonezu|2018
 Idol|YOASOBI|2023
 Yoru ni Kakeru|YOASOBI|2019
+
+# Expansion (Oct 2026): Songsterr's 1,600 most-played songs not already listed above.
+# Years come from MusicBrainz; every song still has to pass TheoryTab + songbpm + Songsterr.
+Master of Puppets|Metallica|
+Enter Sandman|Metallica|
+Nothing Else Matters|Metallica|
+Crazy Train|Ozzy Osbourne|
+One|Metallica|
+Fade to Black|Metallica|
+Killing in the Name|Rage Against the Machine|
+Paranoid|Black Sabbath|
+For Whom The Bell Tolls|Metallica|
+Seek & Destroy|Metallica|
+Iron Man|Black Sabbath|
+Can't Stop|Red Hot Chili Peppers|
+The Trooper|Iron Maiden|
+Hysteria|Muse|
+Symphony Of Destruction|Megadeth|
+Thunderstruck|AC/DC|
+Smoke On The Water|Deep Purple|
+My Own Summer (Shove It)|Deftones|
+Toxicity|System of a Down|
+Aerials|System of a Down|
+Comfortably Numb|Pink Floyd|
+Psychosocial|Slipknot|
+War Pigs|Black Sabbath|
+Money|Pink Floyd|
+Creeping Death|Metallica|
+Orion|Metallica|
+Snow (Hey Oh)|Red Hot Chili Peppers|
+The Unforgiven|Metallica|
+Cowboys From Hell|Pantera|
+Tornado of Souls|Megadeth|
+Sweet Dreams (Are Made of This)|Marilyn Manson|
+Holy Wars... The Punishment Due|Megadeth|
+Animal I Have Become|Three Days Grace|
+Welcome To The Jungle|Guns N' Roses|
+Walk|Pantera|
+Sad But True|Metallica|
+Ride The Lightning|Metallica|
+In Bloom|Nirvana|
+Free Bird|Lynyrd Skynyrd|
+Raining Blood|Slayer|
+Still Loving You|Scorpions|
+Schism|Tool|
+Holiday|Green Day|
+Wherever I May Roam|Metallica|
+Lonely Day|System of a Down|
+Layla|Derek and the Dominos|
+Nightmare|Avenged Sevenfold|
+Sunshine Of Your Love|Cream|
+Cemetery Gates|Pantera|
+Tears In Heaven|Eric Clapton|
+Hells Bells|AC/DC|
+Sonne|Rammstein|
+Breaking The Law|Judas Priest|
+Unholy Confessions|Avenged Sevenfold|
+Welcome Home (Sanitarium)|Metallica|
+Hail To The King|Avenged Sevenfold|
+Another Brick In The Wall, Part 2|Pink Floyd|
+The Man Who Sold The World|Nirvana|
+Purple Haze|The Jimi Hendrix Experience|
+Floods|Pantera|
+Duality|Slipknot|
+Du hast|Rammstein|
+Monster|Skillet|
+Given Up|Linkin Park|
+Battery|Metallica|
+No More Tears|Ozzy Osbourne|
+Black Dog|Led Zeppelin|
+The Kids Aren't Alright|The Offspring|
+Whole Lotta Love|Led Zeppelin|
+Knockin' On Heaven's Door|Guns N' Roses|
+Don't Cry|Guns N' Roses|
+Blackened|Metallica|
+N.I.B.|Black Sabbath|
+The Chain|Fleetwood Mac|
+Rock You Like A Hurricane|Scorpions|
+Roundabout|Yes|
+Peace Sells|Megadeth|
+You Give Love a Bad Name!|Bon Jovi|
+Ain't Talkin' 'Bout Love|Van Halen|
+Dani California|Red Hot Chili Peppers|
+Kickstart My Heart|Mötley Crüe|
+Holy Diver|Dio|
+You Shook Me All Night Long|AC/DC|
+I Hate Everything About You|Three Days Grace|
+Still Got The Blues|Gary Moore|
+Don't Fear The Reaper|Blue Öyster Cult|
+I Was Made for Lovin' You|KISS|
+Domination|Pantera|
+Supermassive Black Hole|Muse|
+Simple Man|Lynyrd Skynyrd|
+Wicked Game|Chris Isaak|
+Eruption|Van Halen|
+Nutshell|Alice in Chains|
+Message In A Bottle|The Police|
+The Four Horsemen|Metallica|
+Before I Forget|Slipknot|
+Mr. Crowley|Ozzy Osbourne|
+Be Quiet And Drive (Far Away)|Deftones|
+Ace Of Spades|Motörhead|
+The Pretender|Foo Fighters|
+Hallowed Be Thy Name|Iron Maiden|
+Like A Stone|Audioslave|
+Money For Nothing|Dire Straits|
+Faint|Linkin Park|
+T.N.T.|AC/DC|
+B.Y.O.B.|System of a Down|
+Tears Don't Fall|Bullet for My Valentine|
+The Less I Know The Better|Tame Impala|
+Painkiller|Judas Priest|
+Cliffs Of Dover|Eric Johnson|
+Shape Of My Heart|Sting|
+I WANNA BE YOUR SLAVE|Måneskin|
+Through The Fire And Flames|DragonForce|
+Am I Evil?|Metallica|
+Immigrant Song|Led Zeppelin|
+Bat Country|Avenged Sevenfold|
+Breed|Nirvana|
+About A Girl|Nirvana|
+21 Guns|Green Day|
+Anastasia|Slash|
+Plug In Baby|Muse|
+I Love Rock N' Roll|Joan Jett|
+The Call Of Ktulu|Metallica|
+Fear Of The Dark|Iron Maiden|
+Even Flow|Pearl Jam|
+Psycho Killer|Talking Heads|
+One Step Closer|Linkin Park|
+Kashmir|Led Zeppelin|
+Square Hammer|Ghost|
+Blind|Korn|
+Laid To Rest|Lamb of God|
+Scotty Doesn't Know|Lustra|
+Hey Joe|The Jimi Hendrix Experience|
+Pretty Fly (For A White Guy)|The Offspring|
+Rape Me|Nirvana|
+Brain Stew|Green Day|
+Little Wing|The Jimi Hendrix Experience|
+Change (In The House Of Flies)|Deftones|
+Drain You|Nirvana|
+This Love|Pantera|
+Down With The Sickness|Disturbed|
+Whiskey In The Jar|Metallica|
+Sugar|System of a Down|
+Would?|Alice in Chains|
+I'm Broken|Pantera|
+Canon Rock|Jerry C|
+Bombtrack|Rage Against the Machine|
+Crystal Mountain|Death|
+Time|Pink Floyd|
+The Devil In I|Slipknot|
+...And Justice for All|Metallica|
+The Day That Never Comes|Metallica|
+Hold The Line|Toto|
+Undone - The Sweater Song|Weezer|
+Afterlife|Avenged Sevenfold|
+My Curse|Killswitch Engage|
+Psycho|Muse|
+When I Come Around|Green Day|
+All Along The Watchtower|The Jimi Hendrix Experience|
+Black Magic Woman|Santana|
+Are You Gonna Be My Girl|Jet|
+Bulls On Parade|Rage Against the Machine|
+Walk This Way|Aerosmith|
+Спокойная ночь|Кино|
+Misery Business|Paramore|
+My Hero|Foo Fighters|
+Harvester of Sorrow|Metallica|
+No One Knows|Queens of the Stone Age|
+Babe I'm Gonna Leave You|Led Zeppelin|
+Panama|Van Halen|
+Kryptonite|3 Doors Down|
+Shepherd Of Fire|Avenged Sevenfold|
+Break Stuff|Limp Bizkit|
+All Apologies|Nirvana|
+I Don't Wanna Be Me|Type O Negative|
+Smooth|Santana|
+Hangar 18|Megadeth|
+Blitzkrieg Bop|The Ramones|
+Welcome To The Black Parade|My Chemical Romance|
+Fuel|Metallica|
+Canon In C|Pachelbel|
+Sharp Dressed Man|ZZ Top|
+Shine On You Crazy Diamond (Parts I - IX)|Pink Floyd|
+The Number Of The Beast|Iron Maiden|
+South Of Heaven|Slayer|
+Silvera|Gojira|
+Something In The Way|Nirvana|
+Wasted Years|Iron Maiden|
+Heartbreaker|Led Zeppelin|
+Why'd You Only Call Me When You're High?|Arctic Monkeys|
+Pride And Joy|Stevie Ray Vaughan & Double Trouble|
+Day Tripper|The Beatles|
+Freaks|Surf Curse|
+Sextape|Deftones|
+Eyeless|Slipknot|
+Barracuda|Heart|
+So Far Away|Avenged Sevenfold|
+Deutschland|Rammstein|
+Them Bones|Alice in Chains|
+Fluorescent Adolescent|Arctic Monkeys|
+Mississippi Queen|Mountain|
+Self Esteem|The Offspring|
+Highway Star|Deep Purple|
+Under Pressure|Queen, David Bowie|
+Beggin'|Måneskin|
+Crazy Little Thing Called Love|Queen|
+Island In The Sun|Weezer|
+Misirlou|Dick Dale|
+My Friend Of Misery|Metallica|
+Dark Necessities|Red Hot Chili Peppers|
+Forty Six & 2|Tool|
+Angel of Death|Slayer|
+Run To The Hills|Iron Maiden|
+Bark at the Moon|Ozzy Osbourne|
+Wonderful Tonight|Eric Clapton|
+One Last Breath|Creed|
+Are You Gonna Go My Way|Lenny Kravitz|
+Tom Sawyer|Rush|
+Jump In The Fire|Metallica|
+Canon in D Major|Pachelbel|
+Knights Of Cydonia|Muse|
+Sweating Bullets|Megadeth|
+The Pot|Tool|
+I Want You Back|The Jackson 5|
+Europa (Earth's Cry Heaven's Smile)|Santana|
+Stricken|Disturbed|
+Phantom Of The Opera|Iron Maiden|
+Trust|Megadeth|
+Cirice|Ghost|
+YYZ|Rush|
+In My Darkest Hour|Megadeth|
+I'm Not Okay (I Promise)|My Chemical Romance|
+Rock And Roll|Led Zeppelin|
+Hot For Teacher|Van Halen|
+Longview|Green Day|
+5 Minutes Alone|Pantera|
+Get Lucky|Daft Punk ft. Pharrell Williams & Nile Rodgers|
+Paranoid Android|Radiohead|
+Teenagers|My Chemical Romance|
+Polly|Nirvana|
+Rooster|Alice in Chains|
+Into the Void|Black Sabbath|
+Spirit Crusher|Death|
+Embryo / Children Of The Grave|Black Sabbath|
+Asturias (Leyenda)|Isaac Albéniz|
+Freak On A Leash|Korn|
+We're Not Gonna Take It|Twisted Sister|
+Never Too Late|Three Days Grace|
+Around The World|Red Hot Chili Peppers|
+Fight Fire With Fire|Metallica|
+Hand Of Blood|Bullet for My Valentine|
+A Tout Le Monde|Megadeth|
+(Anesthesia) - Pulling Teeth|Metallica|
+By The Way|Red Hot Chili Peppers|
+Pull Me Under|Dream Theater|
+Engine No. 9|Deftones|
+Aces High|Iron Maiden|
+Lounge Act|Nirvana|
+Are You Dead Yet?|Children of Bodom|
+Roxanne|The Police|
+Parisienne Walkways (with Phil Lynott)|Gary Moore|
+Don't Let Me Down|The Beatles|
+2 Minutes To Midnight|Iron Maiden|
+Freezing Moon|Mayhem|
+Yellow Ledbetter|Pearl Jam|
+Helena|My Chemical Romance|
+Electric Funeral|Black Sabbath|
+Whiplash|Metallica|
+Teenage Dirtbag|Wheatus|
+Just|Radiohead|
+The Beautiful People|Marilyn Manson|
+The Godfather Theme|Slash|
+Ramble On|Led Zeppelin|
+Voice Of The Soul|Death|
+Just The Two Of Us|Bill Withers|
+A New Level|Pantera|
+Time Is Running Out|Muse|
+Summer Of '69|Bryan Adams|
+Angie|The Rolling Stones|
+Riot|Three Days Grace|
+Sober|Tool|
+Mama, I'm Coming Home|Ozzy Osbourne|
+Heaven And Hell|Black Sabbath|
+Roadhouse Blues|The Doors|
+Still Into You|Paramore|
+People Are Strange|The Doors|
+Pneuma|Tool|
+Disposable Heroes|Metallica|
+Fast Car|Tracy Chapman|
+Dazed And Confused|Led Zeppelin|
+The Kill (Bury Me)|Thirty Seconds to Mars|
+Jigsaw Falling Into Place|Radiohead|
+Flying Whales|Gojira|
+Angry Again|Megadeth|
+Hammer Smashed  Face|Cannibal Corpse|
+Black Sabbath|Black Sabbath|
+Give It Away|Red Hot Chili Peppers|
+Mary|Alex G|
+Beast And The Harlot|Avenged Sevenfold|
+Drive|Incubus|
+Dammit|blink‐182|
+Snuff|Slipknot|
+For The Love of God|Steve Vai|
+Rebel Yell|Billy Idol|
+Black Betty|Ram Jam|
+The Hellion / Electric Eye|Judas Priest|
+Mouth For War|Pantera|
+Take A Look Around|Limp Bizkit|
+Engel|Rammstein|
+How You Remind Me|Nickelback|
+You're Gonna Go Far, Kid|The Offspring|
+Detroit Rock City (Platinum)|KISS|
+Adam's Song|blink‐182|
+River flows in you-Yiruma (shunga jung)|Yiruma-Shunga Jung Fingerstyle|
+La Grange|ZZ Top|
+Freaking Out the Neighborhood|Mac DeMarco|
+Over The Hills And Far Away|Led Zeppelin|
+(Sic)|Slipknot|
+Since I've Been Loving You|Led Zeppelin|
+The Last Of Us|Gustavo Santaolalla|
+Spiders|System of a Down|
+Bullet With Butterfly Wings|Smashing Pumpkins|
+ZITTI E BUONI|Måneskin|
+Good Times Bad Times|Led Zeppelin|
+Come Out And Play|The Offspring|
+Stranded|Gojira|
+The Adults Are Talking|The Strokes|
+Wind Of Change|Scorpions|
+The Thrill Is Gone|B.B. King|
+Still Waiting|Sum 41|
+Higher Ground|Red Hot Chili Peppers|
+Bad To The Bone|George Thorogood & the Destroyers|
+Breathe (In The Air)|Pink Floyd|
+Cocaine|Eric Clapton|
+Sugar, We're Goin Down|Fall Out Boy|
+King Nothing|Metallica|
+Your Betrayal|Bullet for My Valentine|
+Thank You for the Venom|My Chemical Romance|
+More Than Words|Extreme|
+Is This Love|Whitesnake|
+I Bet You Look Good On The Dancefloor|Arctic Monkeys|
+Know Your Enemy|Rage Against the Machine|
+Poison|Alice Cooper|
+Lateralus|Tool|
+Soul To Squeeze|Red Hot Chili Peppers|
+Welcome To Paradise|Green Day|
+King For A Day|Pierce the Veil|
+Patience|Guns N' Roses|
+We Will Rock You|Queen|
+Rollin'|Limp Bizkit|
+Seasons In The Abyss|Slayer|
+Blood and Thunder|Mastodon|
+I Want You (She's So Heavy)|The Beatles|
+Dance, Dance|Fall Out Boy|
+Wasting Love|Iron Maiden|
+96 Quite Bitter Beings|CKY (Camp Kill Yourself)|
+Fat Lip|Sum 41|
+Hypnotize|System of a Down|
+Roots Bloody Roots|Sepultura|
+Custer|Slipknot|
+The Thing That Should Not Be|Metallica|
+Nightrain|Guns N' Roses|
+Mother|Danzig|
+Smooth Criminal|Alien Ant Farm|
+Good Times|The Chic|
+The Diary Of Jane|Breaking Benjamin|
+Oh, Pretty Woman|Roy Orbison|
+Black Sheep|Metric|
+Walk With Me In Hell|Lamb of God|
+Limelight|Rush|
+Love Buzz|Nirvana|
+Shoot To Thrill|AC/DC|
+The Hell Song|Sum 41|
+No One Like You|Scorpions|
+The Unforgiven II|Metallica|
+California Dreamin'|The Mamas and the Papas|
+Leper Messiah|Metallica|
+Through Struggle|As I Lay Dying|
+Eye of the Beholder|Metallica|
+Hey You|Pink Floyd|
+Decode|Paramore|
+People = Shit|Slipknot|
+Weird Fishes/Arpeggi|Radiohead|
+Aneurysm|Nirvana|
+This Means War|Avenged Sevenfold|
+Symbolic|Death|
+Go With The Flow|Queens of the Stone Age|
+Famous Last Words|My Chemical Romance|
+ATWA|System of a Down|
+Uprising|Muse|
+Almost Easy|Avenged Sevenfold|
+Powerslave|Iron Maiden|
+And I Love Her|The Beatles|
+Black No. 1 (Little Miss Scare-All)|Type O Negative|
+Redbone|Childish Gambino|
+Spanish Romance|Spanish Song|
+Wait And Bleed|Slipknot|
+Fur Elise|Ludwig van Beethoven|
+Super Mario Bros. Theme|Koji Kondo|
+All Nightmare Long|Metallica|
+Don't Speak|No Doubt|
+Tennessee Whiskey|Chris Stapleton|
+Pull The Plug|Death|
+Hollow|Pantera|
+Jesus of Suburbia|Green Day|
+Critical Acclaim|Avenged Sevenfold|
+Your Love|The Outfield|
+7 Words|Deftones|
+Seize The Day|Avenged Sevenfold|
+You Really Got Me|Van Halen|
+Violent Pornography|System of a Down|
+Bleed It Out|Linkin Park|
+Creep|Stone Temple Pilots|
+Dead Memories|Slipknot|
+The End Of Heartache|Killswitch Engage|
+Monkey Wrench|Foo Fighters|
+Vicarious|Tool|
+A Forest|The Cure|
+Bodies|Drowning Pool|
+Whole Lotta Rosie|AC/DC|
+Prison Song|System of a Down|
+Shout At The Devil|Mötley Crüe|
+Better Call Saul - The Main Title Theme|Little Barrie|
+Sting - Shape Of My Heart|Fingerstyle Covers|
+Sweet Emotion|Aerosmith|
+Bulls In The Bronx|Pierce the Veil|
+Rapp Snitch Knishes Guitar Lick|MF DOOM|
+My Own Worst Enemy|Lit|
+Crazy On You|Heart|
+I Wanna Be Yours|Arctic Monkeys|
+The Shortest Straw|Metallica|
+My Sharona|The Knack|
+Unsainted|Slipknot|
+Folsom Prison Blues|Johnny Cash|
+Sweet Leaf|Black Sabbath|
+Never Fade Away|Samurai (Cyberpunk 2077)|
+Tush|ZZ Top|
+Cherub Rock|Smashing Pumpkins|
+Nero Forte|Slipknot|
+A Horse With No Name|America|
+A Place For My Head|Linkin Park|
+Take The Power Back|Rage Against the Machine|
+Moth Into Flame|Metallica|
+Mascara|Deftones|
+Where Did You Sleep Last Night|Nirvana|
+The Stage|Avenged Sevenfold|
+Na Na Na|My Chemical Romance|
+Redneck|Lamb of God|
+Let Down|Radiohead|
+Links 2,3,4|Rammstein|
+Exit Music (For A Film)|Radiohead|
+Hit The Lights|Metallica|
+Lux Æterna|Metallica|
+Time In A Bottle|Jim Croce|
+Dirty Deeds Done Dirt Cheap|AC/DC|
+The Reason|Hoobastank|
+Wake Up|Rage Against the Machine|
+Sparks|Coldplay|
+Lovesong|The Cure|
+Territorial Pissings|Nirvana|
+Lying From You|Linkin Park|
+Territory|Sepultura|
+Dragula|Rob Zombie|
+The God That Failed|Metallica|
+Simple Exercises To Gain Monster Speed & Independence|Scales And Arpeggios|
+The Metal|Tenacious D|
+Papercut|Linkin Park|
+Girls, Girls, Girls|Mötley Crüe|
+Cult Of Personality|Living Colour|
+Duvet|bôa|
+Marigold|Periphery|
+Scream|Avenged Sevenfold|
+All My Loving|The Beatles|
+The Ghost Of You|My Chemical Romance|
+Brothers In Arms|Dire Straits|
+You Really Got Me|The Kinks|
+Mayonaise|Smashing Pumpkins|
+Covet|Basement|
+Hearts Burst Into Fire|Bullet for My Valentine|
+Soothsayer|Buckethead|
+In Dying Days|As Blood Runs Black|
+Dumb|Nirvana|
+Voodoo Child (Slight Return)|The Jimi Hendrix Experience|
+Rainbow In The Dark|Dio|
+Sabbath Bloody Sabbath|Black Sabbath|
+Arabella|Arctic Monkeys|
+Ich Will|Rammstein|
+Shine|Collective Soul|
+Play That Funky Music (White Boy)|Wild Cherry|
+Sulfur|Slipknot|
+Pain|Three Days Grace|
+Jingle Bell Rock|Bobby Helms|
+Civil War|Guns N' Roses|
+Street Spirit (Fade Out)|Radiohead|
+The Emptiness Machine|Linkin Park|
+Dead Skin Mask|Slayer|
+Get Back|The Beatles|
+10's|Pantera|
+Y'all Want A Single|Korn|
+Damage, Inc.|Metallica|
+No Remorse|Metallica|
+Planet Caravan|Black Sabbath|
+Knee Socks|Arctic Monkeys|
+London Calling|The Clash|
+Rotten Apple|Alice in Chains|
+Outshined|Soundgarden|
+Runnin' With The Devil|Van Halen|
+Zero|Smashing Pumpkins|
+The Red|Chevelle|
+Down In A Hole|Alice in Chains|
+Rosemary|Deftones|
+GOSSIP|Måneskin|
+The Boys Are Back In Town|Thin Lizzy|
+The Ocean|Led Zeppelin|
+Somewhere I Belong|Linkin Park|
+Sunday Bloody Sunday|U2|
+Layla V2|Derek and the Dominos|
+Supersonic|Oasis|
+Bleed|Meshuggah|
+Far Beyond The Sun|Yngwie Malmsteen|
+Smooth Operator|Sade|
+When The Sun Goes Down|Arctic Monkeys|
+Round And Round|Ratt|
+Foxey Lady|The Jimi Hendrix Experience|
+Welcome Home|Coheed and Cambria|
+Hysteria|Def Leppard|
+Sir Duke|Stevie Wonder|
+Uptown Funk (Feat. Bruno Mars)|Mark Ronson|
+Of Wolf And Man|Metallica|
+Revolution Is My Name|Pantera|
+Looks That Kill|Mötley Crüe|
+De Música Ligera|Soda Stereo|
+School|Nirvana|
+Dead!|My Chemical Romance|
+One Way Or Another|Blondie|
+Dr. Feelgood|Mötley Crüe|
+Wake Up Dead|Megadeth|
+Heart Of Gold|Neil Young|
+Hero|Skillet|
+Motorbreath|Metallica|
+Dance Macabre|Ghost|
+Star Shopping|Lil Peep|
+Mary Jane's Last Dance|Tom Petty|
+Safe In Your Skin|Title Fight|
+White Wedding|Billy Idol|
+Dear Maria, Count Me In|All Time Low|
+All Star|Smash Mouth|
+Long Cool Woman (In A Black Dress)|The Hollies|
+Always With Me, Always With You|Joe Satriani|
+Falling Away From Me|Korn|
+The Zephyr Song|Red Hot Chili Peppers|
+Anarchy in the UK|Sex Pistols|
+I Don't Love You|My Chemical Romance|
+Slither|Velvet Revolver|
+Starlight|Muse|
+Disorder|Joy Division|
+Higher|Creed|
+Natural Born Killer|Avenged Sevenfold|
+I Stand Alone|Godsmack|
+Through Glass|Stone Sour|
+Stockholm Syndrome|Muse|
+The Wind Cries Mary|The Jimi Hendrix Experience|
+115|Kevin Sherwood & Elena Siegman|
+Blew|Nirvana|
+Aeroplane|Red Hot Chili Peppers|
+The Only Thing They Fear Is You|Mick Gordon|
+Dyers Eve|Metallica|
+I Wanna Rock|Twisted Sister|
+Radio/Video|System of a Down|
+Reptilia|The Strokes|
+Seek and Destroy|Metallica|
+What You Know|Two Door Cinema Club|
+Spoonman|Soundgarden|
+Jane!|The Long Faces|
+Here Without You|3 Doors Down|
+E1M1, At Doom’s Gate|Bobby Prince|
+Hardwired|Metallica|
+Still Of The Night|Whitesnake|
+Ending Theme|SpongeBob SquarePants|
+Joker And The Thief|Wolfmother|
+Crying Lightning|Arctic Monkeys|
+I Miss You|blink‐182|
+The Memory Remains|Metallica|
+My Kind of Woman|Mac DeMarco|
+Flesh And The Power It Holds|Death|
+Black Night|Deep Purple|
+Take It Easy|The Eagles|
+When You Were Young|The Killers|
+My Iron Lung|Radiohead|
+Like Light To The Flies|Trivium|
+Left Behind|Slipknot|
+Burn|Deep Purple|
+Savior|Rise Against|
+Mary On A Cross|Ghost|
+Life Is A Highway|Rascal Flatts|
+Teddy Picker|Arctic Monkeys|
+Have A Cigar|Pink Floyd|
+First Date|blink‐182|
+Lover, You Should've Come Over|Jeff Buckley|
+Last Nite|The Strokes|
+Minor Pentatonic Scale|Dan Jackson|
+Passenger|Deftones|
+Join Me In Death|HIM|
+Brianstorm|Arctic Monkeys|
+Life In The Fast Lane|The Eagles|
+21st Century Schizoid Man|King Crimson|
+Times Like These|Foo Fighters|
+Song For The Dead|Queens of the Stone Age|
+Dig|Mudvayne|
+In Too Deep|Sum 41|
+Lucretia|Megadeth|
+Moby Dick|Led Zeppelin|
+Sympathy For The Devil|The Rolling Stones|
+Toccata And Fugue (Bwv 565)|Johann Sebastian Bach|
+Fly Away|Lenny Kravitz|
+Fell On Black Days|Soundgarden|
+I Walk The Line|Johnny Cash|
+So Cold|Breaking Benjamin|
+Stacy's Mom|Fountains of Wayne|
+Around The Fur|Deftones|
+Little Wing|Stevie Ray Vaughan|
+Scream Aim Fire|Bullet for My Valentine|
+Kyouran Hey Kids!!|THE ORAL CIGARETTES|
+Ghost Riders In The Sky|The Ventures|
+Rhiannon|Fleetwood Mac|
+Unchained|Van Halen|
+Rocket Queen|Guns N' Roses|
+White Room|Cream|
+Shadow Moses|Bring Me the Horizon|
+Guerrilla Radio|Rage Against the Machine|
+Got The Life|Korn|
+Dunkelheit|Burzum|
+Happy Birthday|Misc|
+Come and Get Your Love – Single Edit|Redbone|
+Fairies Wear Boots|Black Sabbath|
+All My Life|Foo Fighters|
+Lonely Boy|The Black Keys|
+Gunslinger|Avenged Sevenfold|
+Home Sweet Home|Mötley Crüe|
+Omerta|Lamb of God|
+Holy Diver|Killswitch Engage|
+Howls Moving Castle|Sungha Jung|
+A Little Piece of Heaven|Avenged Sevenfold|
+Stinkfist|Tool|
+Shallow (Lady Gaga, Bradley Cooper)|Neil Wicker|
+Save Me|Avenged Sevenfold|
+Rebel Rebel|David Bowie|
+Technical Difficulties|Paul Gilbert|
+All Right Now|Free|
+Rats|Ghost|
+Black Magic|Slayer|
+The Drug In Me Is You|Falling in Reverse|
+The Man Who Sold The World|David Bowie|
+Stranglehold|Ted Nugent|
+Jumpin' Jack Flash|The Rolling Stones|
+Paralyzer|Finger Eleven|
+I-E-A-I-A-I-O|System of a Down|
+Turn the Page|Metallica|
+Feuer Frei!|Rammstein|
+Helter Skelter|The Beatles|
+Bleed The Freak|Alice in Chains|
+Master Blaster (Jammin')|Stevie Wonder|
+Living After Midnight|Judas Priest|
+My Way|Limp Bizkit|
+You Could Be Mine|Guns N' Roses|
+Someday|The Strokes|
+Cherry Waves|Deftones|
+Refuse / Resist|Sepultura|
+Mutter|Rammstein|
+Through The Never|Metallica|
+Entombed|Deftones|
+Youngest Daughter|Superheaven|
+Apocalypse|Cigarettes After Sex|
+Party Tonight (Regular Show)|Sean Szeles|
+She-Wolf|Megadeth|
+Estranged|Guns N' Roses|
+And I Love Her|Kurt Cobain|
+Is There Anybody Out There?|Pink Floyd|
+Comfortable Liar|Chevelle|
+Welcome To The Family|Avenged Sevenfold|
+Mama|My Chemical Romance|
+Send The Pain Below|Chevelle|
+Take No Prisoners|Megadeth|
+Can You Feel My Heart|Bring Me the Horizon|
+Road Trippin'|Red Hot Chili Peppers|
+Faded Fingerstyle|Alan Walker|
+Radio|Rammstein|
+Sleepwalking|Bring Me the Horizon|
+Samba Pa Ti|Santana|
+From the Start|Laufey|
+Classical Gas|Mason Williams|
+I Believe In A Thing Called Love|The Darkness|
+Panic Attack|Dream Theater|
+Photograph|Def Leppard|
+Thunder Kiss 65|White Zombie|
+Never Meant|American Football|
+The Frayed Ends Of Sanity|Metallica|
+New Born|Muse|
+Mary Had A Little Lamb|Stevie Ray Vaughan & Double Trouble|
+The Spirit Of Radio|Rush|
+Hey|Pixies|
+In Waves|Trivium|
+Game Of Thrones Main Theme|Ramin Djawadi|
+46 And 2|Tool|
+Pray For Plagues|Bring Me the Horizon|
+Owner Of A Lonely Heart|Yes|
+All I Wanted|Paramore|
+Scuttle Buttin'|Stevie Ray Vaughan|
+Hash Pipe|Weezer|
+New Divide|Linkin Park|
+Gimme All Your Lovin'|ZZ Top|
+Suck My Kiss|Red Hot Chili Peppers|
+Tribute|Tenacious D|
+Jealous|Eyedress|
+Funeralopolis|Electric Wizard|
+Wicked Game|HIM|
+I Saw Her Standing There|The Beatles|
+M.I.A.|Avenged Sevenfold|
+The Four Seasons Summer|Antonio Vivaldi|
+Zombie Ritual|Death|
+Deer Dance|System of a Down|
+Lost In Hollywood|System of a Down|
+Every Rose Has Its Thorn|Poison|
+Nocturne Op. 9 No. 2 (Frederic Chopin)|Transcribed: Francisco Tárrega|
+Celebrity Skin|Hole|
+God Save The Queen|Sex Pistols|
+Careless Whisper|Seether|
+Capricho Arabe|Francisco Tárrega|
+Start Me Up|The Rolling Stones|
+Last Caress|Misfits|
+Root|Deftones|
+Disenchanted|My Chemical Romance|
+I Wanna Be Sedated|The Ramones|
+Hourglass|Lamb of God|
+Gone Away|The Offspring|
+Slow Ride|Foghat|
+Treasure|Bruno Mars|
+Spit It Out|Slipknot|
+She Sells Sanctuary|The Cult|
+Wrathchild|Iron Maiden|
+Don't Say Lazy|K-On!!|
+Fade Into You|Mazzy Star|
+Guardians Of Asgaard|Amon Amarth|
+Until It Sleeps|Metallica|
+Mein Herz Brennt|Rammstein|
+The Passenger|Iggy Pop|
+Turkish March|Mozart|
+Between Angels And Insects|Papa Roach|
+Chapter Four|Avenged Sevenfold|
+Tuesday's Gone|Lynyrd Skynyrd|
+Heaven Knows I'm Miserable Now|The Smiths|
+Downfall|Children of Bodom|
+Texas Flood|Stevie Ray Vaughan & Double Trouble|
+Be Yourself|Audioslave|
+Time Of Dying|Three Days Grace|
+Michelle|The Beatles|
+Chippin' In|Samurai|
+Five Magics|Megadeth|
+The Rain Song|Led Zeppelin|
+Atlas, Rise!|Metallica|
+Walking On The Moon|The Police|
+The Show Must Go On|Queen|
+Animals|Nickelback|
+Rust In Peace... Polaris|Megadeth|
+My Generation|The Who|
+Oye Como Va|Santana|
+I Want To Break Free|Queen|
+Lullaby|The Cure|
+The Heretic Anthem|Slipknot|
+Walk|Foo Fighters|
+Trapped Under Ice|Metallica|
+You've Got Another Thing Comin'|Judas Priest|
+Brown Sugar|The Rolling Stones|
+On A Plain|Nirvana|
+Rock And Roll All Nite|KISS|
+Wild Side|Mötley Crüe|
+Coming Undone|Korn|
+The Philosopher|Death|
+Dig Up Her Bones|Misfits|
+KICKBACK|Kenshi Yonezu|
+Ziggy Stardust|David Bowie|
+Keep On Rockin' In The Free World|Neil Young|
+Honky Tonk Women|The Rolling Stones|
+The Perfect Pair|beabadoobee|
+Mr. Brownstone|Guns N' Roses|
+Stay Together For The Kids|blink‐182|
+Bullet In The Head|Rage Against the Machine|
+Madhouse|Anthrax|
+We Die Young|Alice in Chains|
+115 (Drop C Arrangement)|Kevin Sherwood|
+Freedom|Rage Against the Machine|
+Metal Militia|Metallica|
+Main Theme (Fingerstyle)|Fairy Tail|
+Gerudo Valley|The Legend Of Zelda: Ocarina of Time|
+Fur Elise|Beethoven|
+Face Down|The Red Jumpsuit Apparatus|
+Balls To The Wall|Accept|
+Red House|The Jimi Hendrix Experience|
+What's Up, People?!|Maximum The Hormone|
+The Pursuit Of Vikings|Amon Amarth|
+Just What I Needed|The Cars|
+Digital Bath|Deftones|
+Suffocating Under Words Of Sorrow|Bullet for My Valentine|
+Il Vento d'Oro (Giorno's Theme) / from Jojo's Bizarre Adventure: Golden Wind|Yugo Kanno|
+Dear God|Avenged Sevenfold|
+Echoes|Pink Floyd|
+Don't Tread On Me|Metallica|
+When The Levee Breaks|Led Zeppelin|
+The Unforgiven III|Metallica|
+Dirty Little Secret|The All-American Rejects|
+Serve The Servants|Nirvana|
+Holier Than Thou|Metallica|
+Second Heartbeat|Avenged Sevenfold|
+Little Sister|Queens of the Stone Age|
+Back To The Old House|The Smiths|
+Delusions Of Saviour|Slayer|
+Girls And Boys|Blur|
+The Heaviest Matter Of The Universe|Gojira|
+You Know You're Right|Nirvana|
+Rammstein|Rammstein|
+The Joker|Steve Miller Band|
+Paganini 5th Caprice Crossroads|Steve Vai|
+Snowblind|Black Sabbath|
+Hayloft|Mother Mother|
+Carol Of The Bells|Trans-Siberian Orchestra|
+It's A Long Way To The Top (If You Wanna Rock 'N Roll)|AC/DC|
+Sleep Now In The Fire|Rage Against the Machine|
+Fucking Hostile|Pantera|
+Dogs|Pink Floyd|
+If You Can't Hang|Sleeping With Sirens|
+Talk Dirty To Me|Poison|
+Don't Stay|Linkin Park|
+Stay Away|Nirvana|
+Dean Town|Vulfpeck|
+Take Me Away|Lindsay Lohan|
+Pull Harder On The Strings Of Your Martyr|Trivium|
+The Gift Of Guilt|Gojira|
+Blister In The Sun|Violent Femmes|
+She|Green Day|
+Hard To Handle|The Black Crowes|
+Arpeggios From Hell|Yngwie Malmsteen|
+Rein Raus|Rammstein|
+Question!|System of a Down|
+Rock Lobster|B52s|
+Let It Happen|Tame Impala|
+Rime Of The Ancient Mariner|Iron Maiden|
+It's Been A While|Staind|
+Ignorance|Paramore|
+Dead Embryonic Cells|Sepultura|
+Right In Two|Tool|
+Ich Tu Dir Weh|Rammstein|
+Far Behind|Candlebox|
+Boom Boom Boom|John Lee Hooker|
+Broken (ft. Amy Lee)|Seether|
+The Wizard|Black Sabbath|
+Gimme Three Steps|Lynyrd Skynyrd|
+Ten Years Gone|Led Zeppelin|
+Hit Me With Your Best Shot|Pat Benatar|
+Break on Through (To the Other Side)|The Doors|
+I Wish|Stevie Wonder|
+Super Freak|Rick James|
+Mr. Moustache|Nirvana|
+Love Me Two Times|The Doors|
+Spit Out The Bone|Metallica|
+Fallen Leaves|Billy Talent|
+Is This Love|Bob Marley and The Wailers|
+Rip And Tear|Mick Gordon|
+Apache|The Shadows|
+Roulette|System of a Down|
+Outside|Staind|
+Carrion|Parkway Drive|
+She's Gone|Steelheart|
+Top Gun Anthem|Harold Faltermeyer|
+Dance Of Death|Iron Maiden|
+Easy Lover|Philip Bailey (ft. Phil Collins)|
+St. Anger|Metallica|
+Sorry You're Not A Winner|Enter Shikari|
+The Sleep|Pantera|
+Waiting Room|Fugazi|
+Cosmic Girl|Jamiroquai|
+Only For The Weak|In Flames|
+Godzilla|Blue Öyster Cult|
+All These Things I Hate (Revolve Around Me)|Bullet for My Valentine|
+Shot in the Dark|Ozzy Osbourne|
+Down On The Corner|Creedence Clearwater Revival|
+Mother|Pink Floyd|
+God Hates Us|Avenged Sevenfold|
+Strife|Trivium|
+The Downfall Of Us All|A Day to Remember|
+One Of These Nights|The Eagles|
+Head In The Ceiling Fan|Title Fight|
+Cochise|Audioslave|
+Tonight, Tonight|Smashing Pumpkins|
+Die With A Smile|Lady Gaga & Bruno Mars|
+Despacito|Luis Fonsi Feat Daddy Yankee|
+Burnin' For You|Blue Öyster Cult|
+What's New Scooby-Doo?|Simple Plan|
+Redneck Stomp|Obituary|
+No Rain|Blind Melon|
+Babydoll|Dominic Fike|
+That's What You Get|Paramore|
+I Could Have Lied|Red Hot Chili Peppers|
+Shut Me Up|Mindless Self Indulgence|
+The Art Of Shredding|Pantera|
+Du Riechst So Gut|Rammstein|
+I Want It All|Queen|
+Star Spangled Banner|Metallica|
+Escape|Metallica|
+Aqualung|Jethro Tull|
+I Remember You|Skid Row|
+Skin O' My Teeth|Megadeth|
+Mammamia|Måneskin|
+Please Please Please Let Me Get What I Want|Deftones|
+18 And Life|Skid Row|
+Cigarette Daydreams|Cage the Elephant|
+Bored|Deftones|
+Ritual|Ghost|
+So Far So Fake|Pierce the Veil|
+Octopus's Garden|The Beatles|
+Prayer Of The Refugee|Rise Against|
+Out Getting Ribs|King Krule|
+Amerika|Rammstein|
+My Own Prison|Creed|
+Soldier Of Fortune|Deep Purple|
+Love Gun|KISS|
+I Write Sins Not Tragedies|Panic! at the Disco|
+The Loner|Gary Moore|
+Runnin' Down a Dream|Tom Petty|
+Blind (single 6-String arr.) by Korn|Misc Covers|
+Holiday In Cambodia|Dead Kennedys|
+Perfect Strangers|Deep Purple|
+Holy Mountains|System of a Down|
+Surfacing|Slipknot|
+Stuck In The Middle With You|Stealers Wheel|
+Long Train Runnin'|The Doobie Brothers|
+Tender Surrender|Steve Vai|
+Runaway|Bon Jovi|
+My Name Is Mud|Primus|
+Points of Authority|Linkin Park|
+Machinehead|Bush|
+La Bamba|Los Lobos|
+Lenny|Stevie Ray Vaughan & Double Trouble|
+Call Me Little Sunshine|Ghost|
+I Will Survive|Cake|
+My Generation|Limp Bizkit|
+For Those About To Rock|AC/DC|
+Cum On Feel The Noize|Quiet Riot|
+Shedding Skin|Pantera|
+Sex Type Thing|Stone Temple Pilots|
+Transilvanian Hunger|Darkthrone|
+Caraphernelia|Pierce the Veil|
+Remedy|Seether|
+Wrong Side Of Heaven|Five Finger Death Punch|
+Phantom Lord|Metallica|
+Peace Of Mind|Boston|
+Old Yellow Bricks|Arctic Monkeys|
+Skyrim - Sons Of Skyrim Classical Guitar|Harry Murrel|
+Imagine Dragons - Radioactive (Fingerstyle)|Imagine Dragons|
+Go Away|Weezer|
+Drag The Waters|Pantera|
+Miss You|The Rolling Stones|
+Dam That River|Alice in Chains|
+Going Under|Evanescence|
+Feeling Good|Muse|
+Vermillion Pt. 2|Slipknot|
+Any Way You Want It|Journey|
+The Rock Show|blink‐182|
+Radar Love|Golden Earring|
+War|Burzum|
+Virtual Insanity|Jamiroquai|
+Not Ready To Die|Avenged Sevenfold|
+The Distance|Cake|
+Thnks Fr Th Mmrs|Fall Out Boy|
+Whatsername|Green Day|
+Deceptacon|Le Tigre|
+Painkiller|Three Days Grace|
+The Evil That Men Do|Iron Maiden|
+Diary Of A Madman|Ozzy Osbourne|
+Now That We’re Dead|Metallica|
+Figure.09|Linkin Park|
+From The Inside|Linkin Park|
+Suite-Pee|System of a Down|
+Sappy|Nirvana|
+In The End|Black Veil Brides|
+Bouree|Johann Sebastian Bach|
+Bad Company|Five Finger Death Punch|
+L'enfant Sauvage|Gojira|
+Stabwound|Necrophagist|
+Closer To The Heart|Rush|
+Goofy Goober Rock|SpongeBob SquarePants|
+Altitudes|Jason Becker|
+Heartbreaker|Pat Benatar|
+Prelude No 1 Cello Suite|Johann Sebastian Bach|
+Psycho|System of a Down|
+I Wanna Be Your Dog|The Stooges|
+Highway Tune|Greta Van Fleet|
+A Match Into Water|Pierce the Veil|
+Jessie's Girl|Rick Springfield|
+Jessica|The Allman Brothers Band|
+Young Lust|Pink Floyd|
+Not The American Average|Asking Alexandria|
+Knife Prty|Deftones|
+I'm So Sick|Flyleaf|
+Dawn Patrol|Megadeth|
+Looking Out for You|Joy Again|
+Wipe Out|The Surfaris|
+Rose Of Sharyn|Killswitch Engage|
+Communication Breakdown|Led Zeppelin|
+Mein Teil|Rammstein|
+Sittin' On The Dock Of The Bay|Otis Redding|
+No Excuses|Alice in Chains|
+I Stay Away|Alice in Chains|
+Working Man|Rush|
+Gold On The Ceiling|The Black Keys|
+Glycerine|Bush|
+Dread And The Fugitive Mind|Megadeth|
+Lucy in the Sky with Diamonds|The Beatles|
+I Cum Blood|Cannibal Corpse|
+Fine Again|Seether|
+Another Day|Dream Theater|
+No More Sorrow|Linkin Park|
+Lack Of Comprehension|Death|
+Davidian|Machine Head|
+John The Fisherman|Primus|
+Miss Murder|AFI|
+Gimme! Gimme! Gimme! (A Man After Midnight)|ABBA|
+Here to Stay|Korn|
+Lamento Boliviano|Enanitos Verdes|
+Youth Gone Wild|Skid Row|
+As I Am|Dream Theater|
+South Park Theme|Primus|
+Lay It Down|Ratt|
+Halo On Fire|Metallica|
+Fat Bottomed Girls|Queen|
+Mechanix|Megadeth|
+Rock And Roll Ain't Noise Pollution|AC/DC|
+Countdown To Extinction|Megadeth|
+Forest|System of a Down|
+Repentless|Slayer|
+White Rabbit|Jefferson Airplane|
+My Sacrifice|Creed|
+Sabotage|Beastie Boys|
+Green River|Creedence Clearwater Revival|
+Where The Streets Have No Name|U2|
+Notion|The Rare Occasions|
+Always Somewhere|Scorpions|
+Silhouette|KANA-BOON|
+Let There Be Rock|AC/DC|
+Decadence|Disturbed|
+Last Train To London|Electric Light Orchestra|
+Supremacy|Muse|
+Ain't No Rest For The Wicked|Cage the Elephant|
+Bound For The Floor|Local H|
+All Out Life|Slipknot|
+crushcrushcrush|Paramore|
+Hunger Strike|Temple of the Dog|
+Got The Time|Anthrax|
+Killing Is My Business...And Business Is Good!|Megadeth|
+Hand Of Doom|Black Sabbath|
+Parabola|Tool|
+Mandatory Suicide|Slayer|
+Fire|The Jimi Hendrix Experience|
+H.|Tool|
+Rosenrot|Rammstein|
+Flight Of Icarus|Iron Maiden|
+Come A Little Closer|Cage the Elephant|
+Bigmouth Strikes Again|The Smiths|
+Danger Line|Avenged Sevenfold|
+Let's Dance|David Bowie|
+Haruka Kanata|ASIAN KUNG-FU GENERATION|
+In Due Time|Killswitch Engage|
+72 Seasons|Metallica|
+Eyes Without A Face|Billy Idol|
+Wynona's Big Brown Beaver|Primus|
+The Grudge|Tool|
+Keine Lust|Rammstein|
+On Melancholy Hill|Gorillaz|
+Die, Die My Darling|Metallica|
+Pisces|Jinjer|
+Don't Start (Too Late) / Symptom of the Universe|Black Sabbath|
+James Bond Theme|John Barry|
+Pirates Of The Caribbean - He's A Pirate|Hans Zimmer|
+Scene Seven: I. The Dance of Eternity|Dream Theater|
+Pennyroyal Tea|Nirvana|
+The Final Episode (Let's Change The Channel)|Asking Alexandria|
+Around The World (Radio Edit)|Daft Punk|
+Nobody|Avenged Sevenfold|
+Low Rider|War|
+My Sweet Lord|George Harrison|
+REPULSIVE IN ITS SPLENDID BEAUTY|Crowbar|
+Sixpounder|Children of Bodom|
+Indestructible|Disturbed|
+Pinball Wizard|The Who|
+Classico|Tenacious D|
+Unravel - Tokyo Ghoul OP 1|Eddie Van Der Meer|
+Too Young To Fall In Love|Mötley Crüe|
+Out Of The Black|Royal Blood|
+Hot Dog|Limp Bizkit|
+Burn It To The Ground|Nickelback|
+With Arms Wide Open|Creed|
+She Talks To Angels|The Black Crowes|
+Danger Zone|Kenny Loggins|
+Ain't It Fun|Paramore|
+The Lemon Song|Led Zeppelin|
+Last Kiss|Pearl Jam|
+Planet Caravan|Pantera|
+To The Hellfire|Lorna Shore|
+August 10|Julie Doiron|
+512|Lamb of God|
+Man On The Silver Mountain|Rainbow|
+Year Zero|Ghost|
+Pieces|Sum 41|
+Ano Bando|Bocchi ` The ` Rock !|
+Deathcrush|Mayhem|
+Animals|Architects|
+Happy?|Mudvayne|
+My Michelle|Guns N' Roses|
+My Heart Will Go On|Sungha Jung|
+The Sentinel|Judas Priest|
+Cigaro|System of a Down|
+Going to California|Led Zeppelin|
+Possum Kingdom|Toadies|
+Float On|Modest Mouse|
+Love You To Death|Type O Negative|
+I'm Not A Vampire|Falling in Reverse|
+Just Like You|Three Days Grace|
+Stand By Me|Oasis|
+Wet Sand|Red Hot Chili Peppers|
+Power Of Love|Huey Lewis and the News|
+Eugene's Trick Bag (Crossroads)|Steve Vai|
+Die, Die My Darling|Misfits|
+Bed Of Razors|Children of Bodom|
+Chase|Batta|
+Have A Drink On Me|AC/DC|
+Show Me How|Men I Trust|
+What It's Like|Everlast|
+Bloodline|Slayer|
+The Rising Fighting Spirit|Naruto|
+Drown|Bring Me the Horizon|
+Back In The U.S.S.R.|The Beatles|
+Reelin' In The Years|Steely Dan|
+No Sleep Till Brooklyn|Beastie Boys|
+Oh! Darling|The Beatles|
+Brazil|Declan McKenna|
+Chamber Of Reflection|Mac DeMarco|
+I'd Love To Change The World|Ten Years After|
+Back To Black|Amy Winehouse|
+House Of Wolves|My Chemical Romance|
+Dragonaut|Sleep|
+Bleeding Me|Metallica|
+Disasterpiece|Slipknot|
+Twilight Of The Thunder God|Amon Amarth|
+The Summoning|Sleep Token|
+Mama Said|Metallica|
+25 Or 6 To 4|Chicago|
+Negative Creep|Nirvana|
+Break|Three Days Grace|
+Killpop|Slipknot|
+The Wicker Man|Iron Maiden|
+Alison Hell|Annihilator|
+Hybrid Moments|Misfits|
+A Certain Romance|Arctic Monkeys|
+Greensleeves|Anonymous|
+Give 'Em Hell, Kid|My Chemical Romance|
+ふわふわ時間 (Fuwa Fuwa Time)|K-On!!|
+Neon|John Mayer|
+Attention|Charlie Puth|
+The Pink Panther Theme|Cartoons Theme|
+Is This It|The Strokes|
+Carousel|blink‐182|
+Simple Man|Shinedown|
+Fell In Love With a Girl|The White Stripes|
+This Is How I Disappear|My Chemical Romance|
+Too Many Puppies|Primus|
+If Darkness Had A Son|Metallica|
+Seinfeld Theme|Misc|
+(I Just) Died In Your Arms|Cutting Crew|
+Pet Sematary|The Ramones|
+Two Princes|Spin Doctors|
+Wet|Dazey and the Scouts|
+Everytime I Die|Children of Bodom|
+Cancion Del Mariachi|Desperado|
+Old Man|Neil Young|
+Santa Monica|Everclear|
+The Great Gig In The Sky|Pink Floyd|
+He Is|Ghost|
+Indians|Anthrax|
+Fly By Night|Rush|
+Beast Of Burden|The Rolling Stones|
+Loser|Tame Impala|
+Becoming|Pantera|
+BABY SAID|Måneskin|
+Doctor Doctor|UFO|
+The Bards Song|Blind Guardian|
+I Want Out|Helloween|
+Awaken|Dethklok|
+That Was Just Your Life|Metallica|
+Solway Firth|Slipknot|
+I Am The Highway|Audioslave|
+Headup|Deftones|
+Brain Damage / Eclipse|Pink Floyd|
+Always On The Run|Lenny Kravitz|
+The Hero (One Punch Man Op)|JAM Project|
+Thunderhorse|Dethklok|
+Tell Me Baby|Red Hot Chili Peppers|
+Love Hurts|Nazareth|
+One More Light|Linkin Park|
+When You Sleep|My Bloody Valentine|
+Blinded In Chains|Avenged Sevenfold|
+Wrong Way|Sublime|
+Tomorrow|Silverchair|
+Bad|Michael Jackson|
+Dead And Bloated|Stone Temple Pilots|
+Over The Mountain|Ozzy Osbourne|
+Rockstar|Nickelback|
+Green Onions|Booker T and the MGs|
+Without Judgement|Death|
+The Hardest Button To Button|The White Stripes|
+Black Velvet|Alannah Myles|
+Cat Scratch Fever|Ted Nugent|
+Prison Sex|Tool|
+War Ensemble|Slayer|
+Breaking The Habit|Linkin Park|
+Taxman|The Beatles|
+Mann Gegen Mann|Rammstein|
+The Great Southern Trendkill|Pantera|
+Could You Be Loved|Bob Marley and The Wailers|
+Jerry Was A Race Car Driver|Primus|
+Want You Bad|The Offspring|
+A Day in the Life|The Beatles|
+I Don't Know|Ozzy Osbourne|
+Nemesis|Arch Enemy|
+Metropolis - Part I: "The Miracle and the Sleeper"|Dream Theater|
+Valerie|Amy Winehouse|
+Children Of The Damned|Iron Maiden|
+Dirty Diana|Michael Jackson|
+Nothin' But a Good Time|Poison|
+Need 2|Pinegrove|
+Freewill|Rush|
+Runaway Baby|Bruno Mars|
+Do You Want to Know a Secret|The Beatles|
+Across The Universe|The Beatles|
+Can't You Hear Me Knocking|The Rolling Stones|
+Home|Toby Fox|
+Way Down We Go|Kaleo|
+I Love Rock 'N Roll|Joan Jett & the Blackhearts|
+I Just Threw Out The Love Of My Dreams|Weezer|
+Make Me Wanna Die|The Pretty Reckless|
+It's So Easy|Guns N' Roses|
+Glasgow Kiss|John Petrucci|
+In The Meantime|Spacehog|
+Christian Woman|Type O Negative|
+Oblivion|Mastodon|
+Blitzkrieg|Metallica|
+Saturday Night|Misfits|
+La Leyenda Del Hada Y El Mago|Rata Blanca|
+Toxic Garbage Island|Gojira|
+Send Me An Angel|Scorpions|
+Jammin'|Bob Marley|
+Memento Mori|Lamb of God|
+Chelsea Smile|Bring Me the Horizon|
+Another Brick In The Wall|Pink Floyd|
+Wish You Were Here|Incubus|
+Lost Wisdom|Burzum|
+Beverly Hills|Weezer|
+Rosetta Stoned|Tool|
+Ghost of Perdition|Opeth|
+You Know What They Do to Guys Like Us in Prison|My Chemical Romance|
+Better Man|Pearl Jam|
+Kingslayer (ft. BABYMETAL)|Bring Me the Horizon|
+The Adventures Of Rain Dance Maggie|Red Hot Chili Peppers|
+Can't You See|Marshall Tucker Band|
+A Thousand Years|Sungha Jung|
+Revolution|The Beatles|
+Happy Song|Bring Me the Horizon|
+Primal Concrete Sledge|Pantera|
+Unsung|Helmet|
+Know Your Enemy|Green Day|
+Ghostbusters Theme|Ray Parker Jr.|
+Hammer To Fall|Queen|
+Revenga|System of a Down|
+Caught In A Mosh|Anthrax|
+Asche Zu Asche|Rammstein|
+My Name Is Jonas|Weezer|
+Money|The Drums|
+Dear Prudence|The Beatles|
+Diamond Eyes|Deftones|
+4 Words (To Choke Upon)|Bullet for My Valentine|
+Me and Your Mama|Childish Gambino|
+Stargazer|Rainbow|
+Reapers|Muse|
+Walk Of Life|Dire Straits|
+Unanswered|Suicide Silence|
+7 Years Fingerstyle|Lukas Graham|
+Still Counting|Volbeat|
+Hold On Till May|Pierce the Veil|
+Afraid To Shoot Strangers|Iron Maiden|
+Cryin'|Aerosmith|
+Heretic|Avenged Sevenfold|
+Lágrima|Francisco Tárrega|
+God Is Dead?|Black Sabbath|
+Helena|Misfits|
+Gematria (The Killing Name)|Slipknot|
+Oroborus|Gojira|
+The One I Love|R.E.M.|
+Us And Them|Pink Floyd|
+Sound Of Madness|Shinedown|
+Click Click Boom|Saliva|
+Tommy The Cat|Primus|
+Floyd The Barber|Nirvana|
+Amber|311|
+Blow Me Away|Breaking Benjamin|
+Conquer or Die!|Megadeth|
+Hole In The Earth|Deftones|
+Blues Scales|Misc. Scales|
+Evil|Interpol|
+Scentless Apprentice|Nirvana|
+Testify|Rage Against the Machine|
+Ocean Avenue|Yellowcard|
+Jingle Bells (Easy)|Kdtgrave|
+Dancing With Myself|Billy Idol|
+The Only Exception|Paramore|
+Maneater|Daryl Hall & John Oates|
+In The Air Tonight|Phil Collins|
+Die Mf Die|Dope|
+I Sat By The Ocean|Queens of the Stone Age|
+Dying In Your Arms|Trivium|
+Figure It Out|Royal Blood|
+The Zoo|Scorpions|
+Ventura Highway|America|
+Jambi|Tool|
+Overkill|Motörhead|
+Pirates of the Caribbean (Fingerstyle)|Sungha Young|
+To Be With You|Mr. Big|
+Judith|A Perfect Circle|
+Tank!|Cowboy Bebop|
+Stray Cat Strut|Stray Cats|
+The Good, The Bad and the Ugly|Ennio Morricone|
+Niccolo Paganini - Caprice No 24 (Guitar Arrangment)|Niccolo Paganini|
+I Am Machine|Three Days Grace|
+When The Sun Hits|Slowdive|
+Ausländer|Rammstein|
+I Feel Good (I Got You)|The James Brown Band|
+Epic|Faith No More|
+Tie Your Mother Down|Queen|
+Alien Blues|Vundabar|
+Heavy Is the Crown|Linkin Park|
+Entre Dos Tierras|Héroes del Silencio|
+No Quarter|Led Zeppelin|
+Hurt|Nine Inch Nails|
+Major Chords And Scales|Lesson Guitar|
+Fight For Your Right To Party|Beastie Boys|
+Bang Your Head (Metal Health)|Quiet Riot|
+Livin' It Up|Limp Bizkit|
+Home|Three Days Grace|
+Halo Theme|Halo, Martin O'Donnell, Michael Salvatori|
+Scream of The Butterfly|Acid Bath|
+Tangerine|Led Zeppelin|
+Big Gun|AC/DC|
+Scourge Of Iron|Cannibal Corpse|
+Blue On Black|Kenny Wayne Shepherd|
+Love Me Do|The Beatles|
+Living Dead Girl|Rob Zombie|
+The Best of Times|Dream Theater|
+I'm Just A Girl|No Doubt|
+Dicke Titten|Rammstein|
+This Fire|Franz Ferdinand|
+Demiurge|Meshuggah|
+Drive My Car|The Beatles|
+The Blister Exists|Slipknot|
+Silent Lucidity|Queensrÿche|
+The Jack|AC/DC|
+Rasputin|Boney M.|
+No Leaf Clover|Metallica|
+Hit The Floor|Linkin Park|
+Ticket To Ride|The Beatles|
+Postmortem|Slayer|
+Touch Too Much|AC/DC|
+Corazon Espinado|Santana|
+Satch Boogie|Joe Satriani|
+Rumble|Link Wray|
+Give Me One Reason|Tracy Chapman|
+Call Me The Breeze|Lynyrd Skynyrd|
+Maria Maria|Santana|
+Rapper's Delight|The Sugarhill Gang|
+Black Or White|Michael Jackson|
+Wild Eyes|Parkway Drive|
+CORALINE|Måneskin|
+Carry On|Avenged Sevenfold|
+Blacklist|Exodus|
+Technical Difficulties|Racer X|
+All in my head|Computer|
+Backbone|Gojira|
+Perry Mason|Ozzy Osbourne|
+Venus|Shocking Blue|
+I Hate Myself For Loving You|Joan Jett|
+Hey Bulldog|The Beatles|
+Recuerdos De La Alhambra|Francisco Tárrega|
+Frantic|Metallica|
+Dance The Night Away|Van Halen|
+Blackbird|Alter Bridge|
+Confined|As I Lay Dying|
+Farewell Ballad|Zakk Wylde|
+Born On The Bayou|Creedence Clearwater Revival|
+I Wanna Be Adored|The Stone Roses|
+Mr. Highway's Thinking About The End|A Day to Remember|
+Hitchin' A Ride|Green Day|
+Scars|Papa Roach|
+E1M1 - At Doom's Gate|Doom OST|
+The Art Of Dying|Gojira|
+Always|Bon Jovi|
+She Hates Me|Puddle of Mudd|
+Ænema|Tool|
+Doomsday|Architects|
+Glory Box|Portishead|
+Theme Song|Gravity Falls|
+Dystopia|Megadeth|
+Francis Forever|Mitski|
+The Guns Of Brixton|The Clash|
+Vicinity Of Obscenity|System of a Down|
+From The Pinnacle To The Pit|Ghost|
+L's Theme|Death Note|
+Nookie|Limp Bizkit|
+Velvet Ring|Big Thief|
+Band On The Run|Paul McCartney & Wings|
+Black Star|Yngwie Malmsteen|
+Skeletons Of Society|Slayer|
+In My Dreams|Dokken|
+Dark Red|Steve Lacy|
+A National Acrobat|Black Sabbath|
+Rock The Casbah|The Clash|
+Recreant|Chelsea Grin|
+Right Now|Korn|
+You've Got A Friend In Me (Fingerstyle)|Randy Newman|
+God Knows...|Aya Hirano (平野 綾)|
+Parallel Universe|Red Hot Chili Peppers|
+Acid Rain|Avenged Sevenfold|
+Lake Of Fire|Nirvana|
+The Anthem|Good Charlotte|
+Disengage|Suicide Silence|
+The Lord Of The Rings - Concerning Hobbits Classical Guitar|Harry Murrell|
+Run Through The Jungle|Creedence Clearwater Revival|
+Lady Writer|Dire Straits|
+Circles|Pierce the Veil|
+Jailbreak|Thin Lizzy|
+The Poison|Bullet for My Valentine|
+Listen To The Music|The Doobie Brothers|
+Windowpane|Opeth|
+Ghost Riders In The Sky|Johnny Cash|
+Learn Shred|Owen Convey|
+Te Quiero|Hombres G|
+I Fought The Law|The Clash|
+Oye Mi Amor|Maná|
+Caught Somewhere In Time|Iron Maiden|
+Arise|Sepultura|
+Please, Please, Please, Let Me Get What I Want|The Smiths|
+Black Star|Radiohead|
+Waidmanns Heil|Rammstein|
+Beelzeboss (The Final Showdown)|Tenacious D|
+The Godfather - Fingerstyle|Nino Rota|
+nope your too late i already died|wifiskeleton|
+Pigs (Three Different Ones)|Pink Floyd|
+Garbage Truck|Sex Bob‐Omb|
+Needles|System of a Down|
+Cherry Pie|Warrant|
+Cyanide|Metallica|
+Romeo And Juliet|Dire Straits|
+Home|Steve Gabry ( Sally Face )|
+Since You Been Gone|Rainbow|
+King Of The Hill Theme|The Refreshments|
+My Friends|Red Hot Chili Peppers|
+The Handler|Muse|
+Wash It All Away|Five Finger Death Punch|
+American Girl|Tom Petty|
+Push It|Static X|
+Murmaider|Dethklok|
+45|Shinedown|
+Eight Days A Week|The Beatles|
+Iris Standard Tuning|Goo Goo Dolls|
+This Fire Burns|Killswitch Engage|
+End of Beginning|Djo|
+Ruin|Lamb of God|
+Dive|Nirvana|
+Moonlight Sonata Metal|Dr. Viossy|
+Naruto Ost - Sadness & Sorrow (Fingerstyle)|Eddie Van Der Meer|
+The House Of Wolves|Bring Me the Horizon|
+Chameleon|Herbie Hancock|
+Solitude|Candlemass|
+Got To Be Real|Cheryl Lynn|
+Child In Time|Deep Purple|
+Fake It|Seether|
+My Plague|Slipknot|
+Bite The Pain|Death|
+Whiskey In The Jar|Thin Lizzy|
+Walk On The Wild Side|Lou Reed|
+Up Around The Bend|Creedence Clearwater Revival|
+Steady, As She Goes|The Raconteurs|
+Red Barchetta|Rush|
+Big City Nights|Scorpions|
+Selfless|The Strokes|
+Until I Found You|Stephen Sanchez|
+Life's Been Good|Joe Walsh|
+The Loneliest|Måneskin|
+Melodic Metal Arpeggios and Sweep Exercises|Heavy Metal Guitar School|
+Moneytalks|AC/DC|
+The Motherload|Mastodon|
+Run Like Hell|Pink Floyd|
+I Don't Want To Miss A Thing|Aerosmith|
+Ballroom Blitz|Sweet|
+Make It Wit Chu|Queens of the Stone Age|
+Addicted To Chaos|Megadeth|
+Inner Self|Sepultura|
+What's Going On|Marvin Gaye|
+Sad Statue|System of a Down|
+Down From The Sky|Trivium|
+Aruarian Dance|Nujabes|
+Date Rape|Sublime|
+BFG Division|Mick Gordon|
+Breath|Breaking Benjamin|
+Poison Was The Cure|Megadeth|
+Rain|Rob Scallon|
+What If|Creed|
+The Chicken|Jaco Pastorius|
+Bück dich|Rammstein|
+Slow Cheetah|Red Hot Chili Peppers|
+Silent Night, Bodom Night|Children of Bodom|
+If You Want Blood (You've Got It)|AC/DC|
+Screaming Suicide|Metallica|
+Pride (In The Name Of Love)|U2|
+D'yer Mak'er|Led Zeppelin|
+Night Crawler|Judas Priest|
+love.|wave to earth|
+Instant Crush|Daft Punk ft. Julian Casablancas|
+American Jesus|Bad Religion|
+I'm Yours|Sungha Jung|
+Sweet Home Chicago V3|The Blues Brothers|
+The Blue|Acid Bath|
+Lola|The Kinks|
+Surfing With The Alien|Joe Satriani|
+Rain|Trivium|
+Am I Evil?|Diamond Head|
+Fiesta Pagana|Mägo de Oz|
+Forget Me Nots|Patrice Rushen|
+Voodoo|Godsmack|
+Hell Above|Pierce the Veil|
+Inside The Fire|Disturbed|
+The Last In Line|Dio|
+Stardust Crusaders - Main Theme|Yugo Kanno|
+Temple Of The King|Rainbow|
+Revelations|Iron Maiden|
+Blood Brothers|Iron Maiden|
+How Many More Times|Led Zeppelin|
+Awake|Godsmack|
+Hallelujah|Leonard Cohen|
+Lovefool|The Cardigans|
+Gasoline|I Prevail|
+Suspicious Minds|Elvis Presley|
+Hero Of The Day|Metallica|
+Beautiful Disaster|311|
+With a Little Help from My Friends|The Beatles|
+Badfish|Sublime|
+Now You've Got Something To Die For|Lamb of God|
+Dust In The Wind Fingerstyle|Kansas|
+Sick Love|Red Hot Chili Peppers|
+Learning To Fly|Tom Petty|
+So Lonely|The Police|
+Mortal Kombat Theme|Mortal Kombat|
+Gone Forever|Three Days Grace|
+Hellraiser|Ozzy Osbourne|
+Disarm|Smashing Pumpkins|
+Rain When I Die|Alice in Chains|
+Hate To Say I Told You So|The Hives|
+Bu Akşam|Duman|
+Kill Rock 'n Roll|System of a Down|
+Under a Glass Moon|Dream Theater|
+The Rover|Led Zeppelin|
+Memories and Dreams|Steve Gabry|
+Iron Maiden|Iron Maiden|
+Vermilion|Slipknot|
+The Sound Of Truth|As I Lay Dying|
+Time Bomb|Rancid|
+She Loves You|The Beatles|
+Soldier Side|System of a Down|
+Strutter|KISS|
+Devuélveme a Mi Chica|Hombres G|
+The Pink Panther Theme (One Guitar)|Henry Mancini|
+Primo Victoria|Sabaton|
+Psycho Holiday|Pantera|
+Scavenger Of Human Sorrow|Death|
+To Bid You Farewell|Opeth|
+Hey Man Nice Shot|Filter|
+Freak|Silverchair|
+Kilby Girl|The Backseat Lovers|
+What Is And What Should Never Be|Led Zeppelin|
+Voices|Motionless in White|
+Stars|Hum|
+The End|The Doors|
+I'm Still Standing|Elton John|
+Rock 'n' Roll Train|AC/DC|
+Gymnopedie #1|Erik Satie|

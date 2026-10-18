@@ -76,9 +76,12 @@ describe('voiceLeadProgression', () => {
     expect(motion(voiced)).toBeLessThan(motion(chords))
   })
 
-  it('drops the fifth from dense 9th-chord upper structures', () => {
-    const [v] = voiceLeadProgression([parseChord('C9')])
-    expect(pcSet(v.notes.slice(1)).has(7)).toBe(false)
+  it('keeps every chord tone, extensions and slash chords included', () => {
+    for (const symbol of ['C9', 'Dm11', 'E7b9', 'Em7/G', 'Bm7/D', 'Cmaj9']) {
+      const chord = parseChord(symbol)
+      const [v] = voiceLeadProgression([parseChord('C'), chord]).slice(1)
+      expect(pcSet(v.notes), symbol).toEqual(pcSet(chord.notes))
+    }
   })
 })
 

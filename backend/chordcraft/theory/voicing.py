@@ -1,8 +1,7 @@
 """Smooth voice leading — port of lib/theory/voicing.ts.
 
 Keeps each chord's bass anchor, places upper voices in the octave nearest the
-previous chord's voices (C4–B5 window), and drops the 5th from dense 9th-chord
-upper structures.
+previous chord's voices (C4–B5 window), and keeps every chord tone.
 """
 
 from __future__ import annotations
@@ -38,12 +37,6 @@ def voice_lead_progression(chords: list[ParsedChord]) -> list[ParsedChord]:
         bass = ch.notes[0]
         bass_pc = bass % 12
         pcs = list(dict.fromkeys(n % 12 for n in ch.notes[1:]))
-
-        if len(pcs) > 3:
-            fifth = (bass_pc + 7) % 12
-            trimmed = [pc for pc in pcs if pc != fifth]
-            if len(trimmed) >= 3:
-                pcs = trimmed
 
         if prev_upper is None:
             upper = []

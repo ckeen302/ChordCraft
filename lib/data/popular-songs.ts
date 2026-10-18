@@ -7,8 +7,13 @@
  * recording, with its real key, tempo, meter and per-chord durations. The
  * tempo is cross-checked against songbpm.com, and the key too where songbpm
  * lists one. Where TheoryTab and songbpm disagree on tempo, a Songsterr tab's
- * tempo map settles it (`tempoSourceUrl`). `sourceUrl`, `tempoCheckUrl` and
- * `tempoSourceUrl` let anyone check an entry.
+ * tempo map settles it (`tempoSourceUrl`). The chords themselves are confirmed
+ * against the notes of a Songsterr transcription (`chordCheckUrl`): every chord
+ * of a beat or longer has to fit the notes the tab's rhythm, bass and keys
+ * tracks play under it, changing where TheoryTab says it does. The release
+ * year is given only when two of MusicBrainz, Wikidata and the original
+ * candidate list agree on it (`yearSourceUrl`); otherwise it's null. Every
+ * URL lets anyone check an entry.
  *
  * `beats` counts the meter's pulse: quarter notes in x/4, dotted quarters in
  * x/8. Playback and MIDI export follow those durations at `bpm`.
@@ -27,7 +32,8 @@ export interface PopularSong {
   id: string
   title: string
   artist: string
-  year: number
+  /** Original release year, or null when the sources don't agree on one. */
+  year: number | null
   /** One of the app's 24 keys: the tonic, plus Major or Minor by the mode's brightness. */
   key: string
   /** TheoryTab's scale for the section: major, minor, dorian, mixolydian, ... */
@@ -56,6 +62,12 @@ export interface PopularSong {
    * key, the relative major/minor, a different key, or not listed.
    */
   keyCheck: 'exact' | 'relative' | 'differs' | 'unavailable'
+  /** Songsterr tab whose notes confirm the chords, beat for beat. */
+  chordCheckUrl: string
+  /** 'same': confirmed in the tab's key; 'transposed': the tab is in another key (songbpm then confirms ours). */
+  chordCheckKey: 'same' | 'transposed'
+  /** MusicBrainz recording or Wikidata item the year comes from. */
+  yearSourceUrl?: string
   chords: SongChord[]
 }
 
