@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import os
 import time
@@ -25,7 +26,10 @@ def get(url: str) -> str | None:
     try:
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=30) as r:
-            body = r.read().decode("utf8")
+            raw = r.read()
+            if r.headers.get("Content-Encoding") == "gzip" or raw[:2] == b"\x1f\x8b":  # some CDNs gzip unasked
+                raw = gzip.decompress(raw)
+            body = raw.decode("utf8")
     except urllib.error.HTTPError as e:
         if e.code != 404:
             raise

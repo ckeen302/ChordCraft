@@ -1,5 +1,41 @@
 [
  {
+  "id": "earth-angel",
+  "title": "Earth Angel",
+  "artist": "The Penguins",
+  "year": 1954,
+  "key": "Ab Major",
+  "mode": "major",
+  "bpm": 75,
+  "timeSignature": "6/8",
+  "section": "Pre-Chorus and Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/the-penguins/earth-angel",
+  "youtubeId": "VJcGi4-n_Yw",
+  "tempoCheckUrl": "https://songbpm.com/@the-penguins/earth-angel",
+  "tempoCheckBpm": 72,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/the-penguins-earth-angel-tab-s2043169",
+  "tempoSourceBpm": 76,
+  "chords": [
+   {
+    "symbol": "Ab",
+    "beats": 2
+   },
+   {
+    "symbol": "Fm",
+    "beats": 2
+   },
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   }
+  ]
+ },
+ {
   "id": "hound-dog",
   "title": "Hound Dog",
   "artist": "Elvis Presley",
@@ -114,6 +150,122 @@
    {
     "symbol": "Bb",
     "beats": 8
+   }
+  ]
+ },
+ {
+  "id": "la-bamba",
+  "title": "La Bamba",
+  "artist": "Ritchie Valen",
+  "year": 1958,
+  "key": "C Major",
+  "mode": "major",
+  "bpm": 150,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/ritchie-valen/la-bamba",
+  "youtubeId": "AZ_GFkvfBHc",
+  "tempoCheckUrl": "https://songbpm.com/@ritchie-valens/la-bamba",
+  "tempoCheckBpm": 75,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/ritchie-valens-la-bamba-tab-s1571276",
+  "tempoSourceBpm": 150,
+  "chords": [
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G",
+    "beats": 2.5
+   },
+   {
+    "symbol": "G7/F",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G",
+    "beats": 4.5
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G",
+    "beats": 2.5
+   },
+   {
+    "symbol": "G7/F",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G",
+    "beats": 2.5
+   },
+   {
+    "symbol": "G7/F",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G",
+    "beats": 4.5
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G",
+    "beats": 4.5
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "G",
+    "beats": 1
    }
   ]
  },
@@ -506,6 +658,110 @@
   ]
  },
  {
+  "id": "house-of-the-rising-sun",
+  "title": "House of the Rising Sun",
+  "artist": "The Animals",
+  "year": 1964,
+  "key": "A Minor",
+  "mode": "minor",
+  "bpm": 82,
+  "timeSignature": "6/8",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/the-animals/house-of-the-rising-sun",
+  "youtubeId": "4-43lLKaqBQ",
+  "tempoCheckUrl": "https://songbpm.com/@the-animals/house-of-the-rising-sun",
+  "tempoCheckBpm": 117,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/the-animals-the-house-of-the-rising-sun-tab-s63",
+  "tempoSourceBpm": 80,
+  "chords": [
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "D7",
+    "beats": 2
+   },
+   {
+    "symbol": "F7",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "E7",
+    "beats": 4
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "D",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "E7",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "D",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "E7",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "E7",
+    "beats": 2
+   }
+  ]
+ },
+ {
   "id": "my-girl",
   "title": "My Girl",
   "artist": "The Temptations",
@@ -752,6 +1008,54 @@
   ]
  },
  {
+  "id": "unchained-melody",
+  "title": "Unchained Melody",
+  "artist": "Righteous Brothers",
+  "year": 1965,
+  "key": "Db Major",
+  "mode": "major",
+  "bpm": 69,
+  "timeSignature": "6/8",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/righteous-brothers/unchained-melody",
+  "youtubeId": "ZoEwR9_Sy_M",
+  "tempoCheckUrl": "https://songbpm.com/@the-righteous-brothers/unchained-melody",
+  "tempoCheckBpm": 99,
+  "keyCheck": "differs",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/the-righteous-brothers-unchained-melody-tab-s16906",
+  "tempoSourceBpm": 67,
+  "chords": [
+   {
+    "symbol": "Db",
+    "beats": 4
+   },
+   {
+    "symbol": "Bbm",
+    "beats": 4
+   },
+   {
+    "symbol": "Gb",
+    "beats": 4
+   },
+   {
+    "symbol": "Ab",
+    "beats": 4
+   },
+   {
+    "symbol": "Db",
+    "beats": 4
+   },
+   {
+    "symbol": "Bbm",
+    "beats": 4
+   },
+   {
+    "symbol": "Ab",
+    "beats": 8
+   }
+  ]
+ },
+ {
   "id": "yesterday",
   "title": "Yesterday",
   "artist": "The Beatles",
@@ -934,6 +1238,62 @@
    {
     "symbol": "C/G",
     "beats": 1.5
+   }
+  ]
+ },
+ {
+  "id": "good-vibrations",
+  "title": "Good Vibrations",
+  "artist": "The Beach Boys",
+  "year": 1966,
+  "key": "Eb Minor",
+  "mode": "minor",
+  "bpm": 153,
+  "timeSignature": "4/4",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/the-beach-boys/good-vibrations",
+  "youtubeId": "gO071XuztZA",
+  "tempoCheckUrl": "https://songbpm.com/@the-beach-boys/good-vibrations",
+  "tempoCheckBpm": 143,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/the-beach-boys-good-vibrations-tab-s26376",
+  "tempoSourceBpm": 150,
+  "chords": [
+   {
+    "symbol": "Ebm",
+    "beats": 8
+   },
+   {
+    "symbol": "Db",
+    "beats": 8
+   },
+   {
+    "symbol": "B",
+    "beats": 8
+   },
+   {
+    "symbol": "Bb",
+    "beats": 8
+   },
+   {
+    "symbol": "Ebm",
+    "beats": 8
+   },
+   {
+    "symbol": "Db",
+    "beats": 8
+   },
+   {
+    "symbol": "B",
+    "beats": 8
+   },
+   {
+    "symbol": "Bb",
+    "beats": 4
+   },
+   {
+    "symbol": "Db7",
+    "beats": 4
    }
   ]
  },
@@ -1326,6 +1686,174 @@
    {
     "symbol": "Em7",
     "beats": 32
+   }
+  ]
+ },
+ {
+  "id": "strawberry-fields-forever",
+  "title": "Strawberry Fields Forever",
+  "artist": "The Beatles",
+  "year": 1967,
+  "key": "Bb Major",
+  "mode": "major",
+  "bpm": 98,
+  "timeSignature": "4/4",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/the-beatles/strawberry-fields-forever",
+  "youtubeId": "HtUH9z_Oey8",
+  "tempoCheckUrl": "https://songbpm.com/@the-beatles/strawberry-fields-forever---remastered",
+  "tempoCheckBpm": 98,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/the-beatles-strawberry-fields-forever-tab-s474133",
+  "tempoSourceBpm": 95,
+  "chords": [
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Am/E",
+    "beats": 2
+   },
+   {
+    "symbol": "Adim/Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 1
+   },
+   {
+    "symbol": "Ebdim",
+    "beats": 1
+   },
+   {
+    "symbol": "Gm",
+    "beats": 2
+   },
+   {
+    "symbol": "Gm7/F",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 6
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 1
+   },
+   {
+    "symbol": "Bbmaj7/A",
+    "beats": 1
+   },
+   {
+    "symbol": "Gm",
+    "beats": 1
+   },
+   {
+    "symbol": "Gm7/F",
+    "beats": 1
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 2
+   }
+  ]
+ },
+ {
+  "id": "what-a-wonderful-world",
+  "title": "What a Wonderful World",
+  "artist": "Louis Armstrong",
+  "year": 1967,
+  "key": "F Major",
+  "mode": "major",
+  "bpm": 72,
+  "timeSignature": "4/4",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/louis-armstrong/what-a-wonderful-world",
+  "youtubeId": "A3yCcXgbKrE",
+  "tempoCheckUrl": "https://songbpm.com/@louis-armstrong/what-a-wonderful-world",
+  "tempoCheckBpm": 108,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/louis-armstrong-what-a-wonderful-world-tab-s386895",
+  "tempoSourceBpm": 106,
+  "chords": [
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "Gm7",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "A7",
+    "beats": 2
+   },
+   {
+    "symbol": "Dm",
+    "beats": 2
+   },
+   {
+    "symbol": "Db",
+    "beats": 4
+   },
+   {
+    "symbol": "Gm7",
+    "beats": 2
+   },
+   {
+    "symbol": "C7",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Faug",
+    "beats": 2
+   },
+   {
+    "symbol": "Bbmaj7",
+    "beats": 2
+   },
+   {
+    "symbol": "C7",
+    "beats": 2
    }
   ]
  },
@@ -2128,6 +2656,62 @@
   ]
  },
  {
+  "id": "space-oddity",
+  "title": "Space Oddity",
+  "artist": "David Bowie",
+  "year": 1969,
+  "key": "C Major",
+  "mode": "major",
+  "bpm": 136,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/david-bowie/space-oddity",
+  "youtubeId": "iYYRH4apXDo",
+  "tempoCheckUrl": "https://songbpm.com/@david-bowie/space-oddity",
+  "tempoCheckBpm": 81,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/david-bowie-space-oddity-tab-s365",
+  "tempoSourceBpm": 69,
+  "chords": [
+   {
+    "symbol": "C",
+    "beats": 8
+   },
+   {
+    "symbol": "E7",
+    "beats": 8
+   },
+   {
+    "symbol": "F",
+    "beats": 8
+   },
+   {
+    "symbol": "Fm",
+    "beats": 4
+   },
+   {
+    "symbol": "C",
+    "beats": 4
+   },
+   {
+    "symbol": "F",
+    "beats": 8
+   },
+   {
+    "symbol": "Fm",
+    "beats": 4
+   },
+   {
+    "symbol": "C",
+    "beats": 4
+   },
+   {
+    "symbol": "F",
+    "beats": 8
+   }
+  ]
+ },
+ {
   "id": "sweet-caroline",
   "title": "Sweet Caroline",
   "artist": "Neil Diamond",
@@ -2614,6 +3198,90 @@
   ]
  },
  {
+  "id": "behind-blue-eyes",
+  "title": "Behind Blue Eyes",
+  "artist": "The Who",
+  "year": 1971,
+  "key": "G Major",
+  "mode": "major",
+  "bpm": 129,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/the-who/behind-blue-eyes",
+  "youtubeId": "KmbCOMM8peo",
+  "tempoCheckUrl": "https://songbpm.com/@the-who/behind-blue-eyes",
+  "tempoCheckBpm": 129,
+  "keyCheck": "differs",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/the-who-behind-blue-eyes-tab-s86358",
+  "tempoSourceBpm": 128,
+  "chords": [
+   {
+    "symbol": "Cadd9",
+    "beats": 4
+   },
+   {
+    "symbol": "D",
+    "beats": 4
+   },
+   {
+    "symbol": "G",
+    "beats": 3.5
+   },
+   {
+    "symbol": "Gsus4",
+    "beats": 1
+   },
+   {
+    "symbol": "G",
+    "beats": 3.5
+   },
+   {
+    "symbol": "Cadd9",
+    "beats": 4
+   },
+   {
+    "symbol": "D",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 2.5
+   },
+   {
+    "symbol": "Aadd9/E",
+    "beats": 1.5
+   },
+   {
+    "symbol": "E",
+    "beats": 4
+   },
+   {
+    "symbol": "Bm",
+    "beats": 8
+   },
+   {
+    "symbol": "C",
+    "beats": 8
+   },
+   {
+    "symbol": "D",
+    "beats": 3.5
+   },
+   {
+    "symbol": "Dsus4",
+    "beats": 2
+   },
+   {
+    "symbol": "D",
+    "beats": 2.5
+   },
+   {
+    "symbol": "Aadd9",
+    "beats": 16
+   }
+  ]
+ },
+ {
   "id": "imagine",
   "title": "Imagine",
   "artist": "John Lennon",
@@ -2770,6 +3438,58 @@
    {
     "symbol": "Em7b5",
     "beats": 4
+   }
+  ]
+ },
+ {
+  "id": "stairway-to-heaven",
+  "title": "Stairway to Heaven",
+  "artist": "Led Zeppelin",
+  "year": 1971,
+  "key": "A Minor",
+  "mode": "dorian",
+  "bpm": 77,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/led-zeppelin/stairway-to-heaven",
+  "youtubeId": "QkF3oxziUI4",
+  "tempoCheckUrl": "https://songbpm.com/@led-zeppelin/stairway-to-heaven",
+  "tempoCheckBpm": 82,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/led-zeppelin-stairway-to-heaven-tab-s27",
+  "tempoSourceBpm": 77,
+  "chords": [
+   {
+    "symbol": "Am7",
+    "beats": 3.5
+   },
+   {
+    "symbol": "Em7/D",
+    "beats": 1
+   },
+   {
+    "symbol": "D",
+    "beats": 3.5
+   },
+   {
+    "symbol": "Am7",
+    "beats": 3.5
+   },
+   {
+    "symbol": "Em7/D",
+    "beats": 1
+   },
+   {
+    "symbol": "D",
+    "beats": 1
+   },
+   {
+    "symbol": "D11",
+    "beats": 1
+   },
+   {
+    "symbol": "D",
+    "beats": 1.5
    }
   ]
  },
@@ -3166,6 +3886,146 @@
    {
     "symbol": "C",
     "beats": 2.5
+   }
+  ]
+ },
+ {
+  "id": "rocket-man",
+  "title": "Rocket Man",
+  "artist": "Elton John",
+  "year": 1972,
+  "key": "Bb Major",
+  "mode": "major",
+  "bpm": 68,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/elton-john/rocket-man",
+  "youtubeId": "DtVBCG6ThDk",
+  "tempoCheckUrl": "https://songbpm.com/@elton-john/rocket-man",
+  "tempoCheckBpm": 129,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/elton-john-rocket-man-tab-s6338802",
+  "tempoSourceBpm": 68,
+  "chords": [
+   {
+    "symbol": "Bb",
+    "beats": 4
+   },
+   {
+    "symbol": "Eb",
+    "beats": 4
+   },
+   {
+    "symbol": "Bb",
+    "beats": 4
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb/D",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 3.5
+   },
+   {
+    "symbol": "Dm7/C",
+    "beats": 0.5
+   }
+  ]
+ },
+ {
+  "id": "starman",
+  "title": "Starman",
+  "artist": "David Bowie",
+  "year": 1972,
+  "key": "F Major",
+  "mode": "major",
+  "bpm": 99,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/david-bowie/starman",
+  "youtubeId": "rpO1U-nEgRU",
+  "tempoCheckUrl": "https://songbpm.com/@david-bowie/starman",
+  "tempoCheckBpm": 108,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/david-bowie-starman-tab-s3112",
+  "tempoSourceBpm": 100,
+  "chords": [
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "Dm",
+    "beats": 4
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "C/G",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "C7",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "Dm",
+    "beats": 4
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "C/G",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "C7",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bbm",
+    "beats": 2
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "D/Gb",
+    "beats": 2
+   },
+   {
+    "symbol": "Gm",
+    "beats": 2
+   },
+   {
+    "symbol": "C7",
+    "beats": 1
    }
   ]
  },
@@ -3644,6 +4504,58 @@
   ]
  },
  {
+  "id": "no-woman-no-cry",
+  "title": "No Woman No Cry",
+  "artist": "Bob Marley",
+  "year": 1974,
+  "key": "Db Major",
+  "mode": "major",
+  "bpm": 79,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/bob-marley/no-woman-no-cry",
+  "youtubeId": "7L5yDpeNOEs",
+  "tempoCheckUrl": "https://songbpm.com/@bob-marley/no-woman-no-cry-arr--kanneh-mason-TL1MCztlpR",
+  "tempoCheckBpm": 146,
+  "keyCheck": "differs",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/bob-marley-no-woman-no-cry-tab-s115",
+  "tempoSourceBpm": 78,
+  "chords": [
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab/C",
+    "beats": 2
+   },
+   {
+    "symbol": "Bbm",
+    "beats": 1.5
+   },
+   {
+    "symbol": "Gb",
+    "beats": 2.5
+   },
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Gb",
+    "beats": 1.5
+   },
+   {
+    "symbol": "Db",
+    "beats": 2.5
+   },
+   {
+    "symbol": "Ab",
+    "beats": 2
+   }
+  ]
+ },
+ {
   "id": "sweet-home-alabama",
   "title": "Sweet Home Alabama",
   "artist": "Lynyrd Skynyrd",
@@ -3872,6 +4784,62 @@
    {
     "symbol": "A",
     "beats": 8
+   }
+  ]
+ },
+ {
+  "id": "wish-you-were-here",
+  "title": "Wish You Were Here",
+  "artist": "Pink Floyd",
+  "year": 1975,
+  "key": "G Major",
+  "mode": "major",
+  "bpm": 122,
+  "timeSignature": "4/4",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/pink-floyd/wish-you-were-here",
+  "youtubeId": "IXdNnw99-Ic",
+  "tempoCheckUrl": "https://songbpm.com/@pink-floyd/wish-you-were-here",
+  "tempoCheckBpm": 122,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/pink-floyd-wish-you-were-here-tab-s153",
+  "tempoSourceBpm": 61,
+  "chords": [
+   {
+    "symbol": "C",
+    "beats": 8
+   },
+   {
+    "symbol": "D",
+    "beats": 8
+   },
+   {
+    "symbol": "Am",
+    "beats": 8
+   },
+   {
+    "symbol": "G",
+    "beats": 8
+   },
+   {
+    "symbol": "D",
+    "beats": 8
+   },
+   {
+    "symbol": "C",
+    "beats": 8
+   },
+   {
+    "symbol": "Am",
+    "beats": 8
+   },
+   {
+    "symbol": "G",
+    "beats": 2.5
+   },
+   {
+    "symbol": "G/B",
+    "beats": 1.5
    }
   ]
  },
@@ -4284,6 +5252,74 @@
   ]
  },
  {
+  "id": "heroes",
+  "title": "Heroes",
+  "artist": "David Bowie",
+  "year": 1977,
+  "key": "D Major",
+  "mode": "mixolydian",
+  "bpm": 113,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/david-bowie/heroes",
+  "youtubeId": "YLp2cW7ICCU",
+  "tempoCheckUrl": "https://songbpm.com/@david-bowie/heroes",
+  "tempoCheckBpm": 120,
+  "keyCheck": "differs",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/david-bowie-heroes-tab-s3291",
+  "tempoSourceBpm": 113,
+  "chords": [
+   {
+    "symbol": "D",
+    "beats": 8
+   },
+   {
+    "symbol": "G",
+    "beats": 8
+   },
+   {
+    "symbol": "D",
+    "beats": 8
+   },
+   {
+    "symbol": "G",
+    "beats": 8
+   },
+   {
+    "symbol": "C",
+    "beats": 8
+   },
+   {
+    "symbol": "D",
+    "beats": 8
+   },
+   {
+    "symbol": "Am",
+    "beats": 4
+   },
+   {
+    "symbol": "Em",
+    "beats": 4
+   },
+   {
+    "symbol": "D",
+    "beats": 8
+   },
+   {
+    "symbol": "C",
+    "beats": 4
+   },
+   {
+    "symbol": "G7",
+    "beats": 4
+   },
+   {
+    "symbol": "D",
+    "beats": 8
+   }
+  ]
+ },
+ {
   "id": "hotel-california",
   "title": "Hotel California",
   "artist": "Eagles",
@@ -4648,6 +5684,122 @@
    {
     "symbol": "Bb",
     "beats": 16
+   }
+  ]
+ },
+ {
+  "id": "we-are-the-champions",
+  "title": "We Are The Champions",
+  "artist": "Queen",
+  "year": 1977,
+  "key": "F Major",
+  "mode": "major",
+  "bpm": 63,
+  "timeSignature": "6/8",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/queen/we-are-the-champions",
+  "youtubeId": "04854XqcfCY",
+  "tempoCheckUrl": "https://songbpm.com/@queen/we-are-the-champions",
+  "tempoCheckBpm": 59,
+  "keyCheck": "differs",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/queen-we-are-the-champions-tab-s35507",
+  "tempoSourceBpm": 62,
+  "chords": [
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "Dm",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 1
+   },
+   {
+    "symbol": "C",
+    "beats": 1
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Am",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 1.3333
+   },
+   {
+    "symbol": "Bbmaj7/A",
+    "beats": 0.3333
+   },
+   {
+    "symbol": "Gm7",
+    "beats": 0.3333
+   },
+   {
+    "symbol": "Gbdim",
+    "beats": 0.6667
+   },
+   {
+    "symbol": "Gbm7b5",
+    "beats": 0.6667
+   },
+   {
+    "symbol": "Gbdim7",
+    "beats": 0.6667
+   },
+   {
+    "symbol": "Gm7",
+    "beats": 2
+   },
+   {
+    "symbol": "C7/G",
+    "beats": 2
+   },
+   {
+    "symbol": "Bbm6",
+    "beats": 1.6667
+   },
+   {
+    "symbol": "Bbm/Db",
+    "beats": 0.3333
+   },
+   {
+    "symbol": "Edim7",
+    "beats": 1
+   },
+   {
+    "symbol": "Edim7/G",
+    "beats": 1
+   },
+   {
+    "symbol": "F",
+    "beats": 2
+   },
+   {
+    "symbol": "Ebadd9/G",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab6",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb7",
+    "beats": 2
+   },
+   {
+    "symbol": "C7sus4",
+    "beats": 2
    }
   ]
  },
@@ -5505,6 +6657,42 @@
    },
    {
     "symbol": "Dm",
+    "beats": 4
+   }
+  ]
+ },
+ {
+  "id": "love-will-tear-us-apart",
+  "title": "Love Will Tear Us Apart",
+  "artist": "Joy Division",
+  "year": 1980,
+  "key": "D Major",
+  "mode": "major",
+  "bpm": 147,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/joy-division/love-will-tear-us-apart",
+  "youtubeId": "674KGKRQBPE",
+  "tempoCheckUrl": "https://songbpm.com/@joy-division/love-will-tear-us-apart",
+  "tempoCheckBpm": 163,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/joy-division-love-will-tear-us-apart-tab-s10209",
+  "tempoSourceBpm": 147,
+  "chords": [
+   {
+    "symbol": "Dsus2/E",
+    "beats": 4
+   },
+   {
+    "symbol": "D",
+    "beats": 4
+   },
+   {
+    "symbol": "Bm",
+    "beats": 4
+   },
+   {
+    "symbol": "A",
     "beats": 4
    }
   ]
@@ -6508,6 +7696,34 @@
    {
     "symbol": "Eb",
     "beats": 4
+   }
+  ]
+ },
+ {
+  "id": "born-in-the-usa",
+  "title": "Born in the USA",
+  "artist": "Bruce Springsteen",
+  "year": 1984,
+  "key": "B Major",
+  "mode": "major",
+  "bpm": 122,
+  "timeSignature": "4/4",
+  "section": "Intro",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/bruce-springsteen/born-in-the-usa",
+  "youtubeId": "EPhWR4d3FJQ",
+  "tempoCheckUrl": "https://songbpm.com/@bruce-springsteen/born-in-the-usa",
+  "tempoCheckBpm": 122,
+  "keyCheck": "differs",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/bruce-springsteen-born-in-the-u-s-a-tab-s19238",
+  "tempoSourceBpm": 123,
+  "chords": [
+   {
+    "symbol": "B",
+    "beats": 16
+   },
+   {
+    "symbol": "E",
+    "beats": 16
    }
   ]
  },
@@ -8780,6 +9996,50 @@
   ]
  },
  {
+  "id": "november-rain",
+  "title": "November Rain",
+  "artist": "Guns N' Roses",
+  "year": 1991,
+  "key": "B Major",
+  "mode": "major",
+  "bpm": 78,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/guns-n-roses/november-rain",
+  "youtubeId": "8SbUC-UaAxE",
+  "tempoCheckUrl": "https://songbpm.com/@guns-n-roses/november-rain",
+  "tempoCheckBpm": 84,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/guns-n-roses-november-rain-tab-s8452",
+  "tempoSourceBpm": 78,
+  "chords": [
+   {
+    "symbol": "C#m7",
+    "beats": 4
+   },
+   {
+    "symbol": "F#",
+    "beats": 4
+   },
+   {
+    "symbol": "B",
+    "beats": 2
+   },
+   {
+    "symbol": "Bsus4",
+    "beats": 2
+   },
+   {
+    "symbol": "B",
+    "beats": 2
+   },
+   {
+    "symbol": "Bsus2",
+    "beats": 2
+   }
+  ]
+ },
+ {
   "id": "one",
   "title": "One",
   "artist": "U2",
@@ -8856,6 +10116,102 @@
    {
     "symbol": "Db5",
     "beats": 2
+   }
+  ]
+ },
+ {
+  "id": "under-the-bridge",
+  "title": "Under The Bridge",
+  "artist": "Red Hot Chili Peppers",
+  "year": 1991,
+  "key": "E Major",
+  "mode": "major",
+  "bpm": 80,
+  "timeSignature": "4/4",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/red-hot-chili-peppers/under-the-bridge",
+  "youtubeId": "lwlogyj7nFE",
+  "tempoCheckUrl": "https://songbpm.com/@red-hot-chili-peppers/under-the-bridge",
+  "tempoCheckBpm": 84,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/red-hot-chili-peppers-under-the-bridge-tab-s99",
+  "tempoSourceBpm": 79,
+  "chords": [
+   {
+    "symbol": "E",
+    "beats": 1.5
+   },
+   {
+    "symbol": "B",
+    "beats": 2.5
+   },
+   {
+    "symbol": "C#m",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G#m",
+    "beats": 1
+   },
+   {
+    "symbol": "A",
+    "beats": 1.5
+   },
+   {
+    "symbol": "E",
+    "beats": 1.5
+   },
+   {
+    "symbol": "B",
+    "beats": 2.5
+   },
+   {
+    "symbol": "C#m",
+    "beats": 1.5
+   },
+   {
+    "symbol": "A",
+    "beats": 2.5
+   },
+   {
+    "symbol": "E",
+    "beats": 1.5
+   },
+   {
+    "symbol": "B",
+    "beats": 2.5
+   },
+   {
+    "symbol": "C#m",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G#m",
+    "beats": 1
+   },
+   {
+    "symbol": "A",
+    "beats": 1.5
+   },
+   {
+    "symbol": "E",
+    "beats": 1.5
+   },
+   {
+    "symbol": "B",
+    "beats": 2.5
+   },
+   {
+    "symbol": "C#m",
+    "beats": 1.5
+   },
+   {
+    "symbol": "A",
+    "beats": 2.5
+   },
+   {
+    "symbol": "Emaj7",
+    "beats": 8
    }
   ]
  },
@@ -9902,6 +11258,230 @@
   ]
  },
  {
+  "id": "can-you-feel-the-love-tonight",
+  "title": "Can You Feel the Love Tonight",
+  "artist": "Elton John",
+  "year": 1994,
+  "key": "Bb Major",
+  "mode": "major",
+  "bpm": 62,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/elton-john/can-you-feel-the-love-tonight",
+  "youtubeId": "KjgWWjkNbhU",
+  "tempoCheckUrl": "https://songbpm.com/@elton-john/can-you-feel-the-love-tonight",
+  "tempoCheckBpm": 90,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/elton-john-can-you-feel-the-love-tonight-tab-s10242",
+  "tempoSourceBpm": 60,
+  "chords": [
+   {
+    "symbol": "Bb",
+    "beats": 2
+   },
+   {
+    "symbol": "F/A",
+    "beats": 2
+   },
+   {
+    "symbol": "Gm",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 1
+   },
+   {
+    "symbol": "C/E",
+    "beats": 1
+   },
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb/D",
+    "beats": 2
+   },
+   {
+    "symbol": "Gm",
+    "beats": 1
+   },
+   {
+    "symbol": "Gm7/F",
+    "beats": 1
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Cm",
+    "beats": 1
+   },
+   {
+    "symbol": "Bb/D",
+    "beats": 1
+   },
+   {
+    "symbol": "Cm/Eb",
+    "beats": 1
+   },
+   {
+    "symbol": "C/E",
+    "beats": 1
+   },
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "Bb",
+    "beats": 2
+   },
+   {
+    "symbol": "F/A",
+    "beats": 2
+   },
+   {
+    "symbol": "Gm",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 1
+   },
+   {
+    "symbol": "C/E",
+    "beats": 1
+   },
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb/D",
+    "beats": 2
+   },
+   {
+    "symbol": "Gm",
+    "beats": 1
+   },
+   {
+    "symbol": "Gm7/F",
+    "beats": 1
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Cm",
+    "beats": 1
+   },
+   {
+    "symbol": "Bb/D",
+    "beats": 1
+   },
+   {
+    "symbol": "Cm/Eb",
+    "beats": 1
+   },
+   {
+    "symbol": "F7sus4",
+    "beats": 1
+   },
+   {
+    "symbol": "Eb/Bb",
+    "beats": 2
+   },
+   {
+    "symbol": "Bb",
+    "beats": 2
+   }
+  ]
+ },
+ {
+  "id": "hallelujah",
+  "title": "Hallelujah",
+  "artist": "Jeff Buckley",
+  "year": 1994,
+  "key": "C Major",
+  "mode": "major",
+  "bpm": 64.7,
+  "timeSignature": "6/8",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/jeff-buckley/hallelujah",
+  "youtubeId": "WIF4_Sm-rgQ",
+  "tempoCheckUrl": "https://songbpm.com/@jeff-buckley/hallelujah",
+  "tempoCheckBpm": 97,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/jeff-buckley-hallelujah-tab-s380120",
+  "tempoSourceBpm": 63.33,
+  "chords": [
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "Am",
+    "beats": 4
+   },
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "C/E",
+    "beats": 2
+   },
+   {
+    "symbol": "G/D",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "Am7",
+    "beats": 2
+   },
+   {
+    "symbol": "C",
+    "beats": 2
+   },
+   {
+    "symbol": "Am7",
+    "beats": 2
+   }
+  ]
+ },
+ {
   "id": "interstate-love-song",
   "title": "Interstate Love Song",
   "artist": "Stone Temple Pilots",
@@ -10210,6 +11790,222 @@
    {
     "symbol": "G",
     "beats": 8
+   }
+  ]
+ },
+ {
+  "id": "high-and-dry",
+  "title": "High and Dry",
+  "artist": "Radiohead",
+  "year": 1995,
+  "key": "E Major",
+  "mode": "major",
+  "bpm": 88,
+  "timeSignature": "4/4",
+  "section": "Pre-Chorus and Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/radiohead/high-and-dry",
+  "youtubeId": "7qFfFVSerQo",
+  "tempoCheckUrl": "https://songbpm.com/@radiohead/high-and-dry",
+  "tempoCheckBpm": 88,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/radiohead-high-and-dry-tab-s84996",
+  "tempoSourceBpm": 86,
+  "chords": [
+   {
+    "symbol": "F#7sus4",
+    "beats": 4
+   },
+   {
+    "symbol": "Aadd9",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 3.25
+   },
+   {
+    "symbol": "Esus4",
+    "beats": 0.75
+   },
+   {
+    "symbol": "E",
+    "beats": 4
+   },
+   {
+    "symbol": "F#7sus4",
+    "beats": 4
+   },
+   {
+    "symbol": "Aadd9",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 1.75
+   },
+   {
+    "symbol": "Esus4",
+    "beats": 2.25
+   },
+   {
+    "symbol": "E",
+    "beats": 1.75
+   },
+   {
+    "symbol": "Esus4",
+    "beats": 1.25
+   },
+   {
+    "symbol": "E",
+    "beats": 1
+   },
+   {
+    "symbol": "F#7sus4",
+    "beats": 4
+   },
+   {
+    "symbol": "Aadd9",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 2.5
+   },
+   {
+    "symbol": "Esus4",
+    "beats": 1.5
+   },
+   {
+    "symbol": "E",
+    "beats": 4
+   },
+   {
+    "symbol": "F#7sus4",
+    "beats": 4
+   },
+   {
+    "symbol": "Aadd9",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 1.75
+   },
+   {
+    "symbol": "Esus4",
+    "beats": 2.25
+   },
+   {
+    "symbol": "E",
+    "beats": 4
+   },
+   {
+    "symbol": "F#m",
+    "beats": 4
+   },
+   {
+    "symbol": "A",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 4
+   },
+   {
+    "symbol": "E/G#",
+    "beats": 4
+   },
+   {
+    "symbol": "F#m",
+    "beats": 4
+   },
+   {
+    "symbol": "A",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 8
+   }
+  ]
+ },
+ {
+  "id": "ironic",
+  "title": "Ironic",
+  "artist": "Alanis Morissette",
+  "year": 1995,
+  "key": "F# Major",
+  "mode": "mixolydian",
+  "bpm": 85,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/alanis-morissette/ironic",
+  "youtubeId": "H4bIXVTsJck",
+  "tempoCheckUrl": "https://songbpm.com/@alanis-morissette/ironic",
+  "tempoCheckBpm": 115,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/alanis-morissette-ironic-tab-s88",
+  "tempoSourceBpm": 86,
+  "chords": [
+   {
+    "symbol": "F#",
+    "beats": 1.5
+   },
+   {
+    "symbol": "B",
+    "beats": 2.5
+   },
+   {
+    "symbol": "F#",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G#m",
+    "beats": 2.5
+   },
+   {
+    "symbol": "F#",
+    "beats": 1.5
+   },
+   {
+    "symbol": "B",
+    "beats": 2.5
+   },
+   {
+    "symbol": "F#",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G#m",
+    "beats": 2.5
+   },
+   {
+    "symbol": "F#",
+    "beats": 1.5
+   },
+   {
+    "symbol": "B",
+    "beats": 2.5
+   },
+   {
+    "symbol": "F#",
+    "beats": 1.5
+   },
+   {
+    "symbol": "G#m",
+    "beats": 2.5
+   },
+   {
+    "symbol": "A",
+    "beats": 1.5
+   },
+   {
+    "symbol": "E",
+    "beats": 2.5
+   },
+   {
+    "symbol": "F#",
+    "beats": 4
    }
   ]
  },
@@ -11892,6 +13688,42 @@
   ]
  },
  {
+  "id": "otherside",
+  "title": "Otherside",
+  "artist": "Red Hot Chili Peppers",
+  "year": 1999,
+  "key": "A Minor",
+  "mode": "minor",
+  "bpm": 117,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/red-hot-chili-peppers/otherside",
+  "youtubeId": "rn_YodiJO6k",
+  "tempoCheckUrl": "https://songbpm.com/@red-hot-chili-peppers/otherside",
+  "tempoCheckBpm": 123,
+  "keyCheck": "relative",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/red-hot-chili-peppers-otherside-tab-s23785",
+  "tempoSourceBpm": 117,
+  "chords": [
+   {
+    "symbol": "Am",
+    "beats": 4
+   },
+   {
+    "symbol": "F",
+    "beats": 4
+   },
+   {
+    "symbol": "C",
+    "beats": 4
+   },
+   {
+    "symbol": "G",
+    "beats": 4
+   }
+  ]
+ },
+ {
   "id": "scar-tissue",
   "title": "Scar Tissue",
   "artist": "Red Hot Chili Peppers",
@@ -12210,6 +14042,338 @@
    {
     "symbol": "Emaj7",
     "beats": 5
+   }
+  ]
+ },
+ {
+  "id": "chop-suey",
+  "title": "Chop Suey",
+  "artist": "System Of A Down",
+  "year": 2001,
+  "key": "G Minor",
+  "mode": "phrygian",
+  "bpm": 133,
+  "timeSignature": "4/4",
+  "section": "Chorus Lead-Out",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/system-of-a-down/chop-suey",
+  "youtubeId": "CSvFpBOe8eY",
+  "tempoCheckUrl": "https://songbpm.com/@system-of-a-down/chop-suey",
+  "tempoCheckBpm": 127,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/system-of-a-down-chop-suey-tab-s3708",
+  "tempoSourceBpm": 128,
+  "chords": [
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.5
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.5
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "F#m",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Am",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Cm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Bb",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Ab",
+    "beats": 0.25
+   },
+   {
+    "symbol": "Gm",
+    "beats": 0.25
    }
   ]
  },
@@ -13222,6 +15386,58 @@
   ]
  },
  {
+  "id": "1985",
+  "title": "1985",
+  "artist": "Bowling for Soup",
+  "year": 2004,
+  "key": "B Major",
+  "mode": "mixolydian",
+  "bpm": 120,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/bowling-for-soup/1985",
+  "youtubeId": "K38xNqZvBJI",
+  "tempoCheckUrl": "https://songbpm.com/@bowling-for-soup/1985",
+  "tempoCheckBpm": 146,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/bowling-for-soup-1985-tab-s3111",
+  "tempoSourceBpm": 120,
+  "chords": [
+   {
+    "symbol": "B",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 4
+   },
+   {
+    "symbol": "G#m",
+    "beats": 4
+   },
+   {
+    "symbol": "A",
+    "beats": 4
+   },
+   {
+    "symbol": "B",
+    "beats": 4
+   },
+   {
+    "symbol": "E",
+    "beats": 4
+   },
+   {
+    "symbol": "G#m",
+    "beats": 4
+   },
+   {
+    "symbol": "A",
+    "beats": 8
+   }
+  ]
+ },
+ {
   "id": "american-idiot",
   "title": "American Idiot",
   "artist": "Green Day",
@@ -13562,6 +15778,110 @@
   ]
  },
  {
+  "id": "take-me-out",
+  "title": "Take Me Out",
+  "artist": "Franz Ferdinand",
+  "year": 2004,
+  "key": "E Minor",
+  "mode": "minor",
+  "bpm": 142,
+  "timeSignature": "4/4",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/franz-ferdinand/take-me-out",
+  "youtubeId": "Ijk4j-r7qPA",
+  "tempoCheckUrl": "https://songbpm.com/@franz-ferdinand/take-me-out",
+  "tempoCheckBpm": 104,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/franz-ferdinand-take-me-out-tab-s7648",
+  "tempoSourceBpm": 142,
+  "chords": [
+   {
+    "symbol": "Em",
+    "beats": 4
+   },
+   {
+    "symbol": "Am7/G",
+    "beats": 4
+   },
+   {
+    "symbol": "D/F#",
+    "beats": 4
+   },
+   {
+    "symbol": "Gadd9",
+    "beats": 2
+   },
+   {
+    "symbol": "B7",
+    "beats": 2
+   },
+   {
+    "symbol": "Em",
+    "beats": 4
+   },
+   {
+    "symbol": "Am7/G",
+    "beats": 4
+   },
+   {
+    "symbol": "D/F#",
+    "beats": 4
+   },
+   {
+    "symbol": "Gadd9",
+    "beats": 2
+   },
+   {
+    "symbol": "B7",
+    "beats": 2
+   },
+   {
+    "symbol": "Em",
+    "beats": 4
+   },
+   {
+    "symbol": "Am7/G",
+    "beats": 4
+   },
+   {
+    "symbol": "D/F#",
+    "beats": 4
+   },
+   {
+    "symbol": "Gadd9",
+    "beats": 2
+   },
+   {
+    "symbol": "B7",
+    "beats": 2
+   },
+   {
+    "symbol": "Em",
+    "beats": 4
+   },
+   {
+    "symbol": "Am7/G",
+    "beats": 4
+   },
+   {
+    "symbol": "D/F#",
+    "beats": 4
+   },
+   {
+    "symbol": "Gadd9",
+    "beats": 2
+   },
+   {
+    "symbol": "B7",
+    "beats": 2
+   },
+   {
+    "symbol": "Em",
+    "beats": 4
+   }
+  ]
+ },
+ {
   "id": "wagon-wheel",
   "title": "Wagon Wheel",
   "artist": "Old Crow Medicine Show",
@@ -13884,6 +16204,58 @@
    {
     "symbol": "Aadd9",
     "beats": 8
+   }
+  ]
+ },
+ {
+  "id": "better-together",
+  "title": "Better Together",
+  "artist": "Jack Johnson",
+  "year": 2005,
+  "key": "F# Major",
+  "mode": "major",
+  "bpm": 111,
+  "timeSignature": "4/4",
+  "section": "Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/jack-johnson/better-together",
+  "youtubeId": "seZMOTGCDag",
+  "tempoCheckUrl": "https://songbpm.com/@jack-johnson/better-together",
+  "tempoCheckBpm": 94,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/jack-johnson-better-together-tab-s465",
+  "tempoSourceBpm": 112,
+  "chords": [
+   {
+    "symbol": "F#",
+    "beats": 2
+   },
+   {
+    "symbol": "C#/F",
+    "beats": 2
+   },
+   {
+    "symbol": "D#m",
+    "beats": 2
+   },
+   {
+    "symbol": "C#",
+    "beats": 2
+   },
+   {
+    "symbol": "B",
+    "beats": 2
+   },
+   {
+    "symbol": "F#/A#",
+    "beats": 2
+   },
+   {
+    "symbol": "G#m",
+    "beats": 2
+   },
+   {
+    "symbol": "C#",
+    "beats": 2
    }
   ]
  },
@@ -17474,6 +19846,122 @@
   ]
  },
  {
+  "id": "all-of-me",
+  "title": "All of Me",
+  "artist": "John Legend",
+  "year": 2013,
+  "key": "Ab Major",
+  "mode": "major",
+  "bpm": 60,
+  "timeSignature": "4/4",
+  "section": "Intro and Verse",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/john-legend/all-of-me",
+  "youtubeId": "450p7goxZqg",
+  "tempoCheckUrl": "https://songbpm.com/@john-legend/all-of-me",
+  "tempoCheckBpm": 120,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/john-legend-all-of-me-tab-s390512",
+  "tempoSourceBpm": 120,
+  "chords": [
+   {
+    "symbol": "F5",
+    "beats": 2
+   },
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb5",
+    "beats": 2
+   },
+   {
+    "symbol": "F5",
+    "beats": 2
+   },
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb5",
+    "beats": 2
+   },
+   {
+    "symbol": "Fm",
+    "beats": 2
+   },
+   {
+    "symbol": "Dbmaj7",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Fm",
+    "beats": 2
+   },
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Fm",
+    "beats": 2
+   },
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   },
+   {
+    "symbol": "Fm",
+    "beats": 2
+   },
+   {
+    "symbol": "Db",
+    "beats": 2
+   },
+   {
+    "symbol": "Ab",
+    "beats": 2
+   },
+   {
+    "symbol": "Eb",
+    "beats": 2
+   }
+  ]
+ },
+ {
   "id": "animals",
   "title": "Animals",
   "artist": "Martin Garrix",
@@ -18276,6 +20764,78 @@
    {
     "symbol": "F",
     "beats": 8
+   }
+  ]
+ },
+ {
+  "id": "chandelier",
+  "title": "Chandelier",
+  "artist": "Sia",
+  "year": 2014,
+  "key": "Db Major",
+  "mode": "major",
+  "bpm": 87,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/sia/chandelier",
+  "youtubeId": "2vjPBrBU-TM",
+  "tempoCheckUrl": "https://songbpm.com/@sia/chandelier",
+  "tempoCheckBpm": 117,
+  "keyCheck": "unavailable",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/sia-chandelier-tab-s4783988",
+  "tempoSourceBpm": 174,
+  "chords": [
+   {
+    "symbol": "Gb",
+    "beats": 4
+   },
+   {
+    "symbol": "Ab",
+    "beats": 4
+   },
+   {
+    "symbol": "Db/F",
+    "beats": 4
+   },
+   {
+    "symbol": "Gb",
+    "beats": 8
+   },
+   {
+    "symbol": "Ab",
+    "beats": 4
+   },
+   {
+    "symbol": "Db/F",
+    "beats": 4
+   },
+   {
+    "symbol": "Gb",
+    "beats": 8
+   },
+   {
+    "symbol": "Ab",
+    "beats": 4
+   },
+   {
+    "symbol": "Db/F",
+    "beats": 4
+   },
+   {
+    "symbol": "Gb",
+    "beats": 8
+   },
+   {
+    "symbol": "Ab",
+    "beats": 4
+   },
+   {
+    "symbol": "Db/F",
+    "beats": 4
+   },
+   {
+    "symbol": "Gb",
+    "beats": 4
    }
   ]
  },
@@ -21490,6 +24050,46 @@
    {
     "symbol": "B",
     "beats": 2.5
+   }
+  ]
+ },
+ {
+  "id": "happier-than-ever",
+  "title": "Happier Than Ever",
+  "artist": "Billie Eilish",
+  "year": 2021,
+  "key": "C Major",
+  "mode": "major",
+  "bpm": 90,
+  "timeSignature": "4/4",
+  "section": "Chorus",
+  "sourceUrl": "https://www.hooktheory.com/theorytab/view/billie-eilish/happier-than-ever",
+  "youtubeId": "5GJWxDKyk3A",
+  "tempoCheckUrl": "https://songbpm.com/@billie-eilish/happier-than-ever-09H_nh7nix",
+  "tempoCheckBpm": 81,
+  "keyCheck": "exact",
+  "tempoSourceUrl": "https://www.songsterr.com/a/wsa/billie-eilish-happier-than-ever-tab-s498927",
+  "tempoSourceBpm": 89,
+  "chords": [
+   {
+    "symbol": "Cadd9",
+    "beats": 8
+   },
+   {
+    "symbol": "E7",
+    "beats": 8
+   },
+   {
+    "symbol": "Am",
+    "beats": 8
+   },
+   {
+    "symbol": "Dm",
+    "beats": 4
+   },
+   {
+    "symbol": "G",
+    "beats": 5
    }
   ]
  },

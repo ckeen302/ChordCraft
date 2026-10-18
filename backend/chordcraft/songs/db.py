@@ -8,7 +8,8 @@ One file (``backend/db/songs.sqlite``) holds:
 - ``rejected``     — candidates the ingest looked at and refused, with the reason
 
 Every song is converted from a Hooktheory TheoryTab section (chords, rhythm, key, tempo)
-and its tempo is cross-checked against songbpm.com; see ``ingest.py``.
+and its tempo is cross-checked against songbpm.com; where the two disagree, an explicit
+override confirmed by a Songsterr tab (``tempo_source_*``) settles it. See ``ingest.py``.
 """
 
 from __future__ import annotations
@@ -40,6 +41,8 @@ CREATE TABLE IF NOT EXISTS songs (
     tempo_check_url TEXT CHECK (tempo_check_url IS NULL OR tempo_check_url LIKE 'https://%'),
     tempo_check_bpm REAL,
     key_check       TEXT CHECK (key_check IN ('exact', 'relative', 'differs', 'unavailable')),
+    tempo_source_url TEXT CHECK (tempo_source_url IS NULL OR tempo_source_url LIKE 'https://www.songsterr.com/%'),
+    tempo_source_bpm REAL,
     song_key        TEXT NOT NULL UNIQUE,   -- dedupe: normalised artist | title
     added_at        TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -101,6 +104,8 @@ class Song:
     tempoCheckUrl: str | None  # noqa: N815
     tempoCheckBpm: float | None  # noqa: N815
     keyCheck: str  # noqa: N815
+    tempoSourceUrl: str | None = None  # noqa: N815  -- tempo override's confirming tab, if any
+    tempoSourceBpm: float | None = None  # noqa: N815
     chords: list[SongChord] = field(default_factory=list)
 
     def to_json(self) -> dict:
@@ -108,6 +113,10 @@ class Song:
         d["bpm"] = _num(self.bpm)
         if self.tempoCheckBpm is not None:
             d["tempoCheckBpm"] = _num(self.tempoCheckBpm)
+        if self.tempoSourceUrl is None:
+            del d["tempoSourceUrl"], d["tempoSourceBpm"]
+        else:
+            d["tempoSourceBpm"] = _num(self.tempoSourceBpm or 0)
         d["chords"] = [{"symbol": c.symbol, "beats": _num(c.beats)} for c in self.chords]
         return d
 
@@ -145,10 +154,24 @@ def open_db(path: str | Path | None = None) -> Iterator[sqlite3.Connection]:
     conn = connect(path)
     try:
         conn.executescript(SCHEMA)
+        _migrate(conn)
         conn.commit()
         yield conn
     finally:
         conn.close()
+
+
+_ADDED_COLUMNS = {
+    "tempo_source_url": "TEXT CHECK (tempo_source_url IS NULL OR tempo_source_url LIKE 'https://www.songsterr.com/%')",
+    "tempo_source_bpm": "REAL",
+}
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    have = {r[1] for r in conn.execute("PRAGMA table_info(songs)")}
+    for name, decl in _ADDED_COLUMNS.items():
+        if name not in have:
+            conn.execute(f"ALTER TABLE songs ADD COLUMN {name} {decl}")
 
 
 def upsert(conn: sqlite3.Connection, s: Song) -> None:
@@ -167,16 +190,17 @@ def _upsert(conn: sqlite3.Connection, s: Song) -> None:
     conn.execute("DELETE FROM songs WHERE id = ? OR song_key = ?", (s.id, song_key(s.artist, s.title)))
     conn.execute(
         "INSERT INTO songs (id, title, artist, year, key, mode, bpm, time_signature, section, source_url,"
-        " youtube_id, tempo_check_url, tempo_check_bpm, key_check, song_key)"
-        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        " youtube_id, tempo_check_url, tempo_check_bpm, key_check, tempo_source_url, tempo_source_bpm, song_key)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (s.id, s.title, s.artist, s.year, s.key, s.mode, s.bpm, s.timeSignature, s.section, s.sourceUrl,
-         s.youtubeId, s.tempoCheckUrl, s.tempoCheckBpm, s.keyCheck, song_key(s.artist, s.title)),
+         s.youtubeId, s.tempoCheckUrl, s.tempoCheckBpm, s.keyCheck, s.tempoSourceUrl, s.tempoSourceBpm,
+         song_key(s.artist, s.title)),
     )
     conn.executemany(
         "INSERT INTO song_chords (song_id, position, symbol, beats) VALUES (?, ?, ?, ?)",
         [(s.id, i, c.symbol, c.beats) for i, c in enumerate(s.chords)],
     )
-    conn.execute("DELETE FROM rejected WHERE title = ? AND artist = ?", (s.title, s.artist))
+    unreject(conn, s.title, s.artist)
 
 
 def reject(conn: sqlite3.Connection, title: str, artist: str, reason: str) -> None:
@@ -185,6 +209,10 @@ def reject(conn: sqlite3.Connection, title: str, artist: str, reason: str) -> No
         " ON CONFLICT (title, artist) DO UPDATE SET reason = excluded.reason, checked_at = datetime('now')",
         (title, artist, reason),
     )
+
+
+def unreject(conn: sqlite3.Connection, title: str, artist: str) -> None:
+    conn.execute("DELETE FROM rejected WHERE title = ? AND artist = ?", (title, artist))
 
 
 def _fts_query(q: str) -> str:
@@ -199,7 +227,8 @@ def _load(conn: sqlite3.Connection, rows: list[sqlite3.Row]) -> list[Song]:
         out.append(Song(id=r["id"], title=r["title"], artist=r["artist"], year=r["year"], key=r["key"],
                         mode=r["mode"], bpm=r["bpm"], timeSignature=r["time_signature"], section=r["section"],
                         sourceUrl=r["source_url"], youtubeId=r["youtube_id"], tempoCheckUrl=r["tempo_check_url"],
-                        tempoCheckBpm=r["tempo_check_bpm"], keyCheck=r["key_check"], chords=chords))
+                        tempoCheckBpm=r["tempo_check_bpm"], keyCheck=r["key_check"],
+                        tempoSourceUrl=r["tempo_source_url"], tempoSourceBpm=r["tempo_source_bpm"], chords=chords))
     return out
 
 

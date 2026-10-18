@@ -151,6 +151,8 @@ class SongOut(BaseModel):
     tempoCheckUrl: str | None  # noqa: N815
     tempoCheckBpm: float | None  # noqa: N815
     keyCheck: Literal["exact", "relative", "differs", "unavailable"]  # noqa: N815
+    tempoSourceUrl: str | None = None  # noqa: N815
+    tempoSourceBpm: float | None = None  # noqa: N815
     chords: list[SongChordOut]
 
 
