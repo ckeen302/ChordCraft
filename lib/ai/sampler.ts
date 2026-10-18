@@ -158,6 +158,14 @@ export async function sampleProgressions(logits: LogitsFn, v: Vocab, opts: Sampl
       const allowed = step === length ? v.tokens.map((_, i) => i === v.eos) : [...base]
       if (step > 0 && step < length) allowed[chords[chords.length - 1]] = false
       if (blockLoops && step >= 3 && step < length) for (const t of loopCompletions(chords)) allowed[t] = false
+      if (step === length - 1 && step > 0) {
+        // A progression needs at least two roots: "Eb – Ebmaj7" is one chord recoloured.
+        const roots = new Set(chords.map(id => decodeChord(v, id)[0]))
+        if (roots.size === 1) {
+          const [only] = roots
+          for (let i = v.firstChord; i < v.tokens.length; i++) if (decodeChord(v, i)[0] === only) allowed[i] = false
+        }
+      }
       const used = presencePenalty && step > 0 && step < length ? new Set(chords) : null
 
       // log-softmax over allowed tokens (for scoring) and tempered nucleus sampling.

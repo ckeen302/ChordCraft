@@ -443,9 +443,15 @@ def generate_smart(
     r = generate_mood_progression(key, mood, length, exclude_diminished, rng)
     symbols = apply_secondary_dominants(r.symbols, rng) if chromatic_color else r.symbols
     parsed = [replace(c, beats=r.beats[i]) for i, c in enumerate(parse_chords(symbols))]
+    romans = r.romans
+    if symbols != r.symbols:
+        # A secondary dominant replaced a chord, so the pattern's numerals no longer fit.
+        from .analysis import analyze_progression
+
+        romans = analyze_progression(parsed, key).romans
     return SmartResult(
         chords=voice_lead_progression(parsed),
-        romans=r.romans,
+        romans=romans,
         pattern_name=r.pattern_name,
         bpm=r.bpm,
         instrument=r.instrument,

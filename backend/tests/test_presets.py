@@ -135,7 +135,24 @@ def test_ingest_adds_queues_and_moves_watermark(conn):
     added = db.get(conn, "ken-carson-yale")
     assert added.notes == AUTO_NOTE and added.sourceUrl.endswith("/comments/p1/")
     assert db.get_meta(conn, WATERMARK) == "140"
-    assert ingest(conn, fetch=fake_archive(posts)).seen == 0  # nothing new past the watermark
+    # The next run re-scans the look-back window but adds and queues nothing twice.
+    again = ingest(conn, fetch=fake_archive(posts))
+    assert again.added == [] and again.queued == 0 and db.get_meta(conn, WATERMARK) == "140"
+
+
+def test_ingest_picks_up_threads_solved_after_a_run(conn):
+    post = {"id": "late", "title": "Ken Carson - Yale", "selftext": "Purity - Lead Synth - Ducking",
+            "created_utc": 1_000, "link_flair_text": "REQUEST"}
+    assert ingest(conn, fetch=fake_archive([post]), since=900).added == []
+    post["link_flair_text"] = "PRESET FOUND"  # solved a few days later
+    assert ingest(conn, fetch=fake_archive([post])).added == ["ken-carson-yale"]
+
+
+def test_paging_keeps_posts_that_share_a_timestamp():
+    from chordcraft.presets.ingest import fetch_posts_after
+    posts = [{"id": f"p{i}", "created_utc": 500 + i // 3} for i in range(250)]  # 3 posts per second
+    got = [p["id"] for p in fetch_posts_after(0, fetch=fake_archive(posts))]
+    assert sorted(got) == sorted(p["id"] for p in posts) and len(got) == len(set(got))
 
 
 def test_ingest_dry_run_changes_nothing(conn):
@@ -155,6 +172,10 @@ def test_api_lists_and_searches():
     assert body["total"] >= 1 and body["items"][0]["preset"] == "Future Bell"
     page = client.get("/v1/presets", params={"limit": 5, "offset": 5}).json()
     assert page["total"] > 800 and len(page["items"]) == 5 and page["offset"] == 5
+
+
+def test_api_rejects_huge_offsets():
+    assert client.get("/v1/presets", params={"offset": 10**20}).status_code == 422
 
 
 def test_api_filters_facets_and_errors():
